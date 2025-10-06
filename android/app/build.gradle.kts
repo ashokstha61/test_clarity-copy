@@ -1,9 +1,20 @@
+import java.util.Properties
+import java.io.FileInputStream
+
+
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services") 
     id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
 
 android {
     namespace = "com.main.clarity"
@@ -22,15 +33,24 @@ android {
     defaultConfig {
         applicationId = "com.main.clarity"
         minSdk = 28
-        targetSdk = 37
-        versionCode = flutter.versionCode?.toInt() ?: 1
-        versionName = flutter.versionName ?: "1.0"
+        targetSdk = 36
+        versionCode = 2
+        versionName = "1.0.0"
         multiDexEnabled = true
+    }
+
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String?
+            keyPassword = keystoreProperties["keyPassword"] as String?
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String?
+        }
     }
 
     buildTypes {
         getByName("release") {
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
