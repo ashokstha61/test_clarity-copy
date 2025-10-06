@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+
+
 class FavSoundModel {
-  final List<String> soundTitles;
+  final List<Map<String, dynamic>> soundTitles;
   final String favSoundTitle;
   final String userId;
 
@@ -14,7 +16,9 @@ class FavSoundModel {
   // Convert JSON to FavSoundModel object
   factory FavSoundModel.fromJson(Map<String, dynamic> json) {
     return FavSoundModel(
-      soundTitles: List<String>.from(json['soundTitles'] ?? []),
+      soundTitles: (json['soundTitles'] as List<dynamic>? ?? [])
+          .map((e) => Map<String, dynamic>.from(e))
+          .toList(),
       favSoundTitle: json['favSoundTitle'] ?? '',
       userId: json['userId'] ?? '',
     );

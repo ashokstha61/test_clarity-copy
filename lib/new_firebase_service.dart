@@ -4,15 +4,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'model/favSoundModel.dart';
 
-
 class DatabaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String _collectionName = 'SoundData';
-  final String _favSoundCollection= 'FavoriteSoundData';
+  final String _favSoundCollection = 'FavoriteSoundData';
 
   Future<List<NewSoundModel>> fetchSoundData() async {
     try {
-      final QuerySnapshot snapshot = await _firestore.collection(_collectionName).get();
+      final QuerySnapshot snapshot = await _firestore
+          .collection(_collectionName)
+          .get();
       return snapshot.docs.map((doc) {
         return NewSoundModel.fromJson(doc.data() as Map<String, dynamic>);
       }).toList();
@@ -24,7 +25,10 @@ class DatabaseService {
 
   Future<NewSoundModel?> fetchSoundById(String id) async {
     try {
-      final DocumentSnapshot doc = await _firestore.collection(_collectionName).doc(id).get();
+      final DocumentSnapshot doc = await _firestore
+          .collection(_collectionName)
+          .doc(id)
+          .get();
       if (doc.exists) {
         return NewSoundModel.fromJson(doc.data() as Map<String, dynamic>);
       }
@@ -115,9 +119,21 @@ class DatabaseService {
           .where('userId', isEqualTo: userId)
           .get();
 
-      final mixes = snapshot.docs
-          .map((doc) => FavSoundModel.fromJson(doc.data()))
-          .toList();
+      // final mixes = snapshot.docs
+      //     .map((doc) => FavSoundModel.fromJson(doc.data()))
+      //     .toList();
+      final mixes = snapshot.docs.map((doc) {
+        final data = doc.data();
+
+        // If soundTitles is List<String>, convert to List<Map<String, dynamic>>
+        if (data['soundTitles'] is List<dynamic>) {
+          data['soundTitles'] = (data['soundTitles'] as List<dynamic>)
+              .map((e) => e is String ? {'title': e} : e)
+              .toList();
+        }
+
+        return FavSoundModel.fromJson(data);
+      }).toList();
 
       return mixes;
     } catch (e) {
