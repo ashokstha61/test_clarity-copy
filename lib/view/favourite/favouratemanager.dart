@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:clarity/model/model.dart';
 
 import '../../new_firebase_service.dart';
-import 'favouratepage.dart'; // <- Your NewSoundModel
 
 class FavoriteManager {
   FavoriteManager._privateConstructor();
@@ -47,8 +46,10 @@ class FavoriteManager {
 
       final decoded = jsonDecode(data) as Map<String, dynamic>;
       // Convert dynamic → List<String>
-      return decoded.map((key, value) =>
-          MapEntry(key, List<String>.from(value as List<dynamic>)));
+      return decoded.map(
+        (key, value) =>
+            MapEntry(key, List<String>.from(value as List<dynamic>)),
+      );
     } catch (e) {
       print("❌ Failed to load sound mixes: $e");
       return {};
