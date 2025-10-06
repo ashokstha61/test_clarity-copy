@@ -1,6 +1,5 @@
 import 'package:clarity/model/favSoundModel.dart';
 import 'package:clarity/model/model.dart';
-import 'package:clarity/theme.dart';
 import 'package:clarity/view/favourite/empty_file.dart';
 import 'package:clarity/view/favourite/favorite_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
