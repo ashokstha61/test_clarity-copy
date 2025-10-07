@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 // import 'view/sound mixing page/remix test.dart';
 // import 'package:just_audio/just_audio.dart';
 
@@ -55,7 +54,6 @@ class _MyAppState extends State<MyApp> {
     return ScreenUtilInit(
       designSize: const Size(360, 780),
       child: MaterialApp(
-        
         theme: ThemeData(
           primarySwatch: Colors.blue,
           brightness: Brightness.light,
@@ -64,7 +62,7 @@ class _MyAppState extends State<MyApp> {
           primarySwatch: Colors.blue,
           brightness: Brightness.dark,
         ),
-        themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
+        themeMode: _isDarkMode ? ThemeMode.light : ThemeMode.dark,
 
         home: SplashScreen(),
         debugShowCheckedModeBanner: false,

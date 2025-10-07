@@ -170,7 +170,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return Scaffold(
       body: SafeArea(
@@ -179,7 +179,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
             SizedBox(height: 5.h),
             Expanded(
               child: favoriteSounds.isEmpty
-                  ? EmptyFile()
+                  ? const EmptyFile()
                   : ListView.builder(
                       itemCount: favoriteSounds.length,
                       itemBuilder: (context, index) {

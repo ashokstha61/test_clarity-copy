@@ -15,13 +15,14 @@ class MyAccountPage extends StatefulWidget {
 }
 
 class _MyAccountPageState extends State<MyAccountPage> {
-  bool _isDarkMode = false;
+  bool _isDarkMode = true;
   String fullName = '';
   String email = '';
 
   @override
   void initState() {
     super.initState();
+
     _loadCachedUserInfo(); // Load from cache first
     _loadUserInfoFromFirestore(); // Then check Firestore
     final appState = MyApp.of(context);
