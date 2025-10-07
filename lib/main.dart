@@ -62,7 +62,7 @@ class _MyAppState extends State<MyApp> {
           primarySwatch: Colors.blue,
           brightness: Brightness.dark,
         ),
-        themeMode: _isDarkMode ? ThemeMode.light : ThemeMode.dark,
+        themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
 
         home: SplashScreen(),
         debugShowCheckedModeBanner: false,
