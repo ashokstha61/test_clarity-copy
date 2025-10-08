@@ -9,6 +9,8 @@ import 'package:clarity/custom/customtilelist.dart';
 import 'package:clarity/view/profile/my_account_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../subscription/PaywallScreen.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -75,7 +77,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => PaywallScreen()),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.black,
                       backgroundColor: Color.fromARGB(255, 157, 157, 190),
