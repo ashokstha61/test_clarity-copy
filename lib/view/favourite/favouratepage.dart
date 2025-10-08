@@ -32,7 +32,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   // ignore: non_constant_identifier_names
   List<NewSoundModel> Sounds = [];
   final DatabaseService _firebaseService = DatabaseService();
-  final AudioManager _audioManager = AudioManager();
+  final AudioManager _favoriteAudioManager = AudioManager();
   String? currentMix;
   bool isPlaying = false;
   bool _isLoading = false;
@@ -44,8 +44,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
     _loadSounds();
     // _loadData();
     setState(() {
-      currentMix = _audioManager.currentMix;
-      isPlaying = _audioManager.isPlaying;
+      currentMix = _favoriteAudioManager.currentMix;
+      isPlaying = _favoriteAudioManager.isPlaying;
     });
   }
 
@@ -72,7 +72,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     try {
       final sounds = await _firebaseService.fetchSoundData();
       for (var sound in sounds) {
-        sound.isSelected = _audioManager.selectedSoundTitles.contains(
+        sound.isSelected = _favoriteAudioManager.selectedSoundTitles.contains(
           sound.title,
         );
       }
@@ -112,8 +112,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
       currentMix = mixName;
       isPlaying = true;
 
-      _audioManager.currentMix = mixName;
-      _audioManager.isPlaying = true;
+      _favoriteAudioManager.currentMix = mixName;
+      _favoriteAudioManager.isPlaying = true;
     });
 
     // Match saved favorite sounds to actual NewSoundModel instances
@@ -157,11 +157,11 @@ class _FavoritesPageState extends State<FavoritesPage> {
     if (currentMix != null) {
       if (isPlaying) {
         setState(() => isPlaying = false);
-        _audioManager.isPlaying = false;
+        _favoriteAudioManager.isPlaying = false;
         await AudioManager().pauseAll();
       } else {
         setState(() => isPlaying = true);
-        _audioManager.isPlaying = true;
+        _favoriteAudioManager.isPlaying = true;
         await AudioManager().playAll();
       }
     }
