@@ -1,21 +1,32 @@
 import 'package:clarity/view/favourite/favorite_tile.dart';
 import 'package:flutter/material.dart';
 
-class FavoriteView extends StatelessWidget {
+class FavoriteView extends StatefulWidget {
   final List<String> favorites;
   final String? currentTitle;
-  final bool isPlaying;
-  final VoidCallback onTogglePlayback;
+  // final VoidCallback onTogglePlayback;
   final Function(String) onItemTap;
 
   const FavoriteView({
     super.key,
     required this.favorites,
     required this.currentTitle,
-    required this.isPlaying,
-    required this.onTogglePlayback,
+    // required this.onTogglePlayback,
     required this.onItemTap,
   });
+
+  @override
+  State<FavoriteView> createState() => _FavoriteViewState();
+}
+
+class _FavoriteViewState extends State<FavoriteView> {
+   bool Playing=false;
+   void togglePlayback() {
+     setState(() {
+       Playing = !Playing;
+       print("fav : $Playing");
+     });
+   }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +55,7 @@ class FavoriteView extends StatelessWidget {
 
           // List or Empty State
           Expanded(
-            child: favorites.isEmpty
+            child: widget.favorites.isEmpty
                 ? const Center(
                     child: Text(
                       "No favorites yet",
@@ -52,18 +63,18 @@ class FavoriteView extends StatelessWidget {
                     ),
                   )
                 : ListView.builder(
-                    itemCount: favorites.length,
+                    itemCount: widget.favorites.length,
                     itemBuilder: (context, index) {
                       return FavoriteTile(
-                        title: favorites[index],
-                        onTap: () => onItemTap(favorites[index]),
+                        title: widget.favorites[index],
+                        onTap: () => widget.onItemTap(widget.favorites[index]),
                       );
                     },
                   ),
           ),
 
           // Player View (Bottom Bar)
-          if (currentTitle != null)
+          if (widget.currentTitle != null)
             Container(
               height: 60,
               decoration: const BoxDecoration(
@@ -81,7 +92,7 @@ class FavoriteView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    currentTitle!,
+                    widget.currentTitle!,
                     style: const TextStyle(
                       fontSize: 14,
                       fontFamily: "Montserrat",
@@ -90,9 +101,9 @@ class FavoriteView extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    onPressed: onTogglePlayback,
+                    onPressed: () {togglePlayback();},
                     icon: Image.asset(
-                      isPlaying
+                      Playing
                           ? "assets/images/pause_icon.png"
                           : "assets/images/play_icon.png",
                       width: 28,

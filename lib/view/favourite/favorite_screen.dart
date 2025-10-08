@@ -13,11 +13,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   String? currentMix;
   bool isPlaying = false;
 
-  void togglePlayback() {
-    setState(() {
-      isPlaying = !isPlaying;
-    });
-  }
+
 
   void handleItemTap(String mix) {
     setState(() {
@@ -36,9 +32,18 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     return FavoriteView(
       favorites: favorites,
       currentTitle: currentMix,
-      isPlaying: isPlaying,
-      onTogglePlayback: togglePlayback,
+      // Playing: isPlaying,
+      // onTogglePlayback: togglePlayback,
       onItemTap: handleItemTap,
     );
   }
 }
+
+
+
+
+
+
+
+
+
