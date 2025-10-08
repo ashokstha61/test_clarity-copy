@@ -6,7 +6,7 @@ import 'package:clarity/view/profile/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../Sound page/AudioManager.dart';
+import '../Sound page/audio_manager.dart';
 import '../Sound page/sound.dart';
 
 class Homepage extends StatefulWidget {

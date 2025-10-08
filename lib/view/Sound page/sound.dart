@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../model/usermodel.dart';
 import '../sound mixing page/fixedrelaxationmix.dart';
-import 'AudioManager.dart';
+import 'audio_manager.dart';
 import 'remix.dart';
 import 'sound_tile.dart';
 
@@ -205,7 +205,7 @@ class _SoundPageState extends State<SoundPage> {
                   },
                   imagePath: 'assets/images/remix_image.png',
                   soundCount: selectedSounds.length,
-                  isPlaying: isSoundPlaying,
+                  isPlaying: isPlaying,
                 );
               },
             ),

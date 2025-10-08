@@ -7,12 +7,13 @@ bool isSoundPlaying = false;
 
 class AudioManager {
   // Singleton
-  static final AudioManager _instance = AudioManager._internal();
-  factory AudioManager() => _instance;
-  AudioManager._internal();
+  // static final AudioManager _instance = AudioManager._internal();
+  // factory AudioManager() => _instance;
+  // AudioManager._internal();
+
   String? currentMix;
   bool isPlaying = false;
-  
+
   final Map<String, AudioPlayer> _players = {};
   final Map<String, double> _volumeMap = {};
   final ValueNotifier<List<String>> selectedTitlesNotifier = ValueNotifier([]);
@@ -107,14 +108,14 @@ class AudioManager {
     try {
       await ensurePlayers(allSounds);
     } catch (e, st) {
-      print("❌ ensurePlayers failed: $e\n$st");
+      debugPrint("❌ ensurePlayers failed: $e\n$st");
       return;
     }
 
     final key = targetSound.title;
     final player = _players[key];
     if (player == null) {
-      print("⚠️ Player not found for $key");
+      debugPrint("⚠️ Player not found for $key");
       return;
     }
 
@@ -141,7 +142,7 @@ class AudioManager {
                 try {
                   await otherPlayer.stop();
                 } catch (e, st) {
-                  print("❌ Error stopping ${other.title}: $e\n$st");
+                  debugPrint("❌ Error stopping ${other.title}: $e\n$st");
                 }
               }
               other.isSelected = false;
@@ -166,7 +167,9 @@ class AudioManager {
         await player.play();
       }
     } catch (e, st) {
-      print("❌ Error in main toggle logic for ${targetSound.title}: $e\n$st");
+      debugPrint(
+        "❌ Error in main toggle logic for ${targetSound.title}: $e\n$st",
+      );
       targetSound.isSelected = false;
       return;
     }
@@ -178,7 +181,7 @@ class AudioManager {
 
   Future<void> playSound(String title) async {
     final player = _players[title];
-    print(player);
+    debugPrint("$player");
     if (player != null && !player.playing) {
       await player.play();
     }
@@ -255,7 +258,7 @@ class AudioManager {
     return false;
   }
 
-    /// Play all sounds in a mix
+  /// Play all sounds in a mix
   Future<void> playMix(List<String> filepaths, {String? context}) async {
     for (var fp in filepaths) {
       final key = context != null ? '$context$fp' : fp;
@@ -300,5 +303,4 @@ class AudioManager {
     isPlayingNotifier.value = anyPlaying;
     isSoundPlaying = anyPlaying;
   }
-
 }

@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:async';
 import 'global_timer.dart';
-import '../Sound page/AudioManager.dart';
+import '../Sound page/audio_manager.dart';
 import 'slider.dart';
 import 'timer_screen.dart';
 import 'timer_test.dart';

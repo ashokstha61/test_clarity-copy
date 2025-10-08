@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'global_timer.dart';
-import '../Sound page/AudioManager.dart';
+import '../Sound page/audio_manager.dart';
 
 class CircularTimerScreen extends StatefulWidget {
   final int duration;

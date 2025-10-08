@@ -248,7 +248,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../new_firebase_service.dart';
-import '../Sound page/AudioManager.dart';
+import '../Sound page/audio_manager.dart';
 
 class FavoritesPage extends StatefulWidget {
   final String? currentTitle;
