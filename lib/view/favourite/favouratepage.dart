@@ -274,9 +274,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
   final DatabaseService _firebaseService = DatabaseService();
 
   // ✅ Separate AudioManager for FavoritesPage
-  final AudioManager _favoriteAudioManager = AudioManager();
+  static final AudioManager _favoriteAudioManager = AudioManager();
   String? currentMix;
-  bool isPlaying = false;
+
+  bool isfavPlaying = false;
   bool _isLoading = false;
 
   @override
@@ -284,10 +285,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
     super.initState();
     _loadFavorites();
     _loadSounds();
-    setState(() {
-      currentMix = null;
-      isPlaying = false;
-    });
+
+    currentMix = _favoriteAudioManager.currentMix;
+    isfavPlaying = _favoriteAudioManager.isPlaying;
   }
 
   Future<void> _loadFavorites() async {
@@ -320,11 +320,17 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   void _togglePlayback() async {
     if (currentMix != null) {
-      if (isPlaying) {
-        setState(() => isPlaying = false);
+      if (isfavPlaying) {
+        setState(() {
+          isfavPlaying = false;
+          _favoriteAudioManager.isPlaying = false;
+        });
         await _favoriteAudioManager.pauseAll();
       } else {
-        setState(() => isPlaying = true);
+        setState(() {
+          isfavPlaying = true;
+          _favoriteAudioManager.isPlaying = true;
+        });
         await _favoriteAudioManager.playAll();
       }
     }
@@ -336,7 +342,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
   ) async {
     setState(() {
       currentMix = mixName;
-      isPlaying = true;
+      isfavPlaying = true;
+      _favoriteAudioManager.currentMix = mixName;
+      _favoriteAudioManager.isPlaying = true;
     });
 
     // Match saved favorite sounds to actual NewSoundModel instances
@@ -433,7 +441,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     IconButton(
                       onPressed: _togglePlayback,
                       icon: Image.asset(
-                        isPlaying
+                        isfavPlaying
                             ? "assets/images/pause.png"
                             : "assets/images/play.png",
                         width: 28.w,
