@@ -10,16 +10,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../new_firebase_service.dart';
 import '../Sound page/AudioManager.dart';
 
+bool isPlayingMix = false;
+
 class FavoritesPage extends StatefulWidget {
   final String? currentTitle;
-  final bool isPlaying;
+
   final VoidCallback onTogglePlayback;
   final Function(NewSoundModel) onItemTap;
 
   const FavoritesPage({
     super.key,
     this.currentTitle,
-    this.isPlaying = false,
     required this.onTogglePlayback,
     required this.onItemTap,
   });
@@ -28,170 +29,13 @@ class FavoritesPage extends StatefulWidget {
   State<FavoritesPage> createState() => _FavoritesPageState();
 }
 
-// class _FavoritesPageState extends State<FavoritesPage> {
-//   List<FavSoundModel> favoriteSounds = [];
-//   List<NewSoundModel> Sounds = [];
-//   final DatabaseService _firebaseService = DatabaseService();
-//   final AudioManager _audioManager = AudioManager();
-//   String? currentMix;
-//   bool isPlaying = false;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _loadFavorites();
-//     _loadSounds();
-//   }
-
-//   void _loadFavorites() async {
-//     final userId = FirebaseAuth.instance.currentUser?.uid;
-//     final favData = await _firebaseService.loadMixes(userId.toString());
-//     setState(() {
-//       favoriteSounds = favData;
-//     });
-//   }
-
-//   Future<void> _loadSounds() async {
-//     setState(() {
-//       // _isLoading = true;
-//       // _errorMessage = null;
-//     });
-
-//     try {
-//       final sounds = await _firebaseService.fetchSoundData();
-//       for (var sound in sounds) {
-//         sound.isSelected = _audioManager.selectedSoundTitles.contains(
-//           sound.title,
-//         );
-//       }
-//       // _cachedSounds = sounds;
-
-//       setState(() {
-//         Sounds = sounds;
-//         // _isLoading = false;
-//       });
-//     } catch (e) {
-//       setState(() {
-//         // _errorMessage = 'Failed to load sounds: $e';
-//         // _isLoading = false;
-//       });
-//     }
-//   }
-
-//   void _onFavoriteTap(String mixName, List<String> soundTitles) async {
-//     setState(() {
-//     currentMix = mixName;
-//     isPlaying = true;
-//     });
-
-//     final selectedSounds = Sounds
-//         .where((s) => soundTitles.contains(s.title))
-//         .toList();
-
-//     if (selectedSounds.isEmpty) {
-//     debugPrint("⚠️ No matching sounds found for $mixName");
-//     return;
-//     }
-
-//     await AudioManager().ensurePlayers(selectedSounds);
-//     await AudioManager().syncPlayers(selectedSounds);
-//     await AudioManager().playAll();
-//   }
-
-//   void _togglePlayback() async {
-//     if (currentMix != null) {
-
-//       if (isPlaying) {
-//         setState(() {
-//           isPlaying = false;
-//         });
-//         await AudioManager().pauseAll();
-//       } else {
-//         setState(() {
-//           isPlaying = true;
-//         });
-//         await AudioManager().playAll();
-//       }
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: SafeArea(
-//         child: Column(
-//           children: [
-//             SizedBox(height: 5.h),
-//             Expanded(
-//               child: favoriteSounds.isEmpty
-//                   ? EmptyFile()
-//                   : ListView.builder(
-//                       itemCount: favoriteSounds.length,
-//                       itemBuilder: (context, index) {
-//                         final favSound = favoriteSounds[index];
-//                         final mixName = favSound.favSoundTitle;
-//                         final soundTitles = favSound.soundTitles;
-//                         return FavoriteTile(
-//                           title: mixName,
-//                           onTap: ()=>_onFavoriteTap(mixName,soundTitles),
-//                         );
-//                       },
-//                     ),
-//             ),
-
-//             if (currentMix != null)
-//               Container(
-//                 height: 60.h,
-//                 decoration: const BoxDecoration(
-//                   gradient: LinearGradient(
-//                     colors: [
-//                       Color.fromARGB(255, 61, 61, 147),
-//                       Color.fromARGB(255, 64, 64, 144),
-//                     ],
-//                     begin: Alignment.topLeft,
-//                     end: Alignment.bottomRight,
-//                   ),
-//                 ),
-//                 padding: EdgeInsets.symmetric(horizontal: 25.sp),
-//                 child: Row(
-//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                   children: [
-//                     Text(
-//                       currentMix!,
-//                       style: TextStyle(
-//                         fontSize: 14.sp,
-//                         fontFamily: "Montserrat",
-//                         fontWeight: FontWeight.w600,
-//                         color: ThemeHelper.iconAndTextColorRemix(context),
-//                       ),
-//                     ),
-//                     IconButton(
-//                       onPressed: _togglePlayback,
-//                       icon: Image.asset(
-//                         isPlaying
-//                             ? "assets/images/pause.png"
-//                             : "assets/images/play.png",
-//                         width: 28.w,
-//                         height: 28.h,
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 class _FavoritesPageState extends State<FavoritesPage> {
   List<FavSoundModel> favoriteSounds = [];
   List<NewSoundModel> Sounds = [];
   final DatabaseService _firebaseService = DatabaseService();
   final AudioManager _audioManager = AudioManager();
   String? currentMix;
-  bool isPlaying = false;
+
   bool _isLoading = false;
 
   @override
@@ -202,7 +46,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     // _loadData();
     setState(() {
       currentMix = _audioManager.currentMix;
-      isPlaying = _audioManager.isPlaying;
+      // isPlaying = _audioManager.isPlaying;
     });
   }
 
@@ -245,7 +89,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   void _onFavoriteTap(String mixName, List<Map<String, dynamic>> soundTitles,) async {
     setState(() {
       currentMix = mixName;
-      isPlaying = true;
+      isPlayingMix = true;
       _audioManager.currentMix = mixName;
       _audioManager.isPlaying = true;
     });
@@ -283,14 +127,14 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   void _togglePlayback() async {
     if (currentMix != null) {
-      if (isPlaying) {
-        setState(() => isPlaying = false);
-        _audioManager.isPlaying = false;
-        await AudioManager().pauseAll();
+      if (isPlayingMix) {
+        setState(() => isPlayingMix = false);
+        // _audioManager.isPlaying = false;
+        await AudioManager().pauseMixAll();
       } else {
-        setState(() => isPlaying = true);
-        _audioManager.isPlaying = true;
-        await AudioManager().playAll();
+        setState(() => isPlayingMix = true);
+        // _audioManager.isPlaying = true;
+        await AudioManager().playMixAll();
       }
     }
   }
@@ -350,7 +194,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     IconButton(
                       onPressed: _togglePlayback,
                       icon: Image.asset(
-                        isPlaying
+                        isPlayingMix
                             ? "assets/images/pause.png"
                             : "assets/images/play.png",
                         width: 28.w,

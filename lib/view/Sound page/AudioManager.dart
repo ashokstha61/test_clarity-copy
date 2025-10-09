@@ -220,6 +220,32 @@ class AudioManager {
     isSoundPlaying = false;
   }
 
+  Future<void> playMixAll() async {
+    // isPlayingNotifier.value = true;
+    // isSoundPlaying = true;
+
+    // Only play the selected sounds
+    final selectedTitles = selectedTitlesNotifier.value;
+    await Future.wait(
+      selectedTitles.map((title) async {
+        final player = _players[title];
+        if (player != null && !player.playing) {
+          await player.play();
+        }
+      }),
+    );
+  }
+
+  Future<void> pauseMixAll() async {
+    await Future.wait(
+      _players.values.map((p) async {
+        if (p.playing) await p.pause();
+      }),
+    );
+    // isPlayingNotifier.value = false;
+    // isSoundPlaying = false;
+  }
+
   /// Adjust volume based on number of playing sounds
   Future<void> adjustVolumes(List<NewSoundModel> selectedSounds) async {
     for (final s in selectedSounds) {

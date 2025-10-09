@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class FavoriteView extends StatelessWidget {
   final List<String> favorites;
   final String? currentTitle;
-  final bool isPlaying;
+  final bool isPlayingSound;
   final VoidCallback onTogglePlayback;
   final Function(String) onItemTap;
 
@@ -12,7 +12,7 @@ class FavoriteView extends StatelessWidget {
     super.key,
     required this.favorites,
     required this.currentTitle,
-    required this.isPlaying,
+    required this.isPlayingSound,
     required this.onTogglePlayback,
     required this.onItemTap,
   });
@@ -90,9 +90,12 @@ class FavoriteView extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    onPressed: onTogglePlayback,
+                    onPressed: () {
+                      print('Button tapped ✅');
+                      onTogglePlayback();
+                    },
                     icon: Image.asset(
-                      isPlaying
+                      isPlayingSound
                           ? "assets/images/pause_icon.png"
                           : "assets/images/play_icon.png",
                       width: 28,

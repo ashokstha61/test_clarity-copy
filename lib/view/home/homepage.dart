@@ -32,12 +32,11 @@ class _HomepageState extends State<Homepage> {
   @override
   void initState() {
     super.initState();
-    _currentIndex=widget.initialTap;
+    _currentIndex = widget.initialTap;
     _screens = [
       const SoundPage(), // Will update after fetching sounds
     FavoritesPage(
     currentTitle: _currentPlayingTitle,
-    isPlaying: _isPlaying,
     onTogglePlayback: _togglePlayback,
     onItemTap: _onFavoriteItemTap,
     ), // Placeholder for FavoritesPage, updated later
@@ -60,7 +59,6 @@ class _HomepageState extends State<Homepage> {
           _screens[0] = const SoundPage();
           _screens[1] = FavoritesPage(
             currentTitle: _currentPlayingTitle,
-            isPlaying: _isPlaying,
             onTogglePlayback: _togglePlayback,
             onItemTap: _onFavoriteItemTap,
           );
@@ -99,7 +97,6 @@ class _HomepageState extends State<Homepage> {
       _isPlaying = true;
       _screens[1] = FavoritesPage(
         currentTitle: _currentPlayingTitle,
-        isPlaying: _isPlaying,
         onTogglePlayback: _togglePlayback,
         onItemTap: _onFavoriteItemTap,
       );
