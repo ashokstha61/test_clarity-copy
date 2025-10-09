@@ -7,6 +7,7 @@ import 'package:clarity/view/favourite/favouratemanager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:async';
+import '../home/homepage.dart';
 import 'global_timer.dart';
 import '../Sound page/AudioManager.dart';
 import 'slider.dart';
@@ -210,7 +211,11 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         actionsAlignment: MainAxisAlignment.center, // ✅ center button
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context), // close only on OK
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=> const Homepage(initialTap: 1)), (route)=>false);
+
+            }, // close only on OK
             child: const Text(
               "OK",
               style: TextStyle(

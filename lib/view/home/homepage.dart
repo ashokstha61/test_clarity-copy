@@ -10,7 +10,8 @@ import '../Sound page/AudioManager.dart';
 import '../Sound page/sound.dart';
 
 class Homepage extends StatefulWidget {
-  const Homepage({super.key});
+  final int initialTap;
+  const Homepage({super.key,this.initialTap=0});
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -31,9 +32,15 @@ class _HomepageState extends State<Homepage> {
   @override
   void initState() {
     super.initState();
+    _currentIndex=widget.initialTap;
     _screens = [
       const SoundPage(), // Will update after fetching sounds
-      const SizedBox(), // Placeholder for FavoritesPage, updated later
+    FavoritesPage(
+    currentTitle: _currentPlayingTitle,
+    isPlaying: _isPlaying,
+    onTogglePlayback: _togglePlayback,
+    onItemTap: _onFavoriteItemTap,
+    ), // Placeholder for FavoritesPage, updated later
       const ProfilePage(),
     ];
     _fetchSoundData();
