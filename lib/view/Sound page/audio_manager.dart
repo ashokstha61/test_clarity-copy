@@ -63,6 +63,13 @@ class AudioManager {
     await Future.wait(futures);
   }
 
+  void clearAllSelections() {
+    selectedSoundTitles.clear();
+    selectedTitlesNotifier.value = List.from(
+      selectedSoundTitles,
+    ); // notify listeners
+  }
+
   /// Sync players with current selection
   Future<void> syncPlayers(List<NewSoundModel> selectedSounds) async {
     // Dispose removed players
@@ -81,7 +88,7 @@ class AudioManager {
         final player = AudioPlayer();
         _players[sound.title] = player;
         await player.setAudioSource(AudioSource.uri(Uri.parse(sound.musicUrl)));
-        
+
         await player.setLoopMode(LoopMode.one);
       }
     }

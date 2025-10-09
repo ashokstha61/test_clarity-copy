@@ -10,14 +10,16 @@ import '../Sound page/audio_manager.dart';
 import '../Sound page/sound.dart';
 
 class Homepage extends StatefulWidget {
-  const Homepage({super.key});
+   final int initialTab;
+  const Homepage({super.key, this.initialTab = 0});
 
   @override
   State<Homepage> createState() => _HomepageState();
 }
 
 class _HomepageState extends State<Homepage> {
-  int _currentIndex = 0;
+  // int _currentIndex = 0;
+  late int _currentIndex;
   List<NewSoundModel> soundData = [];
   bool _isLoading = true;
   String? _errorMessage;
@@ -31,11 +33,23 @@ class _HomepageState extends State<Homepage> {
   @override
   void initState() {
     super.initState();
+    // _screens = [
+    //   const SoundPage(), // Will update after fetching sounds
+    //   const SizedBox(), // Placeholder for FavoritesPage, updated later
+    //   const ProfilePage(),
+    // ];
+     _currentIndex = widget.initialTab;
     _screens = [
       const SoundPage(), // Will update after fetching sounds
-      const SizedBox(), // Placeholder for FavoritesPage, updated later
+      FavoritesPage(
+        currentTitle: _currentPlayingTitle,
+        isPlaying: _isPlaying,
+        onTogglePlayback: _togglePlayback,
+        onItemTap: _onFavoriteItemTap,
+      ),
       const ProfilePage(),
     ];
+
     _fetchSoundData();
   }
 

@@ -3,7 +3,8 @@ import 'package:clarity/model/model.dart';
 import 'package:clarity/theme.dart';
 import 'package:clarity/view/Sound%20page/sound.dart';
 import 'package:clarity/view/favourite/favouratemanager.dart';
-
+// import 'package:clarity/view/favourite/favouratepage.dart';
+import 'package:clarity/view/home/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:async';
@@ -210,7 +211,26 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         actionsAlignment: MainAxisAlignment.center, // ✅ center button
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context), // close only on OK
+            onPressed: () {
+              setState(() {
+                _selectedSounds.clear();
+                isSoundPlaying = false;
+              });
+
+              // 2️⃣ Notify AudioManager (SoundPage will auto-update via listener)
+              _audioManager.clearAllSelections();
+              _audioManager.pauseAll();
+              Navigator.pop(context); // close only on OK
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const Homepage(initialTab: 1),
+                ),
+                (route) => false,
+              );
+
+              // Then push FavoritesPage on top of HomePage
+            },
             child: const Text(
               "OK",
               style: TextStyle(
