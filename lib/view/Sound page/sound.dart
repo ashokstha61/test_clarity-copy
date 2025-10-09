@@ -214,6 +214,7 @@ class _SoundPageState extends State<SoundPage> {
     );
   }
 
+
   Future<void> loadUserInfo() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -228,15 +229,15 @@ class _SoundPageState extends State<SoundPage> {
         userData = UserModel.fromMap(doc.data()!);
         startFreeTrialCheck(userData);
       } else {
-        print("User document does not exist.");
+        debugPrint("User document does not exist.");
       }
     } catch (e) {
-      print("Error fetching user details: $e");
+      debugPrint("Error fetching user details: $e");
     }
   }
 
   void startFreeTrialCheck(UserModel user) {
-    print("trialEndDate");
+    debugPrint("trialEndDate");
     _checkFreeTrialStatus(user);
 
     // Cancel any existing timer
@@ -258,13 +259,13 @@ class _SoundPageState extends State<SoundPage> {
   void _checkFreeTrialStatus(UserModel user) {
     final now = DateTime.now();
     final trialEndDate = user.creationDate?.add(const Duration(days: 7));
-    print(now.toString());
-    print(trialEndDate.toString());
+    debugPrint(now.toString());
+    debugPrint(trialEndDate.toString());
 
     if (now.isAfter(trialEndDate!) || now.isAtSameMomentAs(trialEndDate)) {
       setState(() {
         isTrial = false;
-        print("Trail is over ");
+        debugPrint("Trail is over ");
       });
 
       if (!_trialDialogShown) {

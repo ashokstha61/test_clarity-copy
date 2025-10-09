@@ -81,6 +81,7 @@ class AudioManager {
         final player = AudioPlayer();
         _players[sound.title] = player;
         await player.setAudioSource(AudioSource.uri(Uri.parse(sound.musicUrl)));
+        
         await player.setLoopMode(LoopMode.one);
       }
     }
