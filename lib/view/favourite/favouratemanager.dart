@@ -15,44 +15,61 @@ class FavoriteManager {
 
   String _mixesKey(String userId) => "SavedFavorites_$userId";
 
-  Future<void> saveSoundMixes(Map<String, List<String>> soundMixes) async {
+  // Future<void> saveSoundMixes(Map<String, List<String>> soundMixes) async {
+  //   final user = FirebaseAuth.instance.currentUser;
+  //   if (user == null) return;
+  //
+  //   try {
+  //     final prefs = await SharedPreferences.getInstance();
+  //
+  //     // Convert map to JSON
+  //     final data = jsonEncode(soundMixes);
+  //
+  //     // Save with a user-specific key
+  //     await prefs.setString(_mixesKey(user.uid), data);
+  //
+  //     print("✅ Sound mixes saved");
+  //   } catch (e) {
+  //     print("❌ Failed to save sound mixes: $e");
+  //   }
+  // }
+  Future<void> saveSoundMixes() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
     try {
       final prefs = await SharedPreferences.getInstance();
-
-      // Convert map to JSON
-      final data = jsonEncode(soundMixes);
+      final data = jsonEncode(favoriteSounds.map((e) => e.toJson()).toList());
 
       // Save with a user-specific key
       await prefs.setString(_mixesKey(user.uid), data);
-
-      print("✅ Sound mixes saved");
+      print("✅ Favorites saved locally");
     } catch (e) {
       print("❌ Failed to save sound mixes: $e");
+      print("❌ Failed to save favorites locally: $e");
     }
-  }
 
+  }
   /// Load favorites for the current user
-  Future<Map<String, List<String>>> loadFavorites() async {
+  Future<List<FavSoundModel>> loadFavorites() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return {};
+    if (user == null) return [];
 
     try {
       final prefs = await SharedPreferences.getInstance();
       final data = prefs.getString(_mixesKey(user.uid));
-      if (data == null) return {};
+      if (data == null) return [];
 
-      final decoded = jsonDecode(data) as Map<String, dynamic>;
-      // Convert dynamic → List<String>
-      return decoded.map(
-        (key, value) =>
-            MapEntry(key, List<String>.from(value as List<dynamic>)),
-      );
+      final List<dynamic> decodedList = jsonDecode(data);
+      final favorites = decodedList
+          .map((e) => FavSoundModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      // update local list
+      return favorites;
     } catch (e) {
       print("❌ Failed to load sound mixes: $e");
-      return {};
+      return [];
     }
   }
 
@@ -77,7 +94,7 @@ class FavoriteManager {
   }
 
   /// Add a sound to favorites
-  Future<void> addFavorite(String mixName, List<String> soundTitles) async {
+  Future<void> addFavorite(String mixName, List<Map<String, dynamic>> soundTitles,) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
 
     final mix = FavSoundModel(

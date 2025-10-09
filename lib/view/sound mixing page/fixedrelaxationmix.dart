@@ -164,7 +164,9 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     }
 
     // 3. Collect selected sound filepaths
-    final selectedSoundskoTitle = _selectedSounds.map((s) => s.title).toList();
+    final selectedSoundskoTitle = _selectedSounds
+        .map((s) => {'title': s.title, 'volume': s.volume})
+        .toList();
 
     // // 4. Create a new mix model
     // final mix = NewSoundModel(

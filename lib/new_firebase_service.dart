@@ -115,9 +115,18 @@ class DatabaseService {
           .where('userId', isEqualTo: userId)
           .get();
 
-      final mixes = snapshot.docs
-          .map((doc) => FavSoundModel.fromJson(doc.data()))
-          .toList();
+      final mixes = snapshot.docs.map((doc) {
+        final data = doc.data();
+
+        // If soundTitles is List<String>, convert to List<Map<String, dynamic>>
+        if (data['soundTitles'] is List<dynamic>) {
+          data['soundTitles'] = (data['soundTitles'] as List<dynamic>)
+              .map((e) => e is String ? {'title': e} : e)
+              .toList();
+        }
+
+        return FavSoundModel.fromJson(data);
+      }).toList();
 
       return mixes;
     } catch (e) {

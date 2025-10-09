@@ -11,6 +11,9 @@ class AudioManager {
   factory AudioManager() => _instance;
   AudioManager._internal();
 
+  String? currentMix;
+  bool isPlaying = false;
+
   final Map<String, AudioPlayer> _players = {};
   final Map<String, double> _volumeMap = {};
   final ValueNotifier<List<String>> selectedTitlesNotifier = ValueNotifier([]);

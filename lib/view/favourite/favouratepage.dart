@@ -197,7 +197,13 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _loadFavorites();
+    _loadSounds();
+    // _loadData();
+    setState(() {
+      currentMix = _audioManager.currentMix;
+      isPlaying = _audioManager.isPlaying;
+    });
   }
 
   Future<void> _loadData() async {
@@ -236,15 +242,28 @@ class _FavoritesPageState extends State<FavoritesPage> {
     }
   }
 
-  void _onFavoriteTap(String mixName, List<String> soundTitles) async {
+  void _onFavoriteTap(String mixName, List<Map<String, dynamic>> soundTitles,) async {
     setState(() {
       currentMix = mixName;
       isPlaying = true;
+      _audioManager.currentMix = mixName;
+      _audioManager.isPlaying = true;
     });
 
-    final selectedSounds = Sounds.where(
-      (s) => soundTitles.contains(s.title),
-    ).toList();
+    final selectedSounds = Sounds.map((s) {
+      final match = soundTitles.firstWhere(
+            (map) => map['title'] == s.title,
+        orElse: () => {},
+      );
+
+      if (match.isNotEmpty) {
+        // Restore saved volume if available
+        final savedVolume = (match['volume'] as num?)?.toDouble() ?? s.volume;
+        return s.copyWith(volume: savedVolume);
+      }
+
+      return s;
+    }).where((s) => soundTitles.any((map) => map['title'] == s.title)).toList();
 
     if (selectedSounds.isEmpty) {
       debugPrint("⚠️ No matching sounds found for $mixName");
@@ -254,15 +273,23 @@ class _FavoritesPageState extends State<FavoritesPage> {
     await AudioManager().ensurePlayers(selectedSounds);
     await AudioManager().syncPlayers(selectedSounds);
     await AudioManager().playAll();
+    if (!mounted) return;
+    setState(() {
+      for (var s in Sounds) {
+        s.isSelected = selectedSounds.any((sel) => sel.title == s.title);
+      }
+    });
   }
 
   void _togglePlayback() async {
     if (currentMix != null) {
       if (isPlaying) {
         setState(() => isPlaying = false);
+        _audioManager.isPlaying = false;
         await AudioManager().pauseAll();
       } else {
         setState(() => isPlaying = true);
+        _audioManager.isPlaying = true;
         await AudioManager().playAll();
       }
     }
@@ -317,7 +344,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                         fontSize: 14.sp,
                         fontFamily: "Montserrat",
                         fontWeight: FontWeight.w600,
-                        color: ThemeHelper.iconAndTextColorRemix(context),
+                        color: Colors.white,
                       ),
                     ),
                     IconButton(
