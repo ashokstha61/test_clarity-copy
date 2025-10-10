@@ -88,7 +88,7 @@ class _HomepageState extends State<Homepage> {
     setState(() {
       _isPlaying = !_isPlaying;
     });
-    // TODO: Add actual audio play/pause logic
+    
   }
 
   void _onFavoriteItemTap(NewSoundModel sound) async {
