@@ -6,10 +6,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../globals.dart';
 import '../../new_firebase_service.dart';
 import '../Sound page/AudioManager.dart';
-
-bool isPlayingMix = false;
 
 class FavoritesPage extends StatefulWidget {
   final String? currentTitle;
@@ -84,7 +83,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
       currentMix = mixName;
       isPlayingMix = true;
       _audioManager.currentMix = mixName;
-      _audioManager.isPlaying = true;
+      // _audioManager.isPlaying = true;
     });
 
     final selectedSounds = Sounds.map((s) {
@@ -107,9 +106,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
       return;
     }
 
-    await AudioManager().ensurePlayers(selectedSounds);
+    await AudioManager().ensureMixPlayers(selectedSounds);
     await AudioManager().syncPlayers(selectedSounds);
-    await AudioManager().playAll();
+    await AudioManager().playMixAll();
     if (!mounted) return;
     setState(() {
       for (var s in Sounds) {

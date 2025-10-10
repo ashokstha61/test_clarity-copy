@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:clarity/globals.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../model/model.dart';
@@ -14,7 +15,8 @@ class AudioManager {
   String? currentMix;
   bool isPlaying = false;
 
-  final Map<String, AudioPlayer> _players = {};
+  Map<String, AudioPlayer> _players = {};
+  Map<String, AudioPlayer> _mixPlayers = {};
   final Map<String, double> _volumeMap = {};
   final ValueNotifier<List<String>> selectedTitlesNotifier = ValueNotifier([]);
   final ValueNotifier<bool> isPlayingNotifier = ValueNotifier(false);
@@ -29,6 +31,10 @@ class AudioManager {
 
   Future<void> ensurePlayers(List<NewSoundModel> sounds) async {
     // Remove players that are no longer in the sounds list
+    if (isPlayingMix) {
+      debugPrint("🛑 Mix player active — clearing it before playing sounds");
+      await clearMixPlayers();
+    }
     final existingKeys = _players.keys.toList();
     for (final key in existingKeys) {
       if (!sounds.any((s) => s.title == key)) {
@@ -53,6 +59,48 @@ class AudioManager {
             await player.setLoopMode(LoopMode.one);
             await player.setVolume(1.0);
             _players[key] = player;
+          } catch (e) {
+            debugPrint("❌ Failed to initialize ${sound.title}: $e");
+          }
+        }());
+      }
+    }
+
+    await Future.wait(futures);
+  }
+
+  Future<void> ensureMixPlayers(List<NewSoundModel> sounds) async {
+    // Remove players that are no longer in the sounds list
+
+    if (isSoundPlaying) {
+      debugPrint("🛑 Sound player active — clearing it before playing mix");
+      await clearSoundPlayers();
+    }
+
+    final existingKeys = _mixPlayers.keys.toList();
+    for (final key in existingKeys) {
+      if (!sounds.any((s) => s.title == key)) {
+        try {
+          await _mixPlayers[key]?.dispose();
+        } catch (_) {}
+        _mixPlayers.remove(key);
+      }
+    }
+
+    // Create and prepare players for missing sounds
+    final futures = <Future>[];
+    for (final sound in sounds) {
+      final key = sound.title;
+      if (!_mixPlayers.containsKey(key)) {
+        futures.add(() async {
+          try {
+            final player = AudioPlayer();
+            await player.setAudioSource(
+              AudioSource.uri(Uri.parse(sound.musicUrl)),
+            );
+            await player.setLoopMode(LoopMode.one);
+            await player.setVolume(1.0);
+            _mixPlayers[key] = player;
           } catch (e) {
             debugPrint("❌ Failed to initialize ${sound.title}: $e");
           }
@@ -225,26 +273,58 @@ class AudioManager {
     // isSoundPlaying = true;
 
     // Only play the selected sounds
+    if (isSoundPlaying) {
+      await clearSoundPlayers();
+    }
     final selectedTitles = selectedTitlesNotifier.value;
     await Future.wait(
       selectedTitles.map((title) async {
-        final player = _players[title];
+        final player = _mixPlayers[title];
         if (player != null && !player.playing) {
           await player.play();
         }
       }),
     );
+    isPlayingMix = true;
   }
 
   Future<void> pauseMixAll() async {
     await Future.wait(
-      _players.values.map((p) async {
+      _mixPlayers.values.map((p) async {
         if (p.playing) await p.pause();
       }),
     );
     // isPlayingNotifier.value = false;
     // isSoundPlaying = false;
   }
+  Future<void> clearSoundPlayers() async {
+    for (final p in _players.values) {
+      if (p.playing) await p.stop();
+      await p.dispose();
+    }
+    _players.clear();
+    isSoundPlaying = false;
+  }
+
+  Future<void> clearMixPlayers() async {
+    for (final p in _mixPlayers.values) {
+      if (p.playing) await p.stop();
+      await p.dispose();
+    }
+    _mixPlayers.clear();
+    isPlayingMix = false;
+  }
+
+  void setSoundPlaying(bool value) {
+    isSoundPlaying = value;
+    isPlayingNotifier.value = value;
+  }
+
+  void setMixPlaying(bool value) {
+    isPlayingMix = value;
+    // Optionally create another notifier if you want
+  }
+
 
   /// Adjust volume based on number of playing sounds
   Future<void> adjustVolumes(List<NewSoundModel> selectedSounds) async {
