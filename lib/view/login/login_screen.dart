@@ -38,7 +38,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     imagePath: 'assets/images/google.png',
                     onPressed: () async {
                       User? user = await _authService.signInWithGoogle();
-                      print(user);
 
                       if (!mounted) return;
                       if (user != null) {

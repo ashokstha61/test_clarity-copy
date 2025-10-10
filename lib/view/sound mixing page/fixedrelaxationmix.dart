@@ -407,44 +407,42 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         centerTitle: true,
         // backgroundColor:  Color.fromRGBO(18, 23, 42, 1),
       ),
-      body: Container(
-        // color: const Color.fromRGBO(18, 23, 42, 1),
-        child: Column(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Recommended Sounds',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: ThemeHelper.textTitle(context),
-                        fontFamily: 'Montserrat',
+      body: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Recommended Sounds',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: ThemeHelper.textTitle(context),
+                      fontFamily: 'Montserrat',
                       ),
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
                       height: 120,
                       child: _isLoadingRecommendedSounds
-                          ? const Center(
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                              ),
-                            )
-                          : ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: _recommendedSounds.length,
-                              itemBuilder: (context, index) {
-                                final sound = _recommendedSounds[index];
-                                return _buildRecommendedSoundButton(
-                                  sound,
-                                  isTrial: isTrial,
-                                );
-                              },
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
                             ),
+                          )
+                        : ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: _recommendedSounds.length,
+                            itemBuilder: (context, index) {
+                              final sound = _recommendedSounds[index];
+                              return _buildRecommendedSoundButton(
+                                sound,
+                                isTrial: isTrial,
+                              );
+                            },
+                          ),
                     ),
                     const SizedBox(height: 5),
                     Text(
@@ -547,7 +545,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
             ),
           ],
         ),
-      ),
     );
   }
 
@@ -619,14 +616,14 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 width: 25.sp,
               ),
               onPressed: _selectedSounds.isEmpty
-                  ? null
-                  : () async {
-                      if (isSoundPlaying) {
-                        await AudioManager().pauseAll();
-                      } else {
-                        await AudioManager().playAll();
-                      }
-                    },
+                ? null
+                : () async {
+                    if (isSoundPlaying) {
+                      await AudioManager().pauseAll();
+                    } else {
+                      await AudioManager().playAll();
+                    }
+                  },
             ),
           ],
         );
@@ -639,11 +636,9 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     required bool isTrial,
   }) {
     bool locked = false;
-    print("isTrial: $isTrial");
 
     if (!isTrial) {
       locked = sound.isLocked;
-      print("locked: $locked");
     }
 
     return Padding(

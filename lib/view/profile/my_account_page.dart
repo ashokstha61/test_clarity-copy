@@ -11,10 +11,10 @@ class MyAccountPage extends StatefulWidget {
   const MyAccountPage({super.key});
 
   @override
-  _MyAccountPageState createState() => _MyAccountPageState();
+  MyAccountPageState createState() => MyAccountPageState();
 }
 
-class _MyAccountPageState extends State<MyAccountPage> {
+class MyAccountPageState extends State<MyAccountPage> {
   bool _isDarkMode = false;
   String fullName = '';
   String email = '';
@@ -68,7 +68,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
         }
       }
     } catch (e) {
-      print("Error fetching user details: $e");
+      debugPrint("Error fetching user details: $e");
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:clarity/model/model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'model/favSoundModel.dart';
 
@@ -17,7 +18,7 @@ class DatabaseService {
         return NewSoundModel.fromJson(doc.data() as Map<String, dynamic>);
       }).toList();
     } catch (e) {
-      print('Error fetching sound data: $e');
+      debugPrint('Error fetching sound data: $e');
       return [];
     }
   }
@@ -30,7 +31,7 @@ class DatabaseService {
       }
       return null;
     } catch (e) {
-      print('Error fetching sound by ID: $e');
+      debugPrint('Error fetching sound by ID: $e');
       return null;
     }
   }
@@ -49,7 +50,7 @@ class DatabaseService {
         'volume': sound.volume,
       });
     } catch (e) {
-      print('Error adding sound data: $e');
+      debugPrint('Error adding sound data: $e');
     }
   }
 
@@ -67,7 +68,7 @@ class DatabaseService {
         'volume': sound.volume,
       });
     } catch (e) {
-      print('Error updating sound data: $e');
+      debugPrint('Error updating sound data: $e');
     }
   }
 
@@ -75,7 +76,7 @@ class DatabaseService {
     try {
       await _firestore.collection(_collectionName).doc(id).delete();
     } catch (e) {
-      print('Error deleting sound data: $e');
+      debugPrint('Error deleting sound data: $e');
     }
   }
 
@@ -91,7 +92,7 @@ class DatabaseService {
         'soundTitles': mix.soundTitles,
       });
     } catch (e) {
-      print("Failed to add/update mix: $e");
+      debugPrint("Failed to add/update mix: $e");
     }
   }
 
@@ -101,13 +102,11 @@ class DatabaseService {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         throw Exception('User not authenticated');
-        return [];
       }
 
       // Ensure user can only access their own data
       if (userId != user.uid) {
         throw Exception('Unauthorized access');
-        return [];
       }
 
       final snapshot = await _firestore
@@ -130,7 +129,7 @@ class DatabaseService {
 
       return mixes;
     } catch (e) {
-      print("❌ Failed to load mixes: $e");
+      debugPrint("❌ Failed to load mixes: $e");
       return [];
     }
   }

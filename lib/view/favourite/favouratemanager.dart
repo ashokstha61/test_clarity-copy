@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:clarity/model/favSoundModel.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:clarity/model/model.dart';
@@ -43,10 +44,9 @@ class FavoriteManager {
 
       // Save with a user-specific key
       await prefs.setString(_mixesKey(user.uid), data);
-      print("✅ Favorites saved locally");
+      debugPrint("✅ Favorites saved locally");
     } catch (e) {
-      print("❌ Failed to save sound mixes: $e");
-      print("❌ Failed to save favorites locally: $e");
+      debugPrint("❌ Failed to save sound mixes: $e");
     }
 
   }
@@ -68,7 +68,7 @@ class FavoriteManager {
       // update local list
       return favorites;
     } catch (e) {
-      print("❌ Failed to load sound mixes: $e");
+      debugPrint("❌ Failed to load sound mixes: $e");
       return [];
     }
   }
