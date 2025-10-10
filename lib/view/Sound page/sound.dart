@@ -135,7 +135,7 @@ class _SoundPageState extends State<SoundPage> {
                             SoundTile(
                               sound: _sounds[index],
                               onTap: () => _toggleSoundSelection(index),
-                              isTrail: isTrial,
+                              isTrail: true,
                             ),
                             Divider(height: 1, indent: 15.w, endIndent: 15.w),
                           ],
