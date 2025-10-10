@@ -125,7 +125,7 @@ class TimerScreen extends StatelessWidget {
                     ), // Add styled divider between ListTiles
                   ],
                 );
-              }).toList(),
+              }),
               // Remove the last Divider
               if ([5, 10, 15, 30, 60, 120, 240, 480].isNotEmpty)
                 SizedBox(height: 16.h), // Increased padding at the end

@@ -1,6 +1,5 @@
 import 'package:clarity/model/favSoundModel.dart';
 import 'package:clarity/model/model.dart';
-import 'package:clarity/theme.dart';
 import 'package:clarity/view/favourite/empty_file.dart';
 import 'package:clarity/view/favourite/favorite_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -43,17 +42,11 @@ class _FavoritesPageState extends State<FavoritesPage> {
     super.initState();
     _loadFavorites();
     _loadSounds();
-    // _loadData();
     setState(() {
       currentMix = _audioManager.currentMix;
-      // isPlaying = _audioManager.isPlaying;
     });
   }
 
-  Future<void> _loadData() async {
-    await _loadFavorites();
-    await _loadSounds();
-  }
 
   Future<void> _loadFavorites() async {
     setState(() {
