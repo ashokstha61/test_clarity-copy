@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:clarity/globals.dart';
 import 'package:clarity/model/model.dart';
 import 'package:clarity/new_firebase_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

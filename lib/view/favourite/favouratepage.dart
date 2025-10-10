@@ -1,3 +1,4 @@
+import 'package:clarity/globals.dart';
 import 'package:clarity/model/favSoundModel.dart';
 import 'package:clarity/model/model.dart';
 import 'package:clarity/view/favourite/empty_file.dart';
@@ -9,7 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../new_firebase_service.dart';
 import '../Sound page/AudioManager.dart';
 
-bool isPlayingMix = false;
+
 
 class FavoritesPage extends StatefulWidget {
   final String? currentTitle;

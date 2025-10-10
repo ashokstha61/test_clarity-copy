@@ -1,4 +1,5 @@
 import 'dart:ui' as ui;
+import 'package:clarity/globals.dart';
 import 'package:clarity/model/model.dart';
 import 'package:clarity/theme.dart';
 import 'package:clarity/view/Sound%20page/sound.dart';

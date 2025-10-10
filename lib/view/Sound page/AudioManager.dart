@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'package:clarity/globals.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../model/model.dart';
 
-bool isSoundPlaying = false;
+
 
 class AudioManager {
   // Singleton
