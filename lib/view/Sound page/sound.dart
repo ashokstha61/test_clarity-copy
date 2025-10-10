@@ -92,18 +92,8 @@ class _SoundPageState extends State<SoundPage> {
 
   void _toggleSoundSelection(int index) async {
     final sound = _sounds[index];
-
     // Use the updated method that handles trial/non-trial logic
     await _audioManager.toggleSoundSelection(_sounds, sound, isTrial);
-
-    // The state will be updated automatically via the listener
-    // setState(() {
-    //  if(sound.isSelected) {
-    //    sound.isSelected = false;
-    //  } else {
-    //    sound.isSelected = true;
-    //  }
-    // }); // Trigger rebuild to reflect changes
   }
 
   @override
@@ -226,7 +216,7 @@ class _SoundPageState extends State<SoundPage> {
 
       if (doc.exists) {
         userData = UserModel.fromMap(doc.data()!);
-        startFreeTrialCheck(userData);
+        // startFreeTrialCheck(userData);
       } else {
         print("User document does not exist.");
       }
