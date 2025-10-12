@@ -34,7 +34,7 @@ android {
         applicationId = "com.main.clarity"
         minSdk = 28
         targetSdk = 36
-        versionCode = 2
+        versionCode = 5
         versionName = "1.0.0"
         multiDexEnabled = true
     }

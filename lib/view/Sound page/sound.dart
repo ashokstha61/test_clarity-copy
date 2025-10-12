@@ -82,6 +82,8 @@ class _SoundPageState extends State<SoundPage> {
         _sounds = sounds;
         _isLoading = false;
       });
+
+      _audioManager.downloadAllSounds(_sounds);
     } catch (e) {
       setState(() {
         _errorMessage = 'Failed to load sounds: $e';

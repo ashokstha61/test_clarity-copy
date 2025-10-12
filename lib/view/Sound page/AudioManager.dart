@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:clarity/globals.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../model/model.dart';
 
 bool isSoundPlaying = false;
@@ -155,6 +158,7 @@ class AudioManager {
   ) async {
     try {
       await ensurePlayers(allSounds);
+      await playAll();
     } catch (e, st) {
       debugPrint("❌ ensurePlayers failed: $e\n$st");
       return;
@@ -408,4 +412,40 @@ class AudioManager {
     isSoundPlaying = anyPlaying;
   }
 
+  Future<List<String>> downloadAllSounds(List<NewSoundModel> sounds) async {
+    List<String> downloadedPaths = [];
+    final dir = await getTemporaryDirectory();
+
+    for (final sound in sounds) {
+
+      try {
+        // 👇 Create safe file path (e.g. "thunder.mp3")
+        final soundName = sound.filepath;
+        final savePath = '${dir.path}/$soundName.mp3';
+        final file = File(savePath);
+
+        // ✅ Skip if file already exists
+        if (await file.exists()) {
+          debugPrint('✅ Already downloaded: $soundName');
+          downloadedPaths.add(file.path);
+          continue;
+        }
+
+        debugPrint('⬇️ Downloading: ${sound.musicUrl}');
+        final response = await http.get(Uri.parse(sound.musicUrl));
+
+        if (response.statusCode == 200) {
+          await file.writeAsBytes(response.bodyBytes);
+          debugPrint('✅ Saved $soundName at $savePath');
+          downloadedPaths.add(file.path);
+        } else {
+          debugPrint('❌ Failed to download $soundName (Status ${response.statusCode})');
+        }
+      } catch (e) {
+        debugPrint('❌ Error downloading ${sound.filepath}: $e');
+      }
+    }
+
+    return downloadedPaths;
+  }
 }
