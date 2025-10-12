@@ -26,29 +26,25 @@ class RelaxationMixBar extends StatefulWidget {
 }
 
 class _RelaxationMixBarState extends State<RelaxationMixBar> {
+  // bool _isProcessing = false;
+
+  void _handleTap() async {
+
+
+    // try {
+      // Use the widget's isPlaying or pass AudioManager's isSoundPlaying
+      if (widget.isPlaying) {
+        widget.onPause();
+      } else {
+        widget.onPlay();
+      }
+    // } finally {
+    //   if (mounted) setState(() => _isProcessing = false);
+    // }
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool _isProcessing = false;
-
-    void _handleTap() {
-      if (_isProcessing) return;
-      setState(() => _isProcessing = true);
-
-      try {
-        if (widget.isPlaying) {
-          widget.onPause(); // call directly
-        } else {
-          widget.onPlay();
-        }
-      } finally {
-        if (mounted) {
-          Future.delayed(const Duration(milliseconds: 200), () {
-            if (mounted) setState(() => _isProcessing = false);
-          });
-        }
-      }
-    }
-
     return Container(
       height: 80,
       width: double.infinity,

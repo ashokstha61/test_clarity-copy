@@ -448,4 +448,102 @@ class AudioManager {
 
     return downloadedPaths;
   }
+
+  final Map<String, String> _downloadedFilePaths = {}; // title -> local file path
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+  Future<void> downloadAllNewSounds(List<NewSoundModel> sounds) async {
+    final dir = await getApplicationDocumentsDirectory();
+    for (var sound in sounds) {
+      if (sound.musicUrl != null && sound.musicUrl!.isNotEmpty) {
+        final fileName = sound.title.replaceAll(' ', '_') + '.mp3';
+        final lowerCaseFileName = fileName.toLowerCase();
+        final filePath = '${dir.path}/$lowerCaseFileName';
+        final file = File(filePath);
+
+        try {
+          if (!await file.exists()) {
+            final response = await http.get(Uri.parse(sound.musicUrl!));
+
+            if (response.statusCode == 200) {
+              await file.writeAsBytes(response.bodyBytes);
+              debugPrint('✅ Downloaded "${sound.title}" successfully!');
+            } else {
+              debugPrint('❌ Failed to download "${sound.title}" (HTTP ${response.statusCode})');
+            }
+          } else {
+            debugPrint('ℹ️ "${sound.title}" already exists locally.');
+          }
+
+          // Save local path
+          _downloadedFilePaths[sound.title.toLowerCase()] = filePath;
+        } catch (e) {
+          debugPrint('❌ Error downloading "${sound.title}": $e');
+        }
+      }
+    }
+  }
+
+  Future<void> playSoundNew(String title) async {
+    final localPath = _downloadedFilePaths[title];
+
+    if (localPath != null && File(localPath).existsSync()) {
+      try {
+        isPlayingNotifier.value = true;
+        debugPrint("isSoundPlaying : $isSoundPlaying");
+        debugPrint('🎧 Playing "$title" in loop from local path.');
+        await _audioPlayer.setFilePath(localPath);
+        await _audioPlayer.setLoopMode(LoopMode.one); // 🔁 loop indefinitely
+        await _audioPlayer.play();
+
+      } catch (e) {
+        debugPrint('❌ Error playing "$title": $e');
+      }
+    } else {
+      debugPrint("⚠️ File not found for $title");
+      isPlayingNotifier.value = false;
+    }
+  }
+
+  Future<void> stop() async {
+    try {
+      isPlayingNotifier.value = false;
+      await _audioPlayer.stop();
+
+      debugPrint('⏹️ Stopped playback.');
+    } catch (e) {
+      debugPrint('❌ Error stopping playback: $e');
+    }
+  }
+
+  Future<void> pause() async {
+    try {
+      if (_audioPlayer.playing) {
+        isPlayingNotifier.value = false;
+
+        await _audioPlayer.pause();
+        debugPrint('⏸️ Paused playback.');
+      } else {
+        debugPrint('⚠️ Cannot pause, player is not playing.');
+      }
+    } catch (e) {
+      debugPrint('❌ Error pausing playback: $e');
+    }
+  }
+
+  Future<void> resume() async {
+    try {
+      if (!_audioPlayer.playing) {
+        isPlayingNotifier.value = true;
+        debugPrint('▶️ Resumed playback.');
+        await _audioPlayer.play();
+
+      } else {
+        debugPrint('⚠️ Player is already playing.');
+      }
+    } catch (e) {
+      debugPrint('❌ Error resuming playback: $e');
+    }
+  }
 }
+

@@ -83,7 +83,7 @@ class _SoundPageState extends State<SoundPage> {
         _isLoading = false;
       });
 
-      _audioManager.downloadAllSounds(_sounds);
+      _audioManager.downloadAllNewSounds(_sounds);
     } catch (e) {
       setState(() {
         _errorMessage = 'Failed to load sounds: $e';
@@ -92,11 +92,18 @@ class _SoundPageState extends State<SoundPage> {
     }
   }
 
-  // void _toggleSoundSelection(int index) async {
-  //   final sound = _sounds[index];
-  //   // Use the updated method that handles trial/non-trial logic
-  //   await _audioManager.toggleSoundSelection(_sounds, sound, isTrial);
-  // }
+  void _toggleSoundSelection(int index) async {
+    final sound = _sounds[index];
+    setState(() {
+      sound.isSelected= !sound.isSelected;
+    });
+    // Use the updated method that handles trial/non-trial logic
+    if (_audioManager.isPlayingNotifier.value) {
+      await _audioManager.stop();
+    } else {
+      await _audioManager.playSoundNew(sound.filepath);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +143,7 @@ class _SoundPageState extends State<SoundPage> {
                           children: [
                             SoundTile(
                               sound: _sounds[index],
-                              onTap: () => _audioManager.toggleSoundSelection(_sounds, _sounds[index], isTrial),
+                              onTap: () => _toggleSoundSelection(index),
                               isTrail: true,
                             ),
                             Divider(height: 1, indent: 15.w, endIndent: 15.w),
@@ -190,14 +197,14 @@ class _SoundPageState extends State<SoundPage> {
                     }
                   },
                   onPlay: () async {
-                    await _audioManager.playAll();
+                    await _audioManager.resume();
                   },
                   onPause: () async {
-                    await _audioManager.pauseAll();
+                    await _audioManager.pause();
                   },
                   imagePath: 'assets/images/remix_image.png',
                   soundCount: selectedSounds.length,
-                  isPlaying: isSoundPlaying,
+                  isPlaying: isPlaying,
                 );
               },
             ),
