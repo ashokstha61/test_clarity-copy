@@ -91,11 +91,11 @@ class _SoundPageState extends State<SoundPage> {
     }
   }
 
-  void _toggleSoundSelection(int index) async {
-    final sound = _sounds[index];
-    // Use the updated method that handles trial/non-trial logic
-    await _audioManager.toggleSoundSelection(_sounds, sound, isTrial);
-  }
+  // void _toggleSoundSelection(int index) async {
+  //   final sound = _sounds[index];
+  //   // Use the updated method that handles trial/non-trial logic
+  //   await _audioManager.toggleSoundSelection(_sounds, sound, isTrial);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +135,7 @@ class _SoundPageState extends State<SoundPage> {
                           children: [
                             SoundTile(
                               sound: _sounds[index],
-                              onTap: () => _toggleSoundSelection(index),
+                              onTap: () => _audioManager.toggleSoundSelection(_sounds, _sounds[index], isTrial),
                               isTrail: true,
                             ),
                             Divider(height: 1, indent: 15.w, endIndent: 15.w),
