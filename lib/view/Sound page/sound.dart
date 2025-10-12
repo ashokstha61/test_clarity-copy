@@ -94,15 +94,17 @@ class _SoundPageState extends State<SoundPage> {
 
   void _toggleSoundSelection(int index) async {
     final sound = _sounds[index];
-    setState(() {
-      sound.isSelected= !sound.isSelected;
-    });
+
     // Use the updated method that handles trial/non-trial logic
-    if (_audioManager.isPlayingNotifier.value) {
+    if (sound.isSelected) {
       await _audioManager.stop();
     } else {
-      await _audioManager.playSoundNew(sound.filepath);
+      await _audioManager.playSoundNew(sound.filepath, _sounds);
     }
+
+    setState(() {
+      sound.isSelected = !sound.isSelected;
+    });
   }
 
   @override
@@ -197,10 +199,10 @@ class _SoundPageState extends State<SoundPage> {
                     }
                   },
                   onPlay: () async {
-                    await _audioManager.resume();
+                    await _audioManager.playAllNew();
                   },
                   onPause: () async {
-                    await _audioManager.pause();
+                    await _audioManager.pauseAllNew();
                   },
                   imagePath: 'assets/images/remix_image.png',
                   soundCount: selectedSounds.length,

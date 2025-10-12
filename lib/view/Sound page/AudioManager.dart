@@ -412,43 +412,6 @@ class AudioManager {
     isSoundPlaying = anyPlaying;
   }
 
-  Future<List<String>> downloadAllSounds(List<NewSoundModel> sounds) async {
-    List<String> downloadedPaths = [];
-    final dir = await getTemporaryDirectory();
-
-    for (final sound in sounds) {
-
-      try {
-        // 👇 Create safe file path (e.g. "thunder.mp3")
-        final soundName = sound.filepath;
-        final savePath = '${dir.path}/$soundName.mp3';
-        final file = File(savePath);
-
-        // ✅ Skip if file already exists
-        if (await file.exists()) {
-          debugPrint('✅ Already downloaded: $soundName');
-          downloadedPaths.add(file.path);
-          continue;
-        }
-
-        debugPrint('⬇️ Downloading: ${sound.musicUrl}');
-        final response = await http.get(Uri.parse(sound.musicUrl));
-
-        if (response.statusCode == 200) {
-          await file.writeAsBytes(response.bodyBytes);
-          debugPrint('✅ Saved $soundName at $savePath');
-          downloadedPaths.add(file.path);
-        } else {
-          debugPrint('❌ Failed to download $soundName (Status ${response.statusCode})');
-        }
-      } catch (e) {
-        debugPrint('❌ Error downloading ${sound.filepath}: $e');
-      }
-    }
-
-    return downloadedPaths;
-  }
-
   final Map<String, String> _downloadedFilePaths = {}; // title -> local file path
   final AudioPlayer _audioPlayer = AudioPlayer();
 
@@ -484,26 +447,57 @@ class AudioManager {
     }
   }
 
-  Future<void> playSoundNew(String title) async {
-    final localPath = _downloadedFilePaths[title];
+  Future<void> playSoundNew(String title, List<NewSoundModel> sounds) async {
 
-    if (localPath != null && File(localPath).existsSync()) {
-      try {
-        isPlayingNotifier.value = true;
-        debugPrint("isSoundPlaying : $isSoundPlaying");
-        debugPrint('🎧 Playing "$title" in loop from local path.');
-        await _audioPlayer.setFilePath(localPath);
-        await _audioPlayer.setLoopMode(LoopMode.one); // 🔁 loop indefinitely
-        await _audioPlayer.play();
-
-      } catch (e) {
-        debugPrint('❌ Error playing "$title": $e');
+    final existingKeys = _players.keys.toList();
+    for (final key in existingKeys) {
+      if (!sounds.any((s) => s.title == key)) {
+        try {
+          await _players[key]?.dispose();
+        } catch (_) {}
+        _players.remove(key);
       }
-    } else {
+    }
+
+    final localPath = _downloadedFilePaths[title];
+    if (localPath == null || !File(localPath).existsSync()) {
       debugPrint("⚠️ File not found for $title");
       isPlayingNotifier.value = false;
+      return;
+    }
+
+    AudioPlayer player;
+
+    // ✅ Reuse player if it exists, otherwise create one
+    if (_players.containsKey(title)) {
+      player = _players[title]!;
+      if (player.playing) {
+        debugPrint("⚠️ Player is already playing.");
+        return;
+      }
+    } else {
+      player = AudioPlayer();
+      try {
+        await player.setFilePath(localPath);
+        await player.setLoopMode(LoopMode.one);
+        await player.setVolume(1.0);
+        _players[title] = player;
+      } catch (e) {
+        debugPrint("❌ Failed to initialize player for $title: $e");
+        return;
+      }
+    }
+
+    try {
+      isPlayingNotifier.value = true;
+      debugPrint('🎧 Playing "$title" in loop.');
+      await player.seek(Duration.zero);
+      await playAllNew();
+    } catch (e) {
+      debugPrint('❌ Error playing "$title": $e');
     }
   }
+
 
   Future<void> stop() async {
     try {
@@ -543,6 +537,32 @@ class AudioManager {
       }
     } catch (e) {
       debugPrint('❌ Error resuming playback: $e');
+    }
+  }
+
+  Future<void> playAllNew() async {
+    isPlayingNotifier.value = true;
+    Future.wait(
+      _players.values.map((p) async {
+        await p.play();
+      }),
+    );
+  }
+
+  /// Pause all selected sounds
+  Future<void> pauseAllNew() async {
+    isPlayingNotifier.value = false;
+    Future.wait(
+      _players.values.map((p) async {
+        if (p.playing) await p.pause();
+      }),
+    );
+  }
+
+  /// Stop all sounds
+  Future<void> stopAll() async {
+    for (final player in _players.values) {
+      if (player.playing) await stop();
     }
   }
 }
