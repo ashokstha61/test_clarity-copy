@@ -258,7 +258,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
 
     if (_selectedSounds.isNotEmpty) {
       setState(() {
-        isSoundPlaying = true;
+        _audioManager.isPlayingNotifier.value = true;
       });
     }
 
@@ -266,11 +266,13 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     final allSounds = _buildUpdatedSounds();
 
     // Use AudioManager to handle the selection properly
-    await _audioManager.toggleSoundSelection(
-      allSounds,
-      normalizedSound,
-      isTrial,
-    );
+    await _audioManager.playSoundNew(sound.filepath, allSounds);
+    await _audioManager.playSound(sound.filepath);
+    // await _audioManager.toggleSoundSelection(
+    //   allSounds,
+    //   normalizedSound,
+    //   isTrial,
+    // );
 
     // Apply correct volume right away
     await _audioManager.adjustVolumes(_selectedSounds);
@@ -322,12 +324,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
 
       if (_selectedSounds.isEmpty) {
         setState(() {
-          isSoundPlaying = false;
+          _audioManager.isPlayingNotifier.value = false;
         });
       }
 
-      _audioManager.pauseSound(sound.title);
-      _audioManager.saveVolume(sound.title, 1.0); // Reset to default volume
+      _audioManager.pauseSound(sound.filepath);
+      _audioManager.saveVolume(sound.filepath, 1.0); // Reset to default volume
       await _audioManager.syncPlayers(_selectedSounds);
 
       if (updateCallback) {
@@ -405,7 +407,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           ),
         ),
         centerTitle: true,
-        // backgroundColor:  Color.fromRGBO(18, 23, 42, 1),
       ),
       body: Column(
         children: [
@@ -609,7 +610,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
               icon: Image.asset(
-                isSoundPlaying
+                isPlaying
                     ? "assets/images/pause.png"
                     : "assets/images/play.png",
                 height: 25.sp,
@@ -618,10 +619,10 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               onPressed: _selectedSounds.isEmpty
                 ? null
                 : () async {
-                    if (isSoundPlaying) {
-                      await AudioManager().pauseAll();
+                    if (isPlaying) {
+                      await AudioManager().pauseAllNew();
                     } else {
-                      await AudioManager().playAll();
+                      await AudioManager().playAllNew();
                     }
                   },
             ),

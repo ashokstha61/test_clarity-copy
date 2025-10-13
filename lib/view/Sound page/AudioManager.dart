@@ -451,7 +451,7 @@ class AudioManager {
 
     final existingKeys = _players.keys.toList();
     for (final key in existingKeys) {
-      if (!sounds.any((s) => s.title == key)) {
+      if (!sounds.any((s) => s.filepath == key)) {
         try {
           await _players[key]?.dispose();
         } catch (_) {}
@@ -492,7 +492,8 @@ class AudioManager {
       isPlayingNotifier.value = true;
       debugPrint('🎧 Playing "$title" in loop.');
       await player.seek(Duration.zero);
-      await playAllNew();
+      // await player.play();
+      // await playAllNew();
     } catch (e) {
       debugPrint('❌ Error playing "$title": $e');
     }

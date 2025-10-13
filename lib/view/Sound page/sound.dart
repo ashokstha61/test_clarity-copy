@@ -97,14 +97,18 @@ class _SoundPageState extends State<SoundPage> {
 
     // Use the updated method that handles trial/non-trial logic
     if (sound.isSelected) {
-      await _audioManager.stop();
-    } else {
-      await _audioManager.playSoundNew(sound.filepath, _sounds);
-    }
+      setState(() {
+        _sounds[index].isSelected = !_sounds[index].isSelected;
+      });
+      await _audioManager.pauseSound(sound.filepath);
 
-    setState(() {
-      sound.isSelected = !sound.isSelected;
-    });
+    } else {
+      setState(() {
+        _sounds[index].isSelected = !_sounds[index].isSelected;
+      });
+      await _audioManager.playSoundNew(sound.filepath, _sounds);
+      await _audioManager.playSound(sound.filepath);
+    }
   }
 
   @override
@@ -145,7 +149,9 @@ class _SoundPageState extends State<SoundPage> {
                           children: [
                             SoundTile(
                               sound: _sounds[index],
-                              onTap: () => _toggleSoundSelection(index),
+                              onTap: () {
+                                _toggleSoundSelection(index);
+                              } ,
                               isTrail: true,
                             ),
                             Divider(height: 1, indent: 15.w, endIndent: 15.w),
@@ -227,7 +233,7 @@ class _SoundPageState extends State<SoundPage> {
 
       if (doc.exists) {
         userData = UserModel.fromMap(doc.data()!);
-        // startFreeTrialCheck(userData);
+        // startFreeTrialCheck(userData); // for trail not  enable for now
       } else {
         debugPrint("User document does not exist.");
       }
