@@ -20,6 +20,7 @@ class AudioManager {
 
   Map<String, AudioPlayer> _players = {};
   Map<String, AudioPlayer> _mixPlayers = {};
+  Map<String, AudioPlayer> _favPlayers = {};
   final Map<String, double> _volumeMap = {};
   final ValueNotifier<List<String>> selectedTitlesNotifier = ValueNotifier([]);
   final ValueNotifier<bool> isPlayingNotifier = ValueNotifier(false);
@@ -151,11 +152,9 @@ class AudioManager {
     await adjustVolumes(selectedSounds);
   }
 
-  Future<void> toggleSoundSelection(
-    List<NewSoundModel> allSounds,
-    NewSoundModel targetSound,
-    bool isTrial,
-  ) async {
+  // for :  when the trial is false
+
+  Future<void> toggleSoundSelection(List<NewSoundModel> allSounds, NewSoundModel targetSound, bool isTrial,) async {
     try {
       await ensurePlayers(allSounds);
       await playAll();
@@ -301,6 +300,7 @@ class AudioManager {
     // isPlayingNotifier.value = false;
     // isSoundPlaying = false;
   }
+
   Future<void> clearSoundPlayers() async {
     for (final p in _players.values) {
       if (p.playing) await p.stop();
@@ -328,7 +328,6 @@ class AudioManager {
     isPlayingMix = value;
     // Optionally create another notifier if you want
   }
-
 
   /// Adjust volume based on number of playing sounds
   Future<void> adjustVolumes(List<NewSoundModel> selectedSounds) async {
@@ -449,6 +448,12 @@ class AudioManager {
 
   Future<void> playSoundNew(String title, List<NewSoundModel> sounds) async {
 
+    if (isPlayingMix) {
+      debugPrint("🛑 Mix player active — clearing it before playing sounds");
+      await pauseAllFav();
+      await clearMixPlayers();
+    }
+
     final existingKeys = _players.keys.toList();
     for (final key in existingKeys) {
       if (!sounds.any((s) => s.filepath == key)) {
@@ -459,7 +464,7 @@ class AudioManager {
       }
     }
 
-    final localPath = _downloadedFilePaths[title];
+    final localPath = _downloadedFilePaths[title.toLowerCase()];
     if (localPath == null || !File(localPath).existsSync()) {
       debugPrint("⚠️ File not found for $title");
       isPlayingNotifier.value = false;
@@ -498,7 +503,6 @@ class AudioManager {
       debugPrint('❌ Error playing "$title": $e');
     }
   }
-
 
   Future<void> stop() async {
     try {
@@ -550,7 +554,6 @@ class AudioManager {
     );
   }
 
-  /// Pause all selected sounds
   Future<void> pauseAllNew() async {
     isPlayingNotifier.value = false;
     Future.wait(
@@ -560,11 +563,96 @@ class AudioManager {
     );
   }
 
-  /// Stop all sounds
   Future<void> stopAll() async {
     for (final player in _players.values) {
       if (player.playing) await stop();
     }
+  }
+
+  Future<void> playFavSounds(List<NewSoundModel> allSounds, List<Map<String, dynamic>> selectedTitles) async {
+
+    if (isPlayingNotifier.value) {
+      debugPrint("🛑 Sound player active — clearing it before playing mix");
+      // await clearSoundPlayers();
+      await pauseAll();
+    }
+
+    final titles = selectedTitles
+        .map((e) => e['title']?.toString())
+        .where((t) => t != null && t.isNotEmpty)
+        .toList();
+
+    // 1. Remove players that are no longer in selected titles
+    final existingKeys = _favPlayers.keys.toList();
+    for (final key in existingKeys) {
+      if (!selectedTitles.contains(key)) {
+        try {
+          await _favPlayers[key]?.dispose();
+        } catch (_) {}
+        _favPlayers.remove(key);
+      }
+    }
+
+    // 2. Loop through selected titles and ensure a player exists
+    for (final title in titles) {
+      final sound = allSounds.firstWhere(
+            (s) => s.title == title,
+        orElse: () => throw Exception("Sound not found: $title"),
+      );
+
+      final localPath = _downloadedFilePaths[sound.title.toLowerCase()];
+      if (localPath == null || !File(localPath).existsSync()) {
+        debugPrint("⚠️ File not found for ${sound.title.toLowerCase()}");
+        continue;
+      }
+
+      if (!_favPlayers.containsKey(sound.title)) {
+        final player = AudioPlayer();
+        try {
+          await player.setFilePath(localPath);
+          await player.setLoopMode(LoopMode.one);
+          await player.setVolume(1.0);
+          _favPlayers[sound.title] = player;
+          debugPrint("✅ Player created for ${sound.title}");
+        } catch (e) {
+          debugPrint("❌ Failed to initialize ${sound.title}: $e");
+        }
+      } else {
+        debugPrint("ℹ️ Reusing existing player for ${sound.title}");
+      }
+    }
+
+    // 3. Play all selected players at once
+    await Future.wait(
+      selectedTitles.map((title) async {
+        final player = _players[title];
+        if (player != null && !player.playing) {
+          await player.seek(Duration.zero);
+          // await player.play();
+          debugPrint('🎧 Playing "$title"');
+        }
+      }),
+    );
+
+    isPlayingNotifier.value = true;
+  }
+
+  Future<void> playAllFav() async {
+    isPlayingNotifier.value = true;
+    Future.wait(
+      _favPlayers.values.map((p) async {
+        await p.play();
+      }),
+    );
+  }
+
+  Future<void> pauseAllFav() async {
+    isPlayingNotifier.value = false;
+    Future.wait(
+      _favPlayers.values.map((p) async {
+        if (p.playing) await p.pause();
+      }),
+    );
   }
 }
 

@@ -106,9 +106,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
       return;
     }
 
-    await AudioManager().ensureMixPlayers(selectedSounds);
-    await AudioManager().syncPlayers(selectedSounds);
-    await AudioManager().playMixAll();
+    await AudioManager().playFavSounds(Sounds, soundTitles);
+    // await AudioManager().syncPlayers(selectedSounds);
+    await AudioManager().playAllFav();
     if (!mounted) return;
     setState(() {
       for (var s in Sounds) {
@@ -122,11 +122,11 @@ class _FavoritesPageState extends State<FavoritesPage> {
       if (isPlayingMix) {
         setState(() => isPlayingMix = false);
         // _audioManager.isPlaying = false;
-        await AudioManager().pauseMixAll();
+        await AudioManager().pauseAllFav();
       } else {
         setState(() => isPlayingMix = true);
         // _audioManager.isPlaying = true;
-        await AudioManager().playMixAll();
+        await AudioManager().playAllFav();
       }
     }
   }
