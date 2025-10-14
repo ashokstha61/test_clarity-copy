@@ -33,133 +33,14 @@ class AudioManager {
     _volumeMap[title] = volume;
   }
 
-  Future<void> ensurePlayers(List<NewSoundModel> sounds) async {
-    // Remove players that are no longer in the sounds list
-    if (isPlayingMix) {
-      debugPrint("🛑 Mix player active — clearing it before playing sounds");
-      await clearMixPlayers();
-    }
-    final existingKeys = _players.keys.toList();
-    for (final key in existingKeys) {
-      if (!sounds.any((s) => s.title == key)) {
-        try {
-          await _players[key]?.dispose();
-        } catch (_) {}
-        _players.remove(key);
-      }
-    }
-
-    // Create and prepare players for missing sounds
-    final futures = <Future>[];
-    for (final sound in sounds) {
-      final key = sound.title;
-      if (!_players.containsKey(key)) {
-        futures.add(() async {
-          try {
-            final player = AudioPlayer();
-            await player.setAudioSource(
-              AudioSource.uri(Uri.parse(sound.musicUrl)),
-            );
-            await player.setLoopMode(LoopMode.one);
-            await player.setVolume(1.0);
-            _players[key] = player;
-          } catch (e) {
-            debugPrint("❌ Failed to initialize ${sound.title}: $e");
-          }
-        }());
-      }
-    }
-
-    await Future.wait(futures);
-  }
-
-  Future<void> ensureMixPlayers(List<NewSoundModel> sounds) async {
-    // Remove players that are no longer in the sounds list
-
-    if (isSoundPlaying) {
-      debugPrint("🛑 Sound player active — clearing it before playing mix");
-      await clearSoundPlayers();
-    }
-
-    final existingKeys = _mixPlayers.keys.toList();
-    for (final key in existingKeys) {
-      if (!sounds.any((s) => s.title == key)) {
-        try {
-          await _mixPlayers[key]?.dispose();
-        } catch (_) {}
-        _mixPlayers.remove(key);
-      }
-    }
-
-    // Create and prepare players for missing sounds
-    final futures = <Future>[];
-    for (final sound in sounds) {
-      final key = sound.title;
-      if (!_mixPlayers.containsKey(key)) {
-        futures.add(() async {
-          try {
-            final player = AudioPlayer();
-            await player.setAudioSource(
-              AudioSource.uri(Uri.parse(sound.musicUrl)),
-            );
-            await player.setLoopMode(LoopMode.one);
-            await player.setVolume(1.0);
-            _mixPlayers[key] = player;
-          } catch (e) {
-            debugPrint("❌ Failed to initialize ${sound.title}: $e");
-          }
-        }());
-      }
-    }
-
-    await Future.wait(futures);
-  }
-
-  /// Sync players with current selection
-  Future<void> syncPlayers(List<NewSoundModel> selectedSounds) async {
-    // Dispose removed players
-    final keysToRemove = _players.keys
-        .where((key) => !selectedSounds.any((s) => s.title == key))
-        .toList();
-
-    for (final key in keysToRemove) {
-      final player = _players.remove(key);
-      await player?.dispose();
-    }
-
-    // Add new players
-    for (final sound in selectedSounds) {
-      if (!_players.containsKey(sound.title)) {
-        final player = AudioPlayer();
-        _players[sound.title] = player;
-        await player.setAudioSource(AudioSource.uri(Uri.parse(sound.musicUrl)));
-        await player.setLoopMode(LoopMode.one);
-      }
-    }
-
-    // Restore saved volumes
-    for (final sound in selectedSounds) {
-      final savedVolume = getSavedVolume(
-        sound.title,
-        defaultValue: sound.volume.toDouble(),
-      );
-      sound.volume = savedVolume; // ✅ update model
-      _volumeMap[sound.title] = savedVolume;
-      await _players[sound.title]?.setVolume(savedVolume);
-    }
-
-    _updateSelectedTitles(selectedSounds);
-    await adjustVolumes(selectedSounds);
-  }
-
   // for :  when the trial is false
 
   Future<void> toggleSoundSelection(List<NewSoundModel> allSounds, NewSoundModel targetSound, bool isTrial,) async {
     try {
-      await ensurePlayers(allSounds);
-      await playAll();
+      await playSoundNew(targetSound.filepath, allSounds);
+      await playAllNew();
     } catch (e, st) {
-      debugPrint("❌ ensurePlayers failed: $e\n$st");
+      debugPrint("❌ Players failed: $e\n$st");
       return;
     }
 
@@ -245,90 +126,6 @@ class AudioManager {
     }
   }
 
-  Future<void> playAll() async {
-    isPlayingNotifier.value = true;
-    isSoundPlaying = true;
-
-    // Only play the selected sounds
-    final selectedTitles = selectedTitlesNotifier.value;
-    await Future.wait(
-      selectedTitles.map((title) async {
-        final player = _players[title];
-        if (player != null && !player.playing) {
-          await player.play();
-        }
-      }),
-    );
-  }
-
-  Future<void> pauseAll() async {
-    await Future.wait(
-      _players.values.map((p) async {
-        if (p.playing) await p.pause();
-      }),
-    );
-    isPlayingNotifier.value = false;
-    isSoundPlaying = false;
-  }
-
-  Future<void> playMixAll() async {
-    // isPlayingNotifier.value = true;
-    // isSoundPlaying = true;
-
-    // Only play the selected sounds
-    if (isSoundPlaying) {
-      await clearSoundPlayers();
-    }
-    final selectedTitles = selectedTitlesNotifier.value;
-    await Future.wait(
-      selectedTitles.map((title) async {
-        final player = _mixPlayers[title];
-        if (player != null && !player.playing) {
-          await player.play();
-        }
-      }),
-    );
-    isPlayingMix = true;
-  }
-
-  Future<void> pauseMixAll() async {
-    await Future.wait(
-      _mixPlayers.values.map((p) async {
-        if (p.playing) await p.pause();
-      }),
-    );
-    // isPlayingNotifier.value = false;
-    // isSoundPlaying = false;
-  }
-
-  Future<void> clearSoundPlayers() async {
-    for (final p in _players.values) {
-      if (p.playing) await p.stop();
-      await p.dispose();
-    }
-    _players.clear();
-    isSoundPlaying = false;
-  }
-
-  Future<void> clearMixPlayers() async {
-    for (final p in _mixPlayers.values) {
-      if (p.playing) await p.stop();
-      await p.dispose();
-    }
-    _mixPlayers.clear();
-    isPlayingMix = false;
-  }
-
-  void setSoundPlaying(bool value) {
-    isSoundPlaying = value;
-    isPlayingNotifier.value = value;
-  }
-
-  void setMixPlaying(bool value) {
-    isPlayingMix = value;
-    // Optionally create another notifier if you want
-  }
-
   /// Adjust volume based on number of playing sounds
   Future<void> adjustVolumes(List<NewSoundModel> selectedSounds) async {
     for (final s in selectedSounds) {
@@ -342,12 +139,6 @@ class AudioManager {
     }
   }
 
-  void _updateSelectedTitles(List<NewSoundModel> selectedSounds) {
-    selectedTitlesNotifier.value = selectedSounds.map((s) => s.title).toList();
-
-    debugPrint("Selected from sync: ${selectedTitlesNotifier.value}");
-  }
-
   Future<void> dispose() async {
     for (final player in _players.values) {
       await player.dispose();
@@ -355,60 +146,6 @@ class AudioManager {
     _players.clear();
     // selectedTitlesNotifier.dispose();
     // isPlayingNotifier.dispose();
-  }
-
-  bool isAnyPlayingInContext(List<String> filepath, {String? context}) {
-    for (var fp in filepath) {
-      final key = context != null ? '$context$fp' : fp;
-      if (_players[key]?.playing == true) return true;
-    }
-    return false;
-  }
-
-    /// Play all sounds in a mix
-  Future<void> playMix(List<String> filepaths, {String? context}) async {
-    for (var fp in filepaths) {
-      final key = context != null ? '$context$fp' : fp;
-      var player = _players[key];
-
-      if (player == null) {
-        // If player doesn't exist, initialize
-        player = AudioPlayer();
-        try {
-          await player.setAudioSource(AudioSource.uri(Uri.parse(fp)));
-          await player.setLoopMode(LoopMode.one);
-          await player.setVolume(1.0);
-          _players[key] = player;
-        } catch (e) {
-          debugPrint("❌ Failed to load $fp: $e");
-          continue;
-        }
-      }
-
-      if (!player.playing) {
-        await player.seek(Duration.zero);
-        await player.play();
-      }
-    }
-
-    isPlayingNotifier.value = true;
-    isSoundPlaying = true;
-  }
-
-  /// Pause all sounds in a given list
-  Future<void> pauseSounds(List<String> filepaths, {String? context}) async {
-    for (var fp in filepaths) {
-      final key = context != null ? '$context$fp' : fp;
-      final player = _players[key];
-      if (player != null && player.playing) {
-        await player.pause();
-      }
-    }
-
-    // If nothing else is playing → update notifiers
-    final anyPlaying = _players.values.any((p) => p.playing);
-    isPlayingNotifier.value = anyPlaying;
-    isSoundPlaying = anyPlaying;
   }
 
   final Map<String, String> _downloadedFilePaths = {}; // title -> local file path
@@ -576,7 +313,6 @@ class AudioManager {
 
     if (isPlayingNotifier.value) {
       debugPrint("🛑 Sound player active — clearing it before playing mix");
-      // await clearSoundPlayers();
       await pauseAllNew();
     }
 
@@ -643,7 +379,6 @@ class AudioManager {
   Future<void> playAllFav() async {
     if (isPlayingNotifier.value) {
       debugPrint("🛑 Sound player active — clearing it before playing mix");
-      // await clearSoundPlayers();
       await pauseAllNew();
     }
     isPlayingMix = true;

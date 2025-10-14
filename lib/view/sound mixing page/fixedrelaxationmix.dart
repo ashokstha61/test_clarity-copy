@@ -262,27 +262,16 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       });
     }
 
-    // Update the main sounds list
     final allSounds = _buildUpdatedSounds();
 
-    // Use AudioManager to handle the selection properly
     await _audioManager.playSoundNew(sound.filepath, allSounds);
     await _audioManager.playSound(sound.filepath);
-    // await _audioManager.toggleSoundSelection(
-    //   allSounds,
-    //   normalizedSound,
-    //   isTrial,
-    // );
 
-    // Apply correct volume right away
     await _audioManager.adjustVolumes(_selectedSounds);
     _audioManager.saveVolume(
       normalizedSound.title,
       normalizedSound.volume.toDouble(),
     );
-
-    // Play the newly added sound
-    _audioManager.playSound(normalizedSound.title);
 
     widget.onSoundsChanged(_buildUpdatedSounds());
   }
@@ -315,7 +304,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
             _recommendedSounds.add(sound.copyWith(isSelected: false));
           } else {
             _recommendedSounds.insert(
-              insertIndex,
+              originalIndex,
               sound.copyWith(isSelected: false),
             );
           }
@@ -329,8 +318,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       }
 
       _audioManager.pauseSound(sound.filepath);
-      _audioManager.saveVolume(sound.filepath, 1.0); // Reset to default volume
-      await _audioManager.syncPlayers(_selectedSounds);
+      _audioManager.saveVolume(sound.filepath, 1.0);
 
       if (updateCallback) {
         widget.onSoundsChanged(_buildUpdatedSounds());

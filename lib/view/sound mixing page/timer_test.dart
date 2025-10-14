@@ -171,7 +171,7 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                     // Update remaining time dynamically
                   },
                   onComplete: () async {
-                    await AudioManager().pauseAll();
+                    await AudioManager().pauseAllNew();
                     // setState(() {
                     //   _isPaused = true;
                     //   _isCompleted = true;
