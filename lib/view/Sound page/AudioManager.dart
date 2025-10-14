@@ -451,7 +451,6 @@ class AudioManager {
     if (isPlayingMix) {
       debugPrint("🛑 Mix player active — clearing it before playing sounds");
       await pauseAllFav();
-      await clearMixPlayers();
     }
 
     final existingKeys = _players.keys.toList();
@@ -546,6 +545,10 @@ class AudioManager {
   }
 
   Future<void> playAllNew() async {
+    if (isPlayingMix) {
+      debugPrint("🛑 Mix player active — clearing it before playing sounds");
+      await pauseAllFav();
+    }
     isPlayingNotifier.value = true;
     Future.wait(
       _players.values.map((p) async {
@@ -574,7 +577,7 @@ class AudioManager {
     if (isPlayingNotifier.value) {
       debugPrint("🛑 Sound player active — clearing it before playing mix");
       // await clearSoundPlayers();
-      await pauseAll();
+      await pauseAllNew();
     }
 
     final titles = selectedTitles
@@ -634,11 +637,16 @@ class AudioManager {
       }),
     );
 
-    isPlayingNotifier.value = true;
+    isPlayingMix = true;
   }
 
   Future<void> playAllFav() async {
-    isPlayingNotifier.value = true;
+    if (isPlayingNotifier.value) {
+      debugPrint("🛑 Sound player active — clearing it before playing mix");
+      // await clearSoundPlayers();
+      await pauseAllNew();
+    }
+    isPlayingMix = true;
     Future.wait(
       _favPlayers.values.map((p) async {
         await p.play();
@@ -647,7 +655,7 @@ class AudioManager {
   }
 
   Future<void> pauseAllFav() async {
-    isPlayingNotifier.value = false;
+    isPlayingMix = false;
     Future.wait(
       _favPlayers.values.map((p) async {
         if (p.playing) await p.pause();

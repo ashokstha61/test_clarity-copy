@@ -107,7 +107,7 @@ class _SoundPageState extends State<SoundPage> {
         _sounds[index].isSelected = !_sounds[index].isSelected;
       });
       await _audioManager.playSoundNew(sound.filepath, _sounds);
-      await _audioManager.playSound(sound.filepath);
+      await _audioManager.playAllNew();
     }
   }
 
