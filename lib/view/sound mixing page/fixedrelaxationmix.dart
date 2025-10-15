@@ -337,7 +337,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       _selectedSounds = List.from(_selectedSounds);
       _selectedSounds[index] = _selectedSounds[index].copyWith(volume: volume);
     });
-    _audioManager.saveVolume(_selectedSounds[index].title, volume);
+   _audioManager.saveVolume(_selectedSounds[index].title, volume);
 
     // Apply volume changes to audio players
     await _audioManager.adjustVolumes(_selectedSounds);

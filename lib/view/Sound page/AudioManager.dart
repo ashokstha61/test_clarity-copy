@@ -129,12 +129,18 @@ class AudioManager {
   /// Adjust volume based on number of playing sounds
   Future<void> adjustVolumes(List<NewSoundModel> selectedSounds) async {
     for (final s in selectedSounds) {
-      final player = _players[s.title];
-      if (player != null) {
-        _volumeMap[s.title] = s.volume.toDouble();
-        await player.setVolume(
-          s.volume.toDouble(),
-        ); // use the actual slider value
+      final player = _players[s.title.toLowerCase()];
+      debugPrint(":headphones: Adjusting volume for ${s.title.toLowerCase()}");
+      if (player == null) {
+        debugPrint(":x: No player found for ${s.title.toLowerCase()}");
+        continue;
+      }
+      debugPrint(":arrow_right: Setting volume to ${s.volume}");
+      try {
+        await player.setVolume(s.volume.toDouble());
+        debugPrint(":white_check_mark: Volume set for ${s.title.toLowerCase()}");
+      } catch (e, st) {
+        debugPrint(":x: Failed to set volume for ${s.title.toLowerCase()}: $e\n$st");
       }
     }
   }
