@@ -32,6 +32,14 @@ class AudioManager {
     _volumeMap[title] = volume;
   }
 
+  Future<void> setVolume(String title, double volume) async {
+    final player = _players[title];
+    if (player != null) {
+      await player.setVolume(volume);
+    }
+    saveVolume(title, volume);
+  }
+
   Future<void> ensurePlayers(List<NewSoundModel> sounds) async {
     // Remove players that are no longer in the sounds list
     if (isPlayingMix) {
@@ -219,7 +227,9 @@ class AudioManager {
         await player.play();
       }
     } catch (e, st) {
-      debugPrint("❌ Error in main toggle logic for ${targetSound.title}: $e\n$st");
+      debugPrint(
+        "❌ Error in main toggle logic for ${targetSound.title}: $e\n$st",
+      );
       targetSound.isSelected = false;
       return;
     }
@@ -301,6 +311,7 @@ class AudioManager {
     // isPlayingNotifier.value = false;
     // isSoundPlaying = false;
   }
+
   Future<void> clearSoundPlayers() async {
     for (final p in _players.values) {
       if (p.playing) await p.stop();
@@ -328,7 +339,6 @@ class AudioManager {
     isPlayingMix = value;
     // Optionally create another notifier if you want
   }
-
 
   /// Adjust volume based on number of playing sounds
   Future<void> adjustVolumes(List<NewSoundModel> selectedSounds) async {
@@ -366,7 +376,7 @@ class AudioManager {
     return false;
   }
 
-    /// Play all sounds in a mix
+  /// Play all sounds in a mix
   Future<void> playMix(List<String> filepaths, {String? context}) async {
     for (var fp in filepaths) {
       final key = context != null ? '$context$fp' : fp;
@@ -412,7 +422,8 @@ class AudioManager {
     isSoundPlaying = anyPlaying;
   }
 
-  final Map<String, String> _downloadedFilePaths = {}; // title -> local file path
+  final Map<String, String> _downloadedFilePaths =
+      {}; // title -> local file path
   final AudioPlayer _audioPlayer = AudioPlayer();
 
   Future<void> downloadAllNewSounds(List<NewSoundModel> sounds) async {
@@ -432,7 +443,9 @@ class AudioManager {
               await file.writeAsBytes(response.bodyBytes);
               debugPrint('✅ Downloaded "${sound.title}" successfully!');
             } else {
-              debugPrint('❌ Failed to download "${sound.title}" (HTTP ${response.statusCode})');
+              debugPrint(
+                '❌ Failed to download "${sound.title}" (HTTP ${response.statusCode})',
+              );
             }
           } else {
             debugPrint('ℹ️ "${sound.title}" already exists locally.');
@@ -448,7 +461,6 @@ class AudioManager {
   }
 
   Future<void> playSoundNew(String title, List<NewSoundModel> sounds) async {
-
     final existingKeys = _players.keys.toList();
     for (final key in existingKeys) {
       if (!sounds.any((s) => s.filepath == key)) {
@@ -499,7 +511,6 @@ class AudioManager {
     }
   }
 
-
   Future<void> stop() async {
     try {
       isPlayingNotifier.value = false;
@@ -532,7 +543,6 @@ class AudioManager {
         isPlayingNotifier.value = true;
         debugPrint('▶️ Resumed playback.');
         await _audioPlayer.play();
-
       } else {
         debugPrint('⚠️ Player is already playing.');
       }
@@ -567,4 +577,3 @@ class AudioManager {
     }
   }
 }
-

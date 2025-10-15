@@ -784,6 +784,10 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                           _selectedSounds[index] = _selectedSounds[index]
                               .copyWith(volume: value);
                         });
+                        _audioManager.setVolume(
+                          _selectedSounds[index].title,
+                          value,
+                        );
                         // _updateSoundVolume(index, value);
                       },
                       onChangeEnd: (value) {
