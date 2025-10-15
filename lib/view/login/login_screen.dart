@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () async {
                       User? user = await _authService.signInWithGoogle();
 
-                      if (!mounted) return;
+                      // if (!mounted) return;
                       if (user != null) {
                         Navigator.pushReplacement(
                           context,
