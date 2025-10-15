@@ -318,6 +318,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       }
 
       _audioManager.pauseSound(sound.filepath);
+      _audioManager.clearSound(sound.filepath);
       _audioManager.saveVolume(sound.filepath, 1.0);
 
       if (updateCallback) {

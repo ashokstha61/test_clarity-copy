@@ -126,6 +126,24 @@ class AudioManager {
     }
   }
 
+  Future<void> clearSound(String title) async {
+    final player = _players[title];
+
+    if (player != null) {
+      if (player.playing) {
+        debugPrint('🧹 Clearing and removing "$title" (was playing)');
+      } else {
+        debugPrint('🧹 Clearing and removing "$title" (was NOT playing)');
+      }
+
+      _players.remove(title);
+      await player.dispose();
+      debugPrint('✅ "$title" removed and disposed successfully');
+    } else {
+      debugPrint('⚠️ No player found for "$title" — nothing to clear');
+    }
+  }
+
   /// Adjust volume based on number of playing sounds
   Future<void> adjustVolumes(List<NewSoundModel> selectedSounds) async {
     for (final s in selectedSounds) {
