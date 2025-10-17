@@ -1,8 +1,8 @@
 import 'dart:ui' as ui;
-import 'package:clarity/model/model.dart';
-import 'package:clarity/theme.dart';
-import 'package:clarity/view/Sound%20page/sound.dart';
-import 'package:clarity/view/favourite/favouratemanager.dart';
+import 'package:Sleephoria/model/model.dart';
+import 'package:Sleephoria/theme.dart';
+import 'package:Sleephoria/view/Sound%20page/sound.dart';
+import 'package:Sleephoria/view/favourite/favouratemanager.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

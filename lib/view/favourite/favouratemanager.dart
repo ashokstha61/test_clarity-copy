@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:clarity/model/favSoundModel.dart';
+import 'package:Sleephoria/model/favSoundModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:clarity/model/model.dart';
+import 'package:Sleephoria/model/model.dart';
 
 import '../../new_firebase_service.dart';
 

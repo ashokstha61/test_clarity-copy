@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:clarity/globals.dart';
+import 'package:Sleephoria/globals.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
@@ -19,7 +19,6 @@ class AudioManager {
   bool isPlaying = false;
 
   Map<String, AudioPlayer> _players = {};
-  Map<String, AudioPlayer> _mixPlayers = {};
   Map<String, AudioPlayer> _favPlayers = {};
   final Map<String, double> _volumeMap = {};
   final ValueNotifier<List<String>> selectedTitlesNotifier = ValueNotifier([]);

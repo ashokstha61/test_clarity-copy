@@ -1,14 +1,12 @@
-
-
 import 'dart:async';
-import 'package:clarity/theme.dart';
+import 'package:Sleephoria/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:clarity/view/home/homepage.dart';
-import 'package:clarity/view/login/login_screen.dart';
-import 'package:clarity/view/splash_screen/onboarding_screen.dart';
+import 'package:Sleephoria/view/home/homepage.dart';
+import 'package:Sleephoria/view/login/login_screen.dart';
+import 'package:Sleephoria/view/splash_screen/onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

@@ -1,9 +1,9 @@
-import 'package:clarity/theme.dart';
-import 'package:clarity/view/home/homepage.dart';
-import 'package:clarity/view/signin/sign_in_screen.dart';
+import 'package:Sleephoria/theme.dart';
+import 'package:Sleephoria/view/home/homepage.dart';
+import 'package:Sleephoria/view/signin/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:clarity/view/login/auth.dart';
+import 'package:Sleephoria/view/login/auth.dart';
 import '../../custom/custom_login_button.dart';
 
 class LoginScreen extends StatefulWidget {

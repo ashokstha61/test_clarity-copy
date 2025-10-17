@@ -1,10 +1,10 @@
-import 'package:clarity/main.dart';
-import 'package:clarity/theme.dart';
+import 'package:Sleephoria/main.dart';
+import 'package:Sleephoria/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:clarity/custom/custom_setting.dart';
-import 'package:clarity/custom/custom_text_field.dart';
+import 'package:Sleephoria/custom/custom_setting.dart';
+import 'package:Sleephoria/custom/custom_text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyAccountPage extends StatefulWidget {

@@ -1,7 +1,7 @@
-import 'package:clarity/model/favSoundModel.dart';
-import 'package:clarity/model/model.dart';
-import 'package:clarity/view/favourite/empty_file.dart';
-import 'package:clarity/view/favourite/favorite_tile.dart';
+import 'package:Sleephoria/model/favSoundModel.dart';
+import 'package:Sleephoria/model/model.dart';
+import 'package:Sleephoria/view/favourite/empty_file.dart';
+import 'package:Sleephoria/view/favourite/favorite_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -109,11 +109,11 @@ class _FavoritesPageState extends State<FavoritesPage> {
     await AudioManager().playFavSounds(Sounds, soundTitles);
     await AudioManager().playAllFav();
     if (!mounted) return;
-    setState(() {
-      for (var s in Sounds) {
-        s.isSelected = selectedSounds.any((sel) => sel.title == s.title);
-      }
-    });
+    // setState(() {
+    //   for (var s in Sounds) {
+    //     s.isSelected = selectedSounds.any((sel) => sel.title == s.title);
+    //   }
+    // });
   }
 
   void _togglePlayback() async {

@@ -1,7 +1,6 @@
-import 'package:clarity/theme.dart';
+import 'package:Sleephoria/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'timer_test.dart';
 
 class TimerScreen extends StatelessWidget {

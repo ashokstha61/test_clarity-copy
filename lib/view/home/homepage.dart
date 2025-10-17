@@ -1,8 +1,8 @@
-import 'package:clarity/model/model.dart';
-import 'package:clarity/new_firebase_service.dart';
-import 'package:clarity/theme.dart';
-import 'package:clarity/view/favourite/favouratepage.dart';
-import 'package:clarity/view/profile/profile_page.dart';
+import 'package:Sleephoria/model/model.dart';
+import 'package:Sleephoria/new_firebase_service.dart';
+import 'package:Sleephoria/theme.dart';
+import 'package:Sleephoria/view/favourite/favouratepage.dart';
+import 'package:Sleephoria/view/profile/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

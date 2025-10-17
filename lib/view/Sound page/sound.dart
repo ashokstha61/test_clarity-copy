@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:clarity/model/model.dart';
-import 'package:clarity/new_firebase_service.dart';
+import 'package:Sleephoria/model/model.dart';
+import 'package:Sleephoria/new_firebase_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -101,6 +101,7 @@ class _SoundPageState extends State<SoundPage> {
         _sounds[index].isSelected = !_sounds[index].isSelected;
       });
       await _audioManager.pauseSound(sound.filepath);
+      await _audioManager.clearSound(sound.filepath);
 
     } else {
       setState(() {

@@ -1,5 +1,5 @@
 
-import 'package:clarity/model/sound_item.dart';
+import 'package:Sleephoria/model/sound_item.dart';
 import 'package:flutter/material.dart';
 
 class SoundButton extends StatefulWidget {

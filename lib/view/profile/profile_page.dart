@@ -1,12 +1,12 @@
-import 'package:clarity/theme.dart';
-import 'package:clarity/view/login/auth.dart';
-import 'package:clarity/view/login/login_screen.dart';
-import 'package:clarity/view/profile/legal_documents_page.dart';
-import 'package:clarity/view/subscription/SubscriptionManagementView.dart';
+import 'package:Sleephoria/theme.dart';
+import 'package:Sleephoria/view/login/auth.dart';
+import 'package:Sleephoria/view/login/login_screen.dart';
+import 'package:Sleephoria/view/profile/legal_documents_page.dart';
+import 'package:Sleephoria/view/subscription/SubscriptionManagementView.dart';
 import 'package:flutter/material.dart';
-import 'package:clarity/custom/custom_logout_button.dart';
-import 'package:clarity/custom/customtilelist.dart';
-import 'package:clarity/view/profile/my_account_page.dart';
+import 'package:Sleephoria/custom/custom_logout_button.dart';
+import 'package:Sleephoria/custom/customtilelist.dart';
+import 'package:Sleephoria/view/profile/my_account_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfilePage extends StatefulWidget {
