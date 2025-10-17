@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,28 +38,59 @@ class AuthService {
 
 
   // Google Sign-In
-  Future<User?> signInWithGoogle() async {
+  Future<User?> signInWithGoogle(BuildContext context) async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return null;
+      if (googleUser == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Google Sign-In was cancelled.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return null;
+      }
 
       final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      await googleUser.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential result = await _auth.signInWithCredential(
-        credential,
+      final UserCredential result = await _auth.signInWithCredential(credential);
+
+      // ✅ Success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Login Successful'),
+          backgroundColor: Colors.green,
+        ),
       );
+
       await _setLoginState(true);
       return result.user;
     } on FirebaseAuthException catch (e) {
+      // 🛑 Error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Sign in failed: ${e.message}'),
+          backgroundColor: Colors.red,
+        ),
+      );
       throw _handleAuthException(e);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Unexpected error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      rethrow;
     }
   }
+
 
   Future<void> _setLoginState(bool isLoggedIn) async {
     final prefs = await SharedPreferences.getInstance();

@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "6205644310-31p31cmset56dl6elq8jf72n3026ujmi.apps.googleusercontent.com",
+          "client_id": "6205644310-q17mb43s5ru2g58vvgp7mavmdcule7e1.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.main.clarity",
-            "certificate_hash": "f452ac9046a716ffb2c6de101a7ee52ef774b702"
+            "certificate_hash": "77359269028fb97a794802b4ba3aff2b823fdd94"
           }
         },
         {

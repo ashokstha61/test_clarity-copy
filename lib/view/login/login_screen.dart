@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:Sleephoria/theme.dart';
 import 'package:Sleephoria/view/home/homepage.dart';
 import 'package:Sleephoria/view/signin/sign_in_screen.dart';
@@ -15,6 +17,27 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final AuthService _authService = AuthService();
+  bool _isLoading = false;
+
+  Future<void> _handleGoogleLogin() async {
+    setState(() => _isLoading = true);
+
+    try {
+      User? user = await _authService.signInWithGoogle(context);
+      if (!mounted) return;
+
+      if (user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Homepage()),
+        );
+      }
+    } catch (e) {
+      debugPrint("Google sign-in failed: $e");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,17 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: CustomLoginButton(
                     label: 'Connect with Google',
                     imagePath: 'assets/images/google.png',
-                    onPressed: () async {
-                      User? user = await _authService.signInWithGoogle();
-
-                      if (!mounted) return;
-                      if (user != null) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => Homepage()),
-                        );
-                      }
-                    },
+                    onPressed: _handleGoogleLogin,
                   ),
                 ),
                 SizedBox(height: 10),
