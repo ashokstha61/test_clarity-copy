@@ -1,4 +1,5 @@
 import 'dart:ui' as ui;
+import 'package:Sleephoria/globals.dart';
 import 'package:Sleephoria/model/model.dart';
 import 'package:Sleephoria/theme.dart';
 import 'package:Sleephoria/view/Sound%20page/sound.dart';
@@ -35,24 +36,45 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   bool showLoading = false;
   ui.Image? thumbImg;
 
+  // List<NewSoundModel> _buildUpdatedSounds() {
+  //   debugPrint("update in progess");
+  //   return widget.sounds
+  //       .map(
+  //         (s) => s.copyWith(
+  //           isSelected: _selectedSounds.any(
+  //             (selected) => selected.title == s.title,
+  //           ),
+  //           // Preserve volume changes made in mix page
+  //           volume: _selectedSounds
+  //               .firstWhere(
+  //                 (selected) => selected.title == s.title,
+  //                 orElse: () => s,
+  //               )
+  //               .volume,
+  //         ),
+  //       )
+  //       .toList();
+  // }
+
   List<NewSoundModel> _buildUpdatedSounds() {
-    return widget.sounds
-        .map(
-          (s) => s.copyWith(
-            isSelected: _selectedSounds.any(
-              (selected) => selected.title == s.title,
-            ),
-            // Preserve volume changes made in mix page
-            volume: _selectedSounds
-                .firstWhere(
-                  (selected) => selected.title == s.title,
-                  orElse: () => s,
-                )
-                .volume,
-          ),
-        )
-        .toList();
+    debugPrint("update in progress");
+
+    return widget.sounds.map((s) {
+      final selectedSound = _selectedSounds.firstWhere(
+            (selected) => selected.title == s.title,
+        orElse: () => s.copyWith(isSelected: false),
+      );
+
+      final isSelected = _selectedSounds.any((selected) => selected.title == s.title);
+
+      return s.copyWith(
+        isSelected: isSelected, // explicitly false if not selected
+        volume: selectedSound.volume, // preserve volume if selected
+      );
+    }).toList();
   }
+
+
 
   @override
   void initState() {
@@ -241,7 +263,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       // In non-trial mode, only one sound can be selected at a time
       // Remove all currently selected sounds first
       for (final selectedSound in List.from(_selectedSounds)) {
-        await _removeSoundFromMixInternal(selectedSound, false);
+        await _removeSoundFromMixInternal(selectedSound);
       }
     }
 
@@ -277,27 +299,34 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   }
 
   Future<void> _removeSoundFromMix(NewSoundModel sound) async {
-    await _removeSoundFromMixInternal(sound, true);
+    await _removeSoundFromMixInternal(sound);
     widget.onSoundsChanged(_buildUpdatedSounds());
   }
 
   Future<void> _removeSoundFromMixInternal(
-    NewSoundModel sound,
-    bool updateCallback,
-  ) async {
+      NewSoundModel sound,
+      // bool updateCallback,
+      ) async {
     try {
       setState(() {
-        _selectedSounds.removeWhere((s) => s.title == sound.title);
+        sound.isSelected = false;
 
-        // find original index in the full sounds list
+        _selectedSounds.removeWhere((s) {
+          if (s.title == sound.title) {
+            s.isSelected = false;
+            return true;
+          }
+          return false;
+        });
+
         final originalIndex = widget.sounds.indexWhere(
-          (s) => s.title == sound.title,
+              (s) => s.title == sound.title,
         );
 
         if (originalIndex != -1) {
-          // insert back into recommendedSounds at the right position
+          // Insert back into recommended sounds list
           final insertIndex = _recommendedSounds.indexWhere(
-            (s) => widget.sounds.indexOf(s) > originalIndex,
+                (s) => widget.sounds.indexOf(s) > originalIndex,
           );
 
           if (insertIndex == -1) {
@@ -311,23 +340,30 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         }
       });
 
+      // Stop playback if no sounds are selected
       if (_selectedSounds.isEmpty) {
         setState(() {
           _audioManager.isPlayingNotifier.value = false;
         });
       }
 
+      // Stop and clear from audio manager
       _audioManager.pauseSound(sound.filepath);
       _audioManager.clearSound(sound.filepath);
       _audioManager.saveVolume(sound.filepath, 1.0);
 
-      if (updateCallback) {
+      // Notify parent widget if required
+      // if (updateCallback) {
+      //   debugPrint("updated");
         widget.onSoundsChanged(_buildUpdatedSounds());
-      }
+      // }
+
+      favIsTapped = true ;
     } catch (e) {
       _showErrorSnackBar('Failed to remove sound: $e');
     }
   }
+
 
   // FIX: Properly update volume by creating new list with updated sound
   Future<void> _updateSoundVolume(int index, double volume) async {
@@ -714,7 +750,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                         color: Color.fromRGBO(92, 67, 108, 1),
                       ),
                     ),
-                    onPressed: () => _removeSoundFromMix(sound),
+                    onPressed: () => _removeSoundFromMixInternal(sound),
                     child: const Icon(
                       Icons.close,
                       size: 16,

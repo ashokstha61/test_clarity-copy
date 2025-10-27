@@ -337,7 +337,11 @@ class AudioManager {
     if (isPlayingNotifier.value) {
       debugPrint("🛑 Sound player active — clearing it before playing mix");
       await pauseAllNew();
+      await clearAllPlayer(_players);
     }
+    await clearAllPlayer(_favPlayers);
+
+    selectedTitlesNotifier.value = [];
 
     final titles = selectedTitles
         .map((e) => e['title']?.toString())
@@ -385,18 +389,21 @@ class AudioManager {
     }
 
     // 3. Play all selected players at once
-    await Future.wait(
-      selectedTitles.map((title) async {
-        final player = _players[title];
-        if (player != null && !player.playing) {
-          await player.seek(Duration.zero);
-          // await player.play();
-          debugPrint('🎧 Playing "$title"');
-        }
-      }),
-    );
+    // await Future.wait(
+    //   selectedTitles.map((title) async {
+    //     final player = _players[title];
+    //     if (player != null && !player.playing) {
+    //       await player.seek(Duration.zero);
+    //       // await player.play();
+    //       debugPrint('🎧 Playing "$title"');
+    //     }
+    //   }),
+    // );
 
     isPlayingMix = true;
+    for (final sound in allSounds) {
+      sound.isSelected = false;
+    }
   }
 
   Future<void> playAllFav() async {
@@ -420,5 +427,18 @@ class AudioManager {
       }),
     );
   }
+
+  Future<void> clearAllPlayer(Map<String, AudioPlayer> players) async {
+    for (final player in players.values) {
+      try {
+        await player.stop();
+        await player.dispose();
+      } catch (_) {
+        // ignore errors during disposal
+      }
+    }
+    players.clear();
+  }
+
 }
 

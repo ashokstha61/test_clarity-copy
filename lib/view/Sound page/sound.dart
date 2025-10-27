@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:Sleephoria/globals.dart';
 import 'package:Sleephoria/model/model.dart';
 import 'package:Sleephoria/new_firebase_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -44,6 +45,13 @@ class _SoundPageState extends State<SoundPage> {
     // Listen to audio manager selection changes
     _audioManager.selectedTitlesNotifier.addListener(_onSelectionChanged);
     loadUserInfo();
+    if (favIsTapped) {
+      setState(() {
+        for (var sound in _sounds) {
+          sound.isSelected = false;
+        }
+      });
+    }
   }
 
   void _onSelectionChanged() {
