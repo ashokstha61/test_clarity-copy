@@ -55,6 +55,7 @@ class _SoundPageState extends State<SoundPage> {
   }
 
   void _onSelectionChanged() {
+    if (isPlayingMix) return; 
     final selectedTitles = _audioManager.selectedSoundTitles;
     if (mounted) {
       setState(() {

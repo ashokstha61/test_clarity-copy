@@ -46,7 +46,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
     });
   }
 
-
   Future<void> _loadFavorites() async {
     setState(() {
       _isLoading = true;
@@ -78,7 +77,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
     }
   }
 
-  void _onFavoriteTap(String mixName, List<Map<String, dynamic>> soundTitles,) async {
+  void _onFavoriteTap(
+    String mixName,
+    List<Map<String, dynamic>> soundTitles,
+  ) async {
+    await AudioManager().pauseAllNew();
+    await AudioManager().stopAll(); 
     setState(() {
       currentMix = mixName;
       isPlayingMix = true;
@@ -88,7 +92,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
     final selectedSounds = Sounds.map((s) {
       final match = soundTitles.firstWhere(
-            (map) => map['title'] == s.title,
+        (map) => map['title'] == s.title,
         orElse: () => {},
       );
 
