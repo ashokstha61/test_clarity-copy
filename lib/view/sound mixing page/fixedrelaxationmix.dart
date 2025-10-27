@@ -298,15 +298,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     widget.onSoundsChanged(_buildUpdatedSounds());
   }
 
-  Future<void> _removeSoundFromMix(NewSoundModel sound) async {
-    await _removeSoundFromMixInternal(sound);
-    widget.onSoundsChanged(_buildUpdatedSounds());
-  }
-
-  Future<void> _removeSoundFromMixInternal(
-      NewSoundModel sound,
-      // bool updateCallback,
-      ) async {
+  Future<void> _removeSoundFromMixInternal(NewSoundModel sound) async {
     try {
       setState(() {
         sound.isSelected = false;
@@ -352,11 +344,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       _audioManager.clearSound(sound.filepath);
       _audioManager.saveVolume(sound.filepath, 1.0);
 
-      // Notify parent widget if required
-      // if (updateCallback) {
-      //   debugPrint("updated");
-        widget.onSoundsChanged(_buildUpdatedSounds());
-      // }
+      widget.onSoundsChanged(_buildUpdatedSounds());
 
       favIsTapped = true ;
     } catch (e) {
