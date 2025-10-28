@@ -328,7 +328,7 @@ class AudioManager {
 
   Future<void> stopAll() async {
     for (final player in _players.values) {
-      if (player.playing) await stop();
+      if (player.playing) await player.stop();
     }
   }
 

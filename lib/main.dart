@@ -51,7 +51,6 @@ class _MyAppState extends State<MyApp> {
     return ScreenUtilInit(
       designSize: const Size(360, 780),
       child: MaterialApp(
-        
         theme: ThemeData(
           primarySwatch: Colors.blue,
           brightness: Brightness.light,
@@ -60,7 +59,7 @@ class _MyAppState extends State<MyApp> {
           primarySwatch: Colors.blue,
           brightness: Brightness.dark,
         ),
-        themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
+        themeMode: _isDarkMode ? ThemeMode.light : ThemeMode.dark,
 
         home: SplashScreen(),
         debugShowCheckedModeBanner: false,

@@ -61,11 +61,13 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
 
     return widget.sounds.map((s) {
       final selectedSound = _selectedSounds.firstWhere(
-            (selected) => selected.title == s.title,
+        (selected) => selected.title == s.title,
         orElse: () => s.copyWith(isSelected: false),
       );
 
-      final isSelected = _selectedSounds.any((selected) => selected.title == s.title);
+      final isSelected = _selectedSounds.any(
+        (selected) => selected.title == s.title,
+      );
 
       return s.copyWith(
         isSelected: isSelected, // explicitly false if not selected
@@ -73,8 +75,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       );
     }).toList();
   }
-
-
 
   @override
   void initState() {
@@ -91,6 +91,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         )
         .toList();
     _recommendedSounds = widget.sounds.where((s) => !s.isSelected).toList();
+
+    setState(() {
+      _selectedSounds = _selectedSounds
+          .map((s) => s.copyWith(volume: 1.0))
+          .toList();
+    });
 
     CustomImageThumbShape.loadImage('assets/images/thumb.png').then((img) {
       setState(() {
@@ -235,8 +241,13 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=> const Homepage(initialTap: 1)), (route)=>false);
-
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const Homepage(initialTap: 1),
+                ),
+                (route) => false,
+              );
             }, // close only on OK
             child: const Text(
               "OK",
@@ -298,15 +309,10 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     widget.onSoundsChanged(_buildUpdatedSounds());
   }
 
-  Future<void> _removeSoundFromMix(NewSoundModel sound) async {
-    await _removeSoundFromMixInternal(sound);
-    widget.onSoundsChanged(_buildUpdatedSounds());
-  }
-
   Future<void> _removeSoundFromMixInternal(
-      NewSoundModel sound,
-      // bool updateCallback,
-      ) async {
+    NewSoundModel sound,
+    // bool updateCallback,
+  ) async {
     try {
       setState(() {
         sound.isSelected = false;
@@ -320,13 +326,13 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         });
 
         final originalIndex = widget.sounds.indexWhere(
-              (s) => s.title == sound.title,
+          (s) => s.title == sound.title,
         );
 
         if (originalIndex != -1) {
           // Insert back into recommended sounds list
           final insertIndex = _recommendedSounds.indexWhere(
-                (s) => widget.sounds.indexOf(s) > originalIndex,
+            (s) => widget.sounds.indexOf(s) > originalIndex,
           );
 
           if (insertIndex == -1) {
@@ -355,15 +361,14 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       // Notify parent widget if required
       // if (updateCallback) {
       //   debugPrint("updated");
-        widget.onSoundsChanged(_buildUpdatedSounds());
+      widget.onSoundsChanged(_buildUpdatedSounds());
       // }
 
-      favIsTapped = true ;
+      favIsTapped = true;
     } catch (e) {
       _showErrorSnackBar('Failed to remove sound: $e');
     }
   }
-
 
   // FIX: Properly update volume by creating new list with updated sound
   Future<void> _updateSoundVolume(int index, double volume) async {
@@ -374,7 +379,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       _selectedSounds = List.from(_selectedSounds);
       _selectedSounds[index] = _selectedSounds[index].copyWith(volume: volume);
     });
-   _audioManager.saveVolume(_selectedSounds[index].title, volume);
+    _audioManager.saveVolume(_selectedSounds[index].title, volume);
 
     // Apply volume changes to audio players
     await _audioManager.adjustVolumes(_selectedSounds);
@@ -447,12 +452,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                       fontSize: 20,
                       color: ThemeHelper.textTitle(context),
                       fontFamily: 'Montserrat',
-                      ),
                     ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: 120,
-                      child: _isLoadingRecommendedSounds
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 120,
+                    child: _isLoadingRecommendedSounds
                         ? const Center(
                             child: CircularProgressIndicator(
                               color: Colors.white,
@@ -469,108 +474,108 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                               );
                             },
                           ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      'Selected Sounds',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: ThemeHelper.textTitle(context),
-                        fontFamily: 'Montserrat',
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Expanded(
-                      child: _selectedSounds.isEmpty
-                          ? const Center(
-                              child: Text(
-                                'No sounds selected\nTap on recommended sounds to add them',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.white54),
-                              ),
-                            )
-                          : ListView.builder(
-                              itemCount: _selectedSounds.length,
-                              itemBuilder: (context, index) {
-                                final sound = _selectedSounds[index];
-                                return _buildSelectedSoundItem(sound, index);
-                              },
-                            ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Container(
-              height: 150,
-              padding: EdgeInsets.all(16.0.sp),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color.fromRGBO(200, 200, 251, 1),
-                    Color.fromRGBO(45, 45, 105, 1),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                color: const Color.fromARGB(194, 194, 244, 244),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.fromRGBO(0, 0, 0, 1).withOpacity(0.2),
-                    blurRadius: 8,
-                    offset: const Offset(0, -2),
                   ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildControlButton(
-                    imagePath: "assets/images/timer_button.png",
-                    label: 'Timer',
-                    onPressed: () {
-                      if (globalTimer.isRunning && globalTimer.remaining > 0) {
-                        // Timer already running → go back to same timer
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => CircularTimerScreen(
-                              duration: globalTimer.remaining > 0
-                                  ? globalTimer.remaining
-                                  : (globalTimer.duration ?? 0),
-                              soundCount: _selectedSounds.length,
-                            ),
-                          ),
-                        );
-                      } else {
-                        // Start a fresh timer
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                TimerScreen(soundCount: _selectedSounds.length),
-                          ),
-                        );
-                      }
-                    },
-                    leading: 32.w,
+                  const SizedBox(height: 5),
+                  Text(
+                    'Selected Sounds',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: ThemeHelper.textTitle(context),
+                      fontFamily: 'Montserrat',
+                    ),
                   ),
-                  _buildPlaybackControls(),
-                  _buildControlButton(
-                    imagePath: "assets/images/saveMix.png",
-                    label: 'Save Mix',
-                    onPressed: _saveMix,
-                    leading: 25.w,
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: _selectedSounds.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'No sounds selected\nTap on recommended sounds to add them',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white54),
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: _selectedSounds.length,
+                            itemBuilder: (context, index) {
+                              final sound = _selectedSounds[index];
+                              return _buildSelectedSoundItem(sound, index);
+                            },
+                          ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+          Container(
+            height: 150,
+            padding: EdgeInsets.all(16.0.sp),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromRGBO(200, 200, 251, 1),
+                  Color.fromRGBO(45, 45, 105, 1),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+              color: const Color.fromARGB(194, 194, 244, 244),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Color.fromRGBO(0, 0, 0, 1).withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildControlButton(
+                  imagePath: "assets/images/timer_button.png",
+                  label: 'Timer',
+                  onPressed: () {
+                    if (globalTimer.isRunning && globalTimer.remaining > 0) {
+                      // Timer already running → go back to same timer
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => CircularTimerScreen(
+                            duration: globalTimer.remaining > 0
+                                ? globalTimer.remaining
+                                : (globalTimer.duration ?? 0),
+                            soundCount: _selectedSounds.length,
+                          ),
+                        ),
+                      );
+                    } else {
+                      // Start a fresh timer
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              TimerScreen(soundCount: _selectedSounds.length),
+                        ),
+                      );
+                    }
+                  },
+                  leading: 32.w,
+                ),
+                _buildPlaybackControls(),
+                _buildControlButton(
+                  imagePath: "assets/images/saveMix.png",
+                  label: 'Save Mix',
+                  onPressed: _saveMix,
+                  leading: 25.w,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -642,14 +647,14 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 width: 25.sp,
               ),
               onPressed: _selectedSounds.isEmpty
-                ? null
-                : () async {
-                    if (isPlaying) {
-                      await AudioManager().pauseAllNew();
-                    } else {
-                      await AudioManager().playAllNew();
-                    }
-                  },
+                  ? null
+                  : () async {
+                      if (isPlaying) {
+                        await AudioManager().pauseAllNew();
+                      } else {
+                        await AudioManager().playAllNew();
+                      }
+                    },
             ),
           ],
         );
