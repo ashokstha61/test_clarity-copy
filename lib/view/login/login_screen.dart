@@ -43,45 +43,49 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ThemeHelper.backgroundColor(context),
-      body: Column(
-        children: [
-          SizedBox(height: 60),
-          Image.asset('assets/images/LoginPageImage.png'),
-          SizedBox(height: 50),
-          Padding(
-            padding: EdgeInsetsGeometry.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
               children: [
-                SizedBox(height: 10),
+                SizedBox(height: 60),
+                Image.asset('assets/images/LoginPageImage.png'),
+                SizedBox(height: 50),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: CustomLoginButton(
-                    label: 'Connect with Google',
-                    imagePath: 'assets/images/google.png',
-                    onPressed: _handleGoogleLogin,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: CustomLoginButton(
-                    label: 'Connect with Email',
-                    imagePath: 'assets/images/mail.png',
-                    onPressed: () async {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignInScreen()),
-                        // remove all previous
-                      );
-                    },
+                  padding: EdgeInsetsGeometry.all(10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: CustomLoginButton(
+                          label: 'Connect with Google',
+                          imagePath: 'assets/images/google.png',
+                          onPressed: _handleGoogleLogin,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: CustomLoginButton(
+                          label: 'Connect with Email',
+                          imagePath: 'assets/images/mail.png',
+                          onPressed: () async {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SignInScreen(),
+                              ),
+                              // remove all previous
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }
