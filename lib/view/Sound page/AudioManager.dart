@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:Sleephoria/globals.dart';
+import 'package:Sleephoria/view/globals/globals.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
@@ -18,8 +18,8 @@ class AudioManager {
   String? currentMix;
   bool isPlaying = false;
 
-  Map<String, AudioPlayer> _players = {};
-  Map<String, AudioPlayer> _favPlayers = {};
+  final Map<String, AudioPlayer> _players = {};
+  final Map<String, AudioPlayer> _favPlayers = {};
   final Map<String, double> _volumeMap = {};
   final ValueNotifier<List<String>> selectedTitlesNotifier = ValueNotifier([]);
   final ValueNotifier<bool> isPlayingNotifier = ValueNotifier(false);
@@ -30,20 +30,11 @@ class AudioManager {
 
   void saveVolume(String title, double volume) {
     _volumeMap[title] = volume;
-
-    print("🔊 Current Volume Map:");
-    _volumeMap.forEach((key, value) {
-      print("Title: $key, Volume: $value");
-    });
   }
 
   // for :  when the trial is false
 
-  Future<void> toggleSoundSelection(
-    List<NewSoundModel> allSounds,
-    NewSoundModel targetSound,
-    bool isTrial,
-  ) async {
+  Future<void> toggleSoundSelection( List<NewSoundModel> allSounds, NewSoundModel targetSound, bool isTrial,) async {
     try {
       await playSoundNew(targetSound.filepath, allSounds);
       await playAllNew();
@@ -193,7 +184,7 @@ class AudioManager {
   Future<void> downloadAllNewSounds(List<NewSoundModel> sounds) async {
     final dir = await getApplicationDocumentsDirectory();
     for (var sound in sounds) {
-      if (sound.musicUrl != null && sound.musicUrl!.isNotEmpty) {
+      if (sound.musicUrl.isNotEmpty) {
         final fileName = sound.title.replaceAll(' ', '_') + '.mp3';
         final lowerCaseFileName = fileName.toLowerCase();
         final filePath = '${dir.path}/$lowerCaseFileName';
@@ -201,7 +192,7 @@ class AudioManager {
 
         try {
           if (!await file.exists()) {
-            final response = await http.get(Uri.parse(sound.musicUrl!));
+            final response = await http.get(Uri.parse(sound.musicUrl));
 
             if (response.statusCode == 200) {
               await file.writeAsBytes(response.bodyBytes);

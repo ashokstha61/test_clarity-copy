@@ -61,11 +61,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     children: [
                       SizedBox(height: 30.h),
                       SizedBox(
-                        height: 339.h,
-
+                        height: 453.h,
+                        width : 339.w,
                         child: Image.asset(
                           _onboardingData[index]['image'],
-                          // fit: BoxFit.contain,
                         ),
                       ),
                       SizedBox(height: 20.h),

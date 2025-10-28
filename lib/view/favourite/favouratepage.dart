@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../globals.dart';
+import '../globals/globals.dart';
 import '../../new_firebase_service.dart';
 import '../Sound page/AudioManager.dart';
 
@@ -44,8 +44,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
       favoriteSounds = _cachedFavSounds!;
     } else {
       _loadFavorites();
+      _loadSounds();
     }
-    _loadSounds();
+
     setState(() {
       currentMix = _audioManager.currentMix;
     });
@@ -89,7 +90,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
       currentMix = mixName;
       isPlayingMix = true;
       _audioManager.currentMix = mixName;
-      // _audioManager.isPlaying = true;
     });
 
     final selectedSounds = Sounds.map((s) {
@@ -115,22 +115,15 @@ class _FavoritesPageState extends State<FavoritesPage> {
     await AudioManager().playFavSounds(Sounds, soundTitles);
     await AudioManager().playAllFav();
     if (!mounted) return;
-    // setState(() {
-    //   for (var s in Sounds) {
-    //     s.isSelected = selectedSounds.any((sel) => sel.title == s.title);
-    //   }
-    // });
   }
 
   void _togglePlayback() async {
     if (currentMix != null) {
       if (isPlayingMix) {
         setState(() => isPlayingMix = false);
-        // _audioManager.isPlaying = false;
         await AudioManager().pauseAllFav();
       } else {
         setState(() => isPlayingMix = true);
-        // _audioManager.isPlaying = true;
         await AudioManager().playAllFav();
       }
     }
@@ -143,7 +136,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
         child: Column(
           children: [
             SizedBox(height: 5.h),
-
             Expanded(
               child: RefreshIndicator(
                 onRefresh: _loadFavorites,
@@ -164,7 +156,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                             )
                           : EmptyFile()
                     : const Center(child: CircularProgressIndicator()),
-              ), // Show loading
+              ),
             ),
 
             if (currentMix != null)

@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:Sleephoria/globals.dart';
+import 'package:Sleephoria/view/globals/globals.dart';
 import 'package:Sleephoria/model/model.dart';
 import 'package:Sleephoria/new_firebase_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

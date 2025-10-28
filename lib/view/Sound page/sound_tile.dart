@@ -6,19 +6,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class SoundTile extends StatelessWidget {
   final NewSoundModel sound;
   final VoidCallback onTap;
-  final bool isTrail; // 👈 new parameter
+  final bool isTrail;
 
   const SoundTile({
     super.key,
     required this.sound,
     required this.onTap,
-    this.isTrail = true, // default false
+    this.isTrail = true,
   });
 
   @override
   Widget build(BuildContext context) {
     final bool locked =
-        !isTrail && sound.isLocked; // check isLocked only if isTrail false
+        !isTrail && sound.isLocked;
 
     return Opacity(
       opacity: locked ? 0.5 : 1.0,
