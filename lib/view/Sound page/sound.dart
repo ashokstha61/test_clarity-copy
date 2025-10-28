@@ -86,12 +86,12 @@ class _SoundPageState extends State<SoundPage> {
       }
       _cachedSounds = sounds;
 
+      await _audioManager.downloadAllNewSounds(sounds);
+
       setState(() {
         _sounds = sounds;
         _isLoading = false;
       });
-
-      _audioManager.downloadAllNewSounds(_sounds);
     } catch (e) {
       setState(() {
         _errorMessage = 'Failed to load sounds: $e';

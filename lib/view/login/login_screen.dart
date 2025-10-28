@@ -44,43 +44,58 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ThemeHelper.backgroundColor(context),
-      body: Column(
+      body:Stack(
         children: [
-          SizedBox(height: 60),
-          Image.asset('assets/images/LoginPageImage.png'),
-          SizedBox(height: 50),
-          Padding(
-            padding: EdgeInsetsGeometry.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: CustomLoginButton(
-                    label: 'Connect with Google',
-                    imagePath: 'assets/images/google.png',
-                    onPressed: _handleGoogleLogin,
-                  ),
+          // Main UI
+          Column(
+            children: [
+              const SizedBox(height: 60),
+              Image.asset('assets/images/LoginPageImage.png'),
+              const SizedBox(height: 50),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: CustomLoginButton(
+                        label: 'Connect with Google',
+                        imagePath: 'assets/images/google.png',
+                        onPressed: _handleGoogleLogin,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: CustomLoginButton(
+                        label: 'Connect with Email',
+                        imagePath: 'assets/images/mail.png',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const SignInScreen()),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: CustomLoginButton(
-                    label: 'Connect with Email',
-                    imagePath: 'assets/images/mail.png',
-                    onPressed: () async {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignInScreen()),
-                        // remove all previous
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
+
+          // Loading overlay
+          if (_isLoading)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.4),
+                child: const Center(
+                  child: CircularProgressIndicator(color: Colors.white),
+                ),
+              ),
+            ),
         ],
       ),
     );

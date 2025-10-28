@@ -30,6 +30,11 @@ class AudioManager {
 
   void saveVolume(String title, double volume) {
     _volumeMap[title] = volume;
+
+    print("🔊 Current Volume Map:");
+    _volumeMap.forEach((key, value) {
+      print("Title: $key, Volume: $value");
+    });
   }
 
   // for :  when the trial is false
@@ -375,7 +380,14 @@ class AudioManager {
         try {
           await player.setFilePath(localPath);
           await player.setLoopMode(LoopMode.one);
-          await player.setVolume(1.0);
+          // Find matching volume from selectedTitles
+          final match = selectedTitles.firstWhere(
+                (e) => e['title'] == sound.title,
+            orElse: () => {'volume': 1.0},
+          );
+
+          final volume = (match['volume'] as num?)?.toDouble() ?? 1.0;
+          await player.setVolume(volume);
           _favPlayers[sound.title] = player;
           debugPrint("✅ Player created for ${sound.title}");
         } catch (e) {

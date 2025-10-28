@@ -16,24 +16,6 @@ class FavoriteManager {
 
   String _mixesKey(String userId) => "SavedFavorites_$userId";
 
-  // Future<void> saveSoundMixes(Map<String, List<String>> soundMixes) async {
-  //   final user = FirebaseAuth.instance.currentUser;
-  //   if (user == null) return;
-  //
-  //   try {
-  //     final prefs = await SharedPreferences.getInstance();
-  //
-  //     // Convert map to JSON
-  //     final data = jsonEncode(soundMixes);
-  //
-  //     // Save with a user-specific key
-  //     await prefs.setString(_mixesKey(user.uid), data);
-  //
-  //     print("✅ Sound mixes saved");
-  //   } catch (e) {
-  //     print("❌ Failed to save sound mixes: $e");
-  //   }
-  // }
   Future<void> saveSoundMixes() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -50,6 +32,7 @@ class FavoriteManager {
     }
 
   }
+
   /// Load favorites for the current user
   Future<List<FavSoundModel>> loadFavorites() async {
     final user = FirebaseAuth.instance.currentUser;

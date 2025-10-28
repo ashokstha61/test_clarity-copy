@@ -185,27 +185,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     if (mixName == null || mixName.isEmpty) {
       return;
     }
-
+    
     // 3. Collect selected sound filepaths
     final selectedSoundskoTitle = _selectedSounds
-        .map((s) => {'title': s.title, 'volume': s.volume})
+        .map((s) => {'title': s.title, 'volume': _audioManager.getSavedVolume(s.title)})
         .toList();
 
-    // // 4. Create a new mix model
-    // final mix = NewSoundModel(
-    //   title: mixName,
-    //   icon: 'default_icon',
-    //   filepath: "mix_$mixName",
-    //   musicUrl: "",
-    //   isSelected: false,
-    //   isFav: true,
-    //   isNew: true,
-    //   isLocked: false,
-    //   volume: 1.0,
-    //   mixFilePaths: filepaths, // 👈 your saved sounds
-    // );
-
-    // 5. Save using your FavoritesManager
     FavoriteManager.instance.addFavorite(mixName, selectedSoundskoTitle);
 
     await showDialog(
@@ -214,7 +199,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       builder: (context) => AlertDialog(
         title: Text(
           "Sound saved",
-          textAlign: TextAlign.center, // ✅ center align
+          textAlign: TextAlign.center,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontFamily: 'Montserrat',
@@ -223,21 +208,23 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         ),
         content: Text(
           "Your customized mix has been saved to your favorites.",
-          textAlign: TextAlign.center, // ✅ center align
+          textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Montserrat',
             fontSize: 14,
             color: ThemeHelper.textColor(context),
           ),
         ),
-        actionsAlignment: MainAxisAlignment.center, // ✅ center button
+        actionsAlignment: MainAxisAlignment.center,
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=> const Homepage(initialTap: 1)), (route)=>false);
-
-            }, // close only on OK
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_)=> const Homepage(initialTap: 1)),
+                (route)=>false);
+            },
             child: const Text(
               "OK",
               style: TextStyle(
