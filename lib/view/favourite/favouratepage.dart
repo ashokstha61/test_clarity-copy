@@ -138,9 +138,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   @override
   Widget build(BuildContext context) {
-    // if (_isLoading) {
-    //   return Scaffold(body: Center(child: CircularProgressIndicator()));
-    // }
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -148,58 +145,28 @@ class _FavoritesPageState extends State<FavoritesPage> {
             SizedBox(height: 5.h),
 
             Expanded(
-              child: !_isLoading
-                  ? favoriteSounds.isNotEmpty
-                        ? ListView.builder(
-                            itemCount: favoriteSounds.length,
-                            itemBuilder: (context, index) {
-                              final favSound = favoriteSounds[index];
-                              final mixName = favSound.favSoundTitle;
-                              final soundTitles = favSound.soundTitles;
-                              return FavoriteTile(
-                                title: mixName,
-                                onTap: () =>
-                                    _onFavoriteTap(mixName, soundTitles),
-                              );
-                            },
-                          )
-                        : EmptyFile()
-                  : const Center(
-                      child: CircularProgressIndicator(),
-                    ), // Show loading
+              child: RefreshIndicator(
+                onRefresh: _loadFavorites,
+                child: !_isLoading
+                    ? favoriteSounds.isNotEmpty
+                          ? ListView.builder(
+                              itemCount: favoriteSounds.length,
+                              itemBuilder: (context, index) {
+                                final favSound = favoriteSounds[index];
+                                final mixName = favSound.favSoundTitle;
+                                final soundTitles = favSound.soundTitles;
+                                return FavoriteTile(
+                                  title: mixName,
+                                  onTap: () =>
+                                      _onFavoriteTap(mixName, soundTitles),
+                                );
+                              },
+                            )
+                          : EmptyFile()
+                    : const Center(child: CircularProgressIndicator()),
+              ), // Show loading
             ),
 
-            // Expanded(
-            //   child: FutureBuilder<List<FavSoundModel>>(
-            //     future: _firebaseService.loadMixes(
-            //       FirebaseAuth.instance.currentUser!.uid,
-            //     ),
-            //     builder: (context, snapshot) {
-            //       if (snapshot.connectionState == ConnectionState.waiting) {
-            //         return const Center(child: CircularProgressIndicator());
-            //       }
-
-            //       if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            //         return const EmptyFile();
-            //       }
-
-            //       final favoriteSounds = snapshot.data!;
-
-            //       return ListView.builder(
-            //         itemCount: favoriteSounds.length,
-            //         itemBuilder: (context, index) {
-            //           final favSound = favoriteSounds[index];
-            //           final mixName = favSound.favSoundTitle;
-            //           final soundTitles = favSound.soundTitles;
-            //           return FavoriteTile(
-            //             title: mixName,
-            //             onTap: () => _onFavoriteTap(mixName, soundTitles),
-            //           );
-            //         },
-            //       );
-            //     },
-            //   ),
-            // ),
             if (currentMix != null)
               Container(
                 height: 60.h,

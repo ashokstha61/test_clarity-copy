@@ -39,14 +39,6 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
   }
 
   void _togglePauseResume() {
-    // setState(() {
-    //   if (_isPaused) {
-    //     _controller.resume(); // Resume timer
-    //   } else {
-    //     _controller.pause(); // Pause timer
-    //   }
-    //   _isPaused = !_isPaused; // flip state
-    // });
     setState(() {
       if (_isPaused) {
         // Resume
@@ -58,6 +50,11 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
       _isPaused = !_isPaused;
       globalTimer.isPaused = _isPaused;
     });
+    if (isSoundPlaying) {
+      AudioManager().pauseAllNew();
+    } else {
+      AudioManager().playAllNew();
+    }
   }
 
   void _quitTimer() {
