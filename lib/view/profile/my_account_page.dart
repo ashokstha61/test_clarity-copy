@@ -34,8 +34,8 @@ class MyAccountPageState extends State<MyAccountPage> {
     final user = FirebaseAuth.instance.currentUser;
 
     setState(() {
-      fullName = prefs.getString('fullName') ?? user?.displayName ?? 'No Name';
-      email = prefs.getString('email') ?? user?.email ?? 'No Email';
+      fullName = user?.displayName ?? prefs.getString('fullName') ?? 'No Name';
+      email =  user?.email ?? prefs.getString('email') ?? 'No Email';
     });
   }
 

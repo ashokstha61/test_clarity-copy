@@ -708,45 +708,48 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Container(
-            width: 50.w,
-            height: 50.h,
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(5),
-              border: Border.all(
-                color: Color.fromARGB(255, 51, 61, 108),
-                width: 2.w,
+          GestureDetector(
+            onTap: () => _removeSoundFromMixInternal(sound),
+            child: Container(
+              width: 50.w,
+              height: 50.h,
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(
+                  color: Color.fromARGB(255, 51, 61, 108),
+                  width: 2.w,
+                ),
               ),
-            ),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Center(child: _buildIconImage(sound.icon, 24)),
-                Positioned(
-                  top: -8,
-                  right: -8,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(24, 24),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      shape: const CircleBorder(),
-                      backgroundColor: const Color.fromRGBO(92, 67, 108, 1),
-                      elevation: 2,
-                      side: const BorderSide(
-                        color: Color.fromRGBO(92, 67, 108, 1),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Center(child: _buildIconImage(sound.icon, 24)),
+                  Positioned(
+                    top: -8,
+                    right: -8,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(24, 24),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        shape: const CircleBorder(),
+                        backgroundColor: const Color.fromRGBO(92, 67, 108, 1),
+                        elevation: 2,
+                        side: const BorderSide(
+                          color: Color.fromRGBO(92, 67, 108, 1),
+                        ),
+                      ),
+                      onPressed: () {} ,
+                      child: const Icon(
+                        Icons.close,
+                        size: 16,
+                        color: Colors.white,
                       ),
                     ),
-                    onPressed: () => _removeSoundFromMixInternal(sound),
-                    child: const Icon(
-                      Icons.close,
-                      size: 16,
-                      color: Colors.white,
-                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           const SizedBox(width: 16),

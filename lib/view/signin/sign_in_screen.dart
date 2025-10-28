@@ -102,7 +102,7 @@ class _SignInScreenState extends State<SignInScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: Text(title),
-        // content: Text(message),
+        content: Text(message),
         actions: [
           TextButton(
             onPressed: () {

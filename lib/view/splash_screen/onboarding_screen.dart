@@ -60,9 +60,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   return Column(
                     children: [
                       SizedBox(height: 30.h),
-                      Image.asset(
-                        _onboardingData[index]['image'],
-                        fit: BoxFit.contain,
+                      SizedBox(
+                        height: 339.h,
+
+                        child: Image.asset(
+                          _onboardingData[index]['image'],
+                          // fit: BoxFit.contain,
+                        ),
                       ),
                       SizedBox(height: 20.h),
                       Text(
@@ -84,6 +88,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      SizedBox(height: 10.h,)
                     ],
                   );
                 },
@@ -136,7 +141,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 20.h),
+            SizedBox(height: 15.h),
             TextButton(
               onPressed: () {
                 Navigator.push(
@@ -153,7 +158,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 20.h),
+            SizedBox(height: 10.h),
           ],
         ),
       ),
