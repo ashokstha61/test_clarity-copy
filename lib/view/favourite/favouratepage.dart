@@ -28,6 +28,7 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
+  static List<FavSoundModel>? _cachedFavSounds;
   List<FavSoundModel> favoriteSounds = [];
   List<NewSoundModel> Sounds = [];
   final DatabaseService _firebaseService = DatabaseService();
@@ -39,24 +40,26 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   void initState() {
     super.initState();
-    _loadFavorites();
+    if (_cachedFavSounds != null) {
+      favoriteSounds = _cachedFavSounds!;
+    } else {
+      _loadFavorites();
+    }
     _loadSounds();
     setState(() {
       currentMix = _audioManager.currentMix;
     });
   }
 
-
   Future<void> _loadFavorites() async {
-    setState(() {
-      _isLoading = true;
-    });
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
     final userId = FirebaseAuth.instance.currentUser?.uid;
     final favData = await _firebaseService.loadMixes(userId.toString());
+
     setState(() {
       favoriteSounds = favData;
-    });
-    setState(() {
+      _cachedFavSounds = favData;
       _isLoading = false;
     });
   }
@@ -78,7 +81,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
     }
   }
 
-  void _onFavoriteTap(String mixName, List<Map<String, dynamic>> soundTitles,) async {
+  void _onFavoriteTap(
+    String mixName,
+    List<Map<String, dynamic>> soundTitles,
+  ) async {
     setState(() {
       currentMix = mixName;
       isPlayingMix = true;
@@ -88,7 +94,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
     final selectedSounds = Sounds.map((s) {
       final match = soundTitles.firstWhere(
-            (map) => map['title'] == s.title,
+        (map) => map['title'] == s.title,
         orElse: () => {},
       );
 
@@ -132,30 +138,68 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
+    // if (_isLoading) {
+    //   return Scaffold(body: Center(child: CircularProgressIndicator()));
+    // }
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             SizedBox(height: 5.h),
+
             Expanded(
-              child: favoriteSounds.isEmpty
-                  ? EmptyFile()
-                  : ListView.builder(
-                      itemCount: favoriteSounds.length,
-                      itemBuilder: (context, index) {
-                        final favSound = favoriteSounds[index];
-                        final mixName = favSound.favSoundTitle;
-                        final soundTitles = favSound.soundTitles;
-                        return FavoriteTile(
-                          title: mixName,
-                          onTap: () => _onFavoriteTap(mixName, soundTitles),
-                        );
-                      },
-                    ),
+              child: !_isLoading
+                  ? favoriteSounds.isNotEmpty
+                        ? ListView.builder(
+                            itemCount: favoriteSounds.length,
+                            itemBuilder: (context, index) {
+                              final favSound = favoriteSounds[index];
+                              final mixName = favSound.favSoundTitle;
+                              final soundTitles = favSound.soundTitles;
+                              return FavoriteTile(
+                                title: mixName,
+                                onTap: () =>
+                                    _onFavoriteTap(mixName, soundTitles),
+                              );
+                            },
+                          )
+                        : EmptyFile()
+                  : const Center(
+                      child: CircularProgressIndicator(),
+                    ), // Show loading
             ),
+
+            // Expanded(
+            //   child: FutureBuilder<List<FavSoundModel>>(
+            //     future: _firebaseService.loadMixes(
+            //       FirebaseAuth.instance.currentUser!.uid,
+            //     ),
+            //     builder: (context, snapshot) {
+            //       if (snapshot.connectionState == ConnectionState.waiting) {
+            //         return const Center(child: CircularProgressIndicator());
+            //       }
+
+            //       if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            //         return const EmptyFile();
+            //       }
+
+            //       final favoriteSounds = snapshot.data!;
+
+            //       return ListView.builder(
+            //         itemCount: favoriteSounds.length,
+            //         itemBuilder: (context, index) {
+            //           final favSound = favoriteSounds[index];
+            //           final mixName = favSound.favSoundTitle;
+            //           final soundTitles = favSound.soundTitles;
+            //           return FavoriteTile(
+            //             title: mixName,
+            //             onTap: () => _onFavoriteTap(mixName, soundTitles),
+            //           );
+            //         },
+            //       );
+            //     },
+            //   ),
+            // ),
             if (currentMix != null)
               Container(
                 height: 60.h,
