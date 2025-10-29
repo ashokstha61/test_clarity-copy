@@ -33,6 +33,7 @@ class FavoritesPage extends StatefulWidget {
 class _FavoritesPageState extends State<FavoritesPage> {
   static List<FavSoundModel>? _cachedFavSounds;
   List<FavSoundModel> favoriteSounds = [];
+  List<NewSoundModel>? _cachedSounds;
   List<NewSoundModel> Sounds = [];
   final DatabaseService _firebaseService = DatabaseService();
   final AudioManager _audioManager = AudioManager();
@@ -43,14 +44,14 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   void initState() {
     super.initState();
-    playAftersSave();
-    if (_cachedFavSounds != null) {
+    if (_cachedFavSounds != null && _cachedSounds != null) {
       favoriteSounds = _cachedFavSounds!;
+      Sounds = _cachedSounds!;
     } else {
       _loadFavorites();
       _loadSounds();
     }
-
+    playAftersSave();
     setState(() {
       currentMix = _audioManager.currentMix;
     });
@@ -95,6 +96,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
       setState(() {
         Sounds = sounds;
+        _cachedSounds = sounds;
       });
     } catch (e) {
       debugPrint("Failed to load sounds: $e");
@@ -111,19 +113,26 @@ class _FavoritesPageState extends State<FavoritesPage> {
       _audioManager.currentMix = mixName;
     });
 
-    final selectedSounds = Sounds.map((s) {
+    debugPrint("All sounds: ${Sounds.map((e) => e.title).toList()}");
+    debugPrint("Mix soundTitles: ${soundTitles.map((e) => e['title']).toList()}");
+
+    final selectedSounds = Sounds.where((s) {
       final match = soundTitles.firstWhere(
-        (map) => map['title'] == s.title,
+            (map) => map['title'] == s.title,
         orElse: () => {},
       );
 
       if (match.isNotEmpty) {
-        final savedVolume = (match['volume'] as num?)?.toDouble() ?? s.volume;
-        return s.copyWith(volume: savedVolume);
+        s = s.copyWith(volume: (match['volume'] as num?)?.toDouble() ?? s.volume);
+        return true;
       }
+      return false;
+    }).toList();
 
-      return s;
-    }).where((s) => soundTitles.any((map) => map['title'] == s.title)).toList();
+    if (selectedSounds.isEmpty) {
+      debugPrint("⚠️ No matching sounds found for $mixName");
+      return;
+    }
 
     if (selectedSounds.isEmpty) {
       debugPrint("⚠️ No matching sounds found for $mixName");
@@ -132,9 +141,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
     await AudioManager().playFavSounds(Sounds, soundTitles);
     await AudioManager().playAllFav();
-    setState(() {
+    // setState(() {
       favIsTapped = true;
-    });
+    // });
     if (!mounted) return;
   }
 
