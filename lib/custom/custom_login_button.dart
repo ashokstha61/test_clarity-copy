@@ -1,5 +1,7 @@
+import 'package:Sleephoria/constant/color_constant.dart';
 import 'package:Sleephoria/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomLoginButton extends StatelessWidget {
   final String imagePath;
@@ -26,18 +28,18 @@ class CustomLoginButton extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 12.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
-          side: BorderSide(color: Colors.grey),
+          side: BorderSide(color: loginButtonBorderColorGray),
         ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(imagePath, height: 24.0, width: 24.0),
-          SizedBox(width: 8.0),
+          Image.asset(imagePath, height: 24.h, width: 24.w),
+          SizedBox(width: 8.w),
           Text(
             label,
             style: TextStyle(
-              fontSize: 16.0,
+              fontSize: 16.sp,
               fontWeight: FontWeight.w500,
               fontFamily: 'Montserrat',
               color: ThemeHelper.textColor(context),

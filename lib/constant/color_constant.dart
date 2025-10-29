@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 Color primary = Color.fromRGBO(176, 176, 224, 1);
+Color loginButtonBorderColorGray=Colors.grey;
+Color customLogoutButtonTextColor=Color.fromRGBO(51, 51, 109, 1);
 
 class AppColors {
   // Theme management

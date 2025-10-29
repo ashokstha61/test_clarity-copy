@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomSetting extends StatefulWidget {
   final String title;
@@ -43,7 +44,7 @@ class CustomSettingState extends State<CustomSetting> {
         Text(
           widget.title,
           style: TextStyle(
-            fontSize: 24,
+            fontSize: 24.sp,
             fontWeight: FontWeight.bold,
             color: textColor,
             fontFamily: 'Montserrat',
@@ -53,7 +54,7 @@ class CustomSettingState extends State<CustomSetting> {
           title: Text(
             widget.switchLabel,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 18.sp,
               color: textColor,
               fontFamily: 'Montserrat',
             ),

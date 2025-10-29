@@ -1,5 +1,6 @@
 import 'package:Sleephoria/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomTextField extends StatelessWidget {
   final String labelText;
@@ -27,12 +28,12 @@ class CustomTextField extends StatelessWidget {
         Text(
           labelText,
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 16.sp,
             fontWeight: FontWeight.bold,
             color: ThemeHelper.formTitle(context),
           ),
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 10.h),
         TextField(
           controller: controller,
           readOnly: readOnly,
@@ -49,7 +50,7 @@ class CustomTextField extends StatelessWidget {
           ),
           style: TextStyle(color: Colors.white),
         ),
-        SizedBox(height: 16.0),
+        SizedBox(height: 16.h),
       ],
     );
   }
