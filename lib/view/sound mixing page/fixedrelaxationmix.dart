@@ -318,7 +318,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
 
       widget.onSoundsChanged(_buildUpdatedSounds());
 
-      favIsTapped = true;
+
     } catch (e) {
       _showErrorSnackBar('Failed to remove sound: $e');
     }

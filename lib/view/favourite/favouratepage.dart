@@ -132,6 +132,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
     await AudioManager().playFavSounds(Sounds, soundTitles);
     await AudioManager().playAllFav();
+    setState(() {
+      favIsTapped = true;
+    });
     if (!mounted) return;
   }
 

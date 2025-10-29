@@ -49,6 +49,7 @@ class _SoundPageState extends State<SoundPage> {
         for (var sound in _sounds) {
           sound.isSelected = false;
         }
+        favIsTapped = false;
       });
     }
   }
