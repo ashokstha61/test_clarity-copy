@@ -12,7 +12,10 @@ class FavoriteManager {
 
   String _mixesKey(String userId) => "SavedFavorites_$userId";
 
-  Future<void> addFavorite(String mixName, List<Map<String, dynamic>> soundTitles,) async {
+  Future<void> addFavorite(
+    String mixName,
+    List<Map<String, dynamic>> soundTitles,
+  ) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
 
     final mix = FavSoundModel(

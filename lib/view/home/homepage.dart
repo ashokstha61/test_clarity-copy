@@ -11,7 +11,14 @@ import '../Sound page/sound.dart';
 
 class Homepage extends StatefulWidget {
   final int initialTap;
-  const Homepage({super.key,this.initialTap=0});
+  final bool reloadFavorites;
+  final String? autoPlayMixName;
+  const Homepage({
+    super.key,
+    this.initialTap = 0,
+    this.reloadFavorites = false,
+    this.autoPlayMixName,
+  });
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -35,11 +42,12 @@ class _HomepageState extends State<Homepage> {
     _currentIndex = widget.initialTap;
     _screens = [
       const SoundPage(),
-    FavoritesPage(
-    currentTitle: _currentPlayingTitle,
-    onTogglePlayback: _togglePlayback,
-    onItemTap: _onFavoriteItemTap,
-    ), 
+      FavoritesPage(
+        currentTitle: _currentPlayingTitle,
+        onTogglePlayback: _togglePlayback,
+        onItemTap: _onFavoriteItemTap,
+        key: ValueKey(widget.reloadFavorites),
+      ),
       const ProfilePage(),
     ];
     _fetchSoundData();

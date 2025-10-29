@@ -15,12 +15,16 @@ class FavoritesPage extends StatefulWidget {
 
   final VoidCallback onTogglePlayback;
   final Function(NewSoundModel) onItemTap;
+  final bool reloadFavorites;
+  final String? autoPlayMixName;
 
   const FavoritesPage({
     super.key,
     this.currentTitle,
     required this.onTogglePlayback,
     required this.onItemTap,
+    this.reloadFavorites = false,
+    this.autoPlayMixName,
   });
 
   @override
@@ -46,6 +50,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
       _loadFavorites();
       _loadSounds();
     }
+    
 
     setState(() {
       currentMix = _audioManager.currentMix;
