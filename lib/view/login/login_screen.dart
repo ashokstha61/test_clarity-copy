@@ -4,6 +4,7 @@ import 'package:Sleephoria/view/signin/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:Sleephoria/view/login/auth.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../custom/custom_login_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -47,7 +48,11 @@ class _LoginScreenState extends State<LoginScreen> {
           Column(
             children: [
               const SizedBox(height: 60),
-              Image.asset('assets/images/LoginPageImage.png'),
+              SizedBox(
+                height: 453.h,
+                width : 339.w,
+                child: Image.asset('assets/images/LoginPageImage.png'),
+              ),
               const SizedBox(height: 50),
               Padding(
                 padding: const EdgeInsets.all(10),

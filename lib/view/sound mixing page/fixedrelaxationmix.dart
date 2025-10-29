@@ -1,5 +1,4 @@
 import 'dart:ui' as ui;
-import 'package:Sleephoria/view/globals/globals.dart';
 import 'package:Sleephoria/model/model.dart';
 import 'package:Sleephoria/theme.dart';
 import 'package:Sleephoria/view/Sound%20page/sound.dart';
