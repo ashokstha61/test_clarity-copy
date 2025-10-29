@@ -44,6 +44,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   void initState() {
     super.initState();
+    playAftersSave();
     if (_cachedFavSounds != null && _cachedSounds != null) {
       favoriteSounds = _cachedFavSounds!;
       Sounds = _cachedSounds!;
@@ -51,13 +52,15 @@ class _FavoritesPageState extends State<FavoritesPage> {
       _loadFavorites();
       _loadSounds();
     }
-    playAftersSave();
+
     setState(() {
       currentMix = _audioManager.currentMix;
     });
   }
 
   Future<void> playAftersSave() async {
+
+    print(widget.triggerRefresh);
     if (widget.triggerRefresh){
       await _loadFavorites();
       await _loadSounds();
