@@ -22,13 +22,12 @@ class MyAccountPageState extends State<MyAccountPage> {
   @override
   void initState() {
     super.initState();
-    _loadCachedUserInfo(); // Load from cache first
-    _loadUserInfoFromFirestore(); // Then check Firestore
+    _loadCachedUserInfo(); 
+    _loadUserInfoFromFirestore(); 
     final appState = MyApp.of(context);
     if (appState != null) _isDarkMode = appState.isDarkMode;
   }
 
-  /// Load cached values (instant display)
   Future<void> _loadCachedUserInfo() async {
     final prefs = await SharedPreferences.getInstance();
     final user = FirebaseAuth.instance.currentUser;
@@ -39,7 +38,6 @@ class MyAccountPageState extends State<MyAccountPage> {
     });
   }
 
-  /// Fetch from Firestore only if newer data exists
   Future<void> _loadUserInfoFromFirestore() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -61,7 +59,6 @@ class MyAccountPageState extends State<MyAccountPage> {
             fullName = fetchedName;
           });
 
-          // ✅ Save to cache
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('fullName', fetchedName);
           await prefs.setString('email', user.email ?? 'No Email');
@@ -118,7 +115,7 @@ class MyAccountPageState extends State<MyAccountPage> {
                   _isDarkMode = value;
                 });
                 final appState = MyApp.of(context);
-                appState?.toggleTheme(value); // Update global theme
+                appState?.toggleTheme(value); 
               },
             ),
           ],

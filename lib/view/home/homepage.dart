@@ -34,12 +34,12 @@ class _HomepageState extends State<Homepage> {
     super.initState();
     _currentIndex = widget.initialTap;
     _screens = [
-      const SoundPage(), // Will update after fetching sounds
+      const SoundPage(),
     FavoritesPage(
     currentTitle: _currentPlayingTitle,
     onTogglePlayback: _togglePlayback,
     onItemTap: _onFavoriteItemTap,
-    ), // Placeholder for FavoritesPage, updated later
+    ), 
       const ProfilePage(),
     ];
     _fetchSoundData();
@@ -88,7 +88,6 @@ class _HomepageState extends State<Homepage> {
     setState(() {
       _isPlaying = !_isPlaying;
     });
-    // TODO: Add actual audio play/pause logic
   }
 
   void _onFavoriteItemTap(NewSoundModel sound) async {

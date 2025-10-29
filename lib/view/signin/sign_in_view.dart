@@ -55,7 +55,6 @@ class _SignInViewState extends State<SignInView> {
             ),
             const SizedBox(height: 30),
 
-            // Email
             _buildTextField(
               widget.emailController,
               "Email",
@@ -64,7 +63,6 @@ class _SignInViewState extends State<SignInView> {
             ),
             const SizedBox(height: 20),
 
-            // Password
             _buildTextField(
               widget.passwordController,
               "Password",
@@ -76,7 +74,6 @@ class _SignInViewState extends State<SignInView> {
             ),
             const SizedBox(height: 20),
 
-            // Login button
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -96,14 +93,13 @@ class _SignInViewState extends State<SignInView> {
             ),
             const SizedBox(height: 12),
 
-            // Register link
             Center(
               child: TextButton(
                 onPressed: widget.onRegister,
                 style: TextButton.styleFrom(
                   overlayColor:
-                      Colors.transparent, // 👈 removes ripple/animation
-                  splashFactory: NoSplash.splashFactory, // 👈 removes splash
+                      Colors.transparent, 
+                  splashFactory: NoSplash.splashFactory, 
                 ),
                 child: const Text.rich(
                   TextSpan(

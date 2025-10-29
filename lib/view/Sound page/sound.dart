@@ -24,7 +24,7 @@ class SoundPage extends StatefulWidget {
 
 class _SoundPageState extends State<SoundPage> {
   final DatabaseService _firebaseService = DatabaseService();
-  final AudioManager _audioManager = AudioManager(); // 👈 instance here
+  final AudioManager _audioManager = AudioManager(); 
 
   static List<NewSoundModel>? _cachedSounds;
   late final UserModel userData;
@@ -42,7 +42,6 @@ class _SoundPageState extends State<SoundPage> {
       _loadSounds();
     }
 
-    // Listen to audio manager selection changes
     _audioManager.selectedTitlesNotifier.addListener(_onSelectionChanged);
     loadUserInfo();
     if (favIsTapped) {
@@ -103,7 +102,6 @@ class _SoundPageState extends State<SoundPage> {
   void _toggleSoundSelection(int index) async {
     final sound = _sounds[index];
 
-    // Use the updated method that handles trial/non-trial logic
     if (sound.isSelected) {
       setState(() {
         _sounds[index].isSelected = !_sounds[index].isSelected;
@@ -192,9 +190,8 @@ class _SoundPageState extends State<SoundPage> {
                           child: RelaxationMixPage(
                             sounds: List.from(
                               _sounds,
-                            ), // Pass a copy of current sounds
+                            ), 
                             onSoundsChanged: (newSounds) {
-                              // This callback will be called when sounds change in mix page
                               if (mounted) {
                                 setState(() {
                                   _sounds = newSounds;
@@ -206,7 +203,6 @@ class _SoundPageState extends State<SoundPage> {
                       },
                     );
 
-                    // If result is returned, update the sounds
                     if (result != null && mounted) {
                       setState(() {
                         _sounds = result;
@@ -242,7 +238,6 @@ class _SoundPageState extends State<SoundPage> {
 
       if (doc.exists) {
         userData = UserModel.fromMap(doc.data()!);
-        // startFreeTrialCheck(userData); // for trail not  enable for now
       } else {
         debugPrint("User document does not exist.");
       }
@@ -255,10 +250,8 @@ class _SoundPageState extends State<SoundPage> {
 
     _checkFreeTrialStatus(user);
 
-    // Cancel any existing timer
     _freeTrialTimer?.cancel();
 
-    // Check every minute
     _freeTrialTimer = Timer.periodic(const Duration(minutes: 1), (_) {
       if (isTrial) {
         _checkFreeTrialStatus(user);

@@ -10,7 +10,6 @@ import '../../model/model.dart';
 bool isSoundPlaying = false;
 
 class AudioManager {
-  // Singleton
   static final AudioManager _instance = AudioManager._internal();
   factory AudioManager() => _instance;
   AudioManager._internal();
@@ -32,9 +31,12 @@ class AudioManager {
     _volumeMap[title] = volume;
   }
 
-  // for :  when the trial is false
 
-  Future<void> toggleSoundSelection( List<NewSoundModel> allSounds, NewSoundModel targetSound, bool isTrial,) async {
+  Future<void> toggleSoundSelection(
+    List<NewSoundModel> allSounds,
+    NewSoundModel targetSound,
+    bool isTrial,
+  ) async {
     try {
       await playSoundNew(targetSound.filepath, allSounds);
       await playAllNew();
@@ -89,7 +91,6 @@ class AudioManager {
             .toList();
         selectedTitlesNotifier.value = selectedTitles;
 
-        // Update playing state
         final anyPlaying = selectedTitles.isNotEmpty;
         isPlayingNotifier.value = anyPlaying;
         isSoundPlaying = anyPlaying;
@@ -145,7 +146,6 @@ class AudioManager {
     }
   }
 
-  /// Adjust volume based on number of playing sounds
   Future<void> adjustVolumes(List<NewSoundModel> selectedSounds) async {
     for (final s in selectedSounds) {
       final player = _players[s.title.toLowerCase()];
@@ -173,12 +173,9 @@ class AudioManager {
       await player.dispose();
     }
     _players.clear();
-    // selectedTitlesNotifier.dispose();
-    // isPlayingNotifier.dispose();
   }
 
-  final Map<String, String> _downloadedFilePaths =
-      {}; // title -> local file path
+  final Map<String, String> _downloadedFilePaths = {};
   final AudioPlayer _audioPlayer = AudioPlayer();
 
   Future<void> downloadAllNewSounds(List<NewSoundModel> sounds) async {
@@ -206,7 +203,6 @@ class AudioManager {
             debugPrint('ℹ️ "${sound.title}" already exists locally.');
           }
 
-          // Save local path
           _downloadedFilePaths[sound.title.toLowerCase()] = filePath;
         } catch (e) {
           debugPrint('❌ Error downloading "${sound.title}": $e');
@@ -240,7 +236,6 @@ class AudioManager {
 
     AudioPlayer player;
 
-    // ✅ Reuse player if it exists, otherwise create one
     if (_players.containsKey(title)) {
       player = _players[title]!;
       if (player.playing) {
@@ -264,8 +259,6 @@ class AudioManager {
       isPlayingNotifier.value = true;
       debugPrint('🎧 Playing "$title" in loop.');
       await player.seek(Duration.zero);
-      // await player.play();
-      // await playAllNew();
     } catch (e) {
       debugPrint('❌ Error playing "$title": $e');
     }
@@ -357,7 +350,6 @@ class AudioManager {
         .where((t) => t != null && t.isNotEmpty)
         .toList();
 
-    // 1. Remove players that are no longer in selected titles
     final existingKeys = _favPlayers.keys.toList();
     for (final key in existingKeys) {
       if (!selectedTitles.contains(key)) {
@@ -368,7 +360,6 @@ class AudioManager {
       }
     }
 
-    // 2. Loop through selected titles and ensure a player exists
     for (final title in titles) {
       final sound = allSounds.firstWhere(
         (s) => s.title == title,
@@ -386,7 +377,6 @@ class AudioManager {
         try {
           await player.setFilePath(localPath);
           await player.setLoopMode(LoopMode.one);
-          // Find matching volume from selectedTitles
           final match = selectedTitles.firstWhere(
             (e) => e['title'] == sound.title,
             orElse: () => {'volume': 1.0},
@@ -409,7 +399,6 @@ class AudioManager {
         final player = _players[title];
         if (player != null && !player.playing) {
           await player.seek(Duration.zero);
-          // await player.play();
           debugPrint('🎧 Playing "$title"');
         }
       }),
@@ -446,7 +435,6 @@ class AudioManager {
         await player.stop();
         await player.dispose();
       } catch (_) {
-        // ignore errors during disposal
       }
     }
     players.clear();

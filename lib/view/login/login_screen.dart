@@ -44,7 +44,6 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: ThemeHelper.backgroundColor(context),
       body:Stack(
         children: [
-          // Main UI
           Column(
             children: [
               const SizedBox(height: 60),
@@ -84,7 +83,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
 
-          // Loading overlay
           if (_isLoading)
             Positioned.fill(
               child: Container(

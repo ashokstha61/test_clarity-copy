@@ -96,13 +96,11 @@ class DatabaseService {
 
   Future<List<FavSoundModel>> loadMixes(String userId) async {
     try {
-      // Verify user is authenticated
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         throw Exception('User not authenticated');
       }
 
-      // Ensure user can only access their own data
       if (userId != user.uid) {
         throw Exception('Unauthorized access');
       }
@@ -115,7 +113,6 @@ class DatabaseService {
       final mixes = snapshot.docs.map((doc) {
         final data = doc.data();
 
-        // If soundTitles is List<String>, convert to List<Map<String, dynamic>>
         if (data['soundTitles'] is List<dynamic>) {
           data['soundTitles'] = (data['soundTitles'] as List<dynamic>)
               .map((e) => e is String ? {'title': e} : e)

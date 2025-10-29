@@ -19,12 +19,10 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
 
   void _logout(BuildContext context) {
-    // Clear global user info
     setState(() {
       AuthService().signOut();
     });
 
-    // Navigate to login screen
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (context) => const LoginScreen()),
     );
@@ -71,7 +69,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       foregroundColor: Colors.black,
                       backgroundColor: Color.fromARGB(255, 157, 157, 190),
                       overlayColor:
-                          Colors.transparent, // 👈 removes ripple/animation
+                          Colors.transparent,
                       splashFactory: NoSplash.splashFactory,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0.r),
@@ -154,7 +152,7 @@ class _ProfilePageState extends State<ProfilePage> {
               onPressed: () async {
                 final shouldLogout = await showDialog<bool>(
                   context: context,
-                  barrierDismissible: false, // user must tap a button
+                  barrierDismissible: false,
                   builder: (ctx) => AlertDialog(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -180,7 +178,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         children: [
                           TextButton(
                             onPressed: () =>
-                                Navigator.of(ctx).pop(false), // Cancel
+                                Navigator.of(ctx).pop(false), 
                             child: const Text(
                               "Cancel",
                               style: TextStyle(
@@ -191,7 +189,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           TextButton(
                             onPressed: () =>
-                                Navigator.of(ctx).pop(true), // Confirm
+                                Navigator.of(ctx).pop(true), 
                             child: const Text(
                               "Logout",
                               style: TextStyle(
@@ -207,7 +205,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 );
 
                 if (shouldLogout == true) {
-                  _logout(context); // Call your logout logic
+                  _logout(context); 
                 }
               },
             ),

@@ -18,24 +18,24 @@ class SoundCard extends StatelessWidget {
       margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
       elevation: 1,
       child: Container(
-        height: 60, // Reduced from 80 to 60
-        width: 70, // Slightly narrower to match new height
-        padding: EdgeInsets.all(4.0), // Reduced padding
+        height: 60, 
+        width: 70, 
+        padding: EdgeInsets.all(4.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
               imagePath,
-              width: 30, // Reduced from 40
+              width: 30, 
               height: 30,
               fit: BoxFit.cover,
             ),
-            SizedBox(height: 4), // Reduced spacing
+            SizedBox(height: 4), 
             Text(
               label,
               style: TextStyle(
-                fontSize: 10, // Slightly smaller font
+                fontSize: 10,
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
@@ -49,5 +49,3 @@ class SoundCard extends StatelessWidget {
   }
 }
 
-
-// no usage

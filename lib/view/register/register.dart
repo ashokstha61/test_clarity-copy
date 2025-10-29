@@ -56,23 +56,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final password = _passwordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
 
-    // Validation
     if (name.isEmpty) {
       _showAlert("Invalid Input", "Please enter your full name.");
       return;
     }
-    // if (phone.isEmpty) {
-    //   _showAlert("Invalid Input", "Phone number is required.");
-    //   return;
-    // }
+    
     if (phone.isNotEmpty && phone.length != 10) {
       _showAlert("Invalid Input", "Phone number must be exactly 10 digits.");
       return;
     }
-    // else if (!RegExp(r'^\d{10}$').hasMatch(phone)) {
-    //   _showAlert("Invalid Input", "Phone number must be exactly 10 digits.");
-    //   return;
-    // }
+   
 
     if (email.isEmpty) {
       _showAlert("Invalid Input", "Email is required.");
@@ -107,7 +100,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Create Firebase user
       UserCredential result = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -115,7 +107,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       String uid = result.user!.uid;
 
-      // Save additional user info in Firestore
       await _firestore.collection("users").doc(uid).set({
         "fullName": name,
         "phone": phone,
@@ -125,7 +116,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
 
       _showAlert("Success", "Registered successfully.", () {
-        Navigator.pop(context); // Go back to login
+        Navigator.pop(context); 
       });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
@@ -201,8 +192,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     keyboardType: TextInputType.phone,
                     borderColor: _isPhoneValid ? null : Colors.red,
                     inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly, // only digits
-                      LengthLimitingTextInputFormatter(10), // max 10 digits
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10),
                     ],
                   ),
 
@@ -265,9 +256,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onPressed: () => Navigator.pop(context),
                       style: TextButton.styleFrom(
                         overlayColor:
-                            Colors.transparent, // 👈 removes ripple/animation
+                            Colors.transparent, 
                         splashFactory:
-                            NoSplash.splashFactory, // 👈 removes splash
+                            NoSplash.splashFactory, 
                       ),
                       child: const Text.rich(
                         TextSpan(
@@ -312,7 +303,7 @@ Widget _buildTextField(
   bool isPasswordVisible = false,
   TextInputType? keyboardType,
   Color? borderColor,
-  List<TextInputFormatter>? inputFormatters, // new parameter
+  List<TextInputFormatter>? inputFormatters,
 }) {
   return TextField(
     controller: controller,

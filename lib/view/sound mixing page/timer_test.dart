@@ -7,7 +7,7 @@ import '../Sound page/AudioManager.dart';
 
 class CircularTimerScreen extends StatefulWidget {
   final int duration;
-  final int soundCount; // in seconds
+  final int soundCount;
 
   const CircularTimerScreen({
     super.key,
@@ -20,7 +20,6 @@ class CircularTimerScreen extends StatefulWidget {
 }
 
 class _CircularTimerScreenState extends State<CircularTimerScreen> {
-  // final CountDownController _controller = CountDownController();
   bool _isPaused = false;
   bool _isCompleted = false;
 
@@ -41,10 +40,8 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
   void _togglePauseResume() {
     setState(() {
       if (_isPaused) {
-        // Resume
         globalTimer.controller.resume();
       } else {
-        // Pause
         globalTimer.controller.pause();
       }
       _isPaused = !_isPaused;
@@ -80,13 +77,13 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                 color: ThemeHelper.iconAndTextColorRemix(context),
               ),
               Positioned(
-                right: 0, // adjust position
+                right: 0,
                 top: 0,
                 child: Container(
                   padding: EdgeInsets.all(4),
 
                   child: Text(
-                    "${widget.soundCount}", // count of selected sounds
+                    "${widget.soundCount}",
                     style: TextStyle(
                       color: ThemeHelper.iconAndTextColorRemix(context),
                       fontSize: 14.sp,
@@ -105,16 +102,9 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
               color: ThemeHelper.iconAndTextColorRemix(context),
             ),
             onPressed: () {
-              // Navigator.pushAndRemoveUntil(
-              //   context,
-              //   MaterialPageRoute(builder: (_) => const Homepage()),
-              //   (route) => false,
-              // );
               if (globalTimer.isRunning) {
-                // Go back to homepage root (without rebuilding a new one)
                 Navigator.popUntil(context, (route) => route.isFirst);
               } else {
-                // Just close the timer screen
                 Navigator.pop(context);
               }
             },
@@ -140,13 +130,9 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
               alignment: Alignment.center,
               children: [
                 CircularCountDownTimer(
-                  duration:
-                      globalTimer.duration ??
-                      widget.duration, // 👈 use passed duration
-                  // initialDuration: 0,
+                  duration: globalTimer.duration ?? widget.duration,
                   initialDuration:
                       (globalTimer.duration ?? widget.duration) - remainingTime,
-                  // controller: _controller,
                   controller: globalTimer.controller,
                   width: 200.w,
                   height: 200.h,
@@ -163,16 +149,9 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                   ),
                   textFormat: CountdownTextFormat.HH_MM_SS,
                   isReverse: true,
-                  // isReverseAnimation: true,
-                  onChange: (time) {
-                    // Update remaining time dynamically
-                  },
+                  onChange: (time) {},
                   onComplete: () async {
                     await AudioManager().pauseAllNew();
-                    // setState(() {
-                    //   _isPaused = true;
-                    //   _isCompleted = true;
-                    // });
                     globalTimer.isRunning = false;
                     globalTimer.isPaused = true;
                     setState(() {
@@ -198,7 +177,6 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
               offset: Offset(0, 20.h),
               child: SizedBox(
                 height: 200.h,
-                // width: double.infinity,
                 child: Stack(
                   children: [
                     Positioned.fill(
@@ -208,13 +186,13 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                         child: Image.asset(
                           "assets/images/ellipse_mix_page.png",
                           fit: BoxFit
-                              .contain, // adjust as needed (cover/contain/fill)
+                              .contain, 
                           filterQuality: FilterQuality.high,
                         ),
                       ),
                     ),
                     Positioned(
-                      top: 50, // adjust for spacing from status bar
+                      top: 50, 
                       left: 0,
                       right: 0,
                       child: Row(
@@ -253,7 +231,6 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                           ),
                           SizedBox(width: 20.w),
                           InkWell(
-                            // onPressed: () => _controller.reset(),
                             onTap: _quitTimer,
                             splashColor: Colors.transparent,
                             highlightColor: Colors.transparent,

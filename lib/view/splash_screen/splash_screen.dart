@@ -16,7 +16,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final int splashDuration = 3; // seconds
+  final int splashDuration = 3; 
 
   @override
   void initState() {
@@ -29,19 +29,16 @@ class _SplashScreenState extends State<SplashScreen> {
     final bool? onboardingSeen = prefs.getBool('onboardingSeen');
     final bool isUserLoggedIn = prefs.getBool('isUserLoggedIn') ?? false;
 
-    // Show splash for defined duration
     await Future.delayed(Duration(seconds: splashDuration));
 
     if (!mounted) return;
 
     if (isUserLoggedIn) {
-      // ✅ User already logged in → Go to Homepage
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const Homepage()),
       );
     } else if (onboardingSeen == null || onboardingSeen == false) {
-      // ✅ First time user → Show Onboarding
       await prefs.setBool('onboardingSeen', true);
       if (mounted) {
         Navigator.pushReplacement(
@@ -50,7 +47,6 @@ class _SplashScreenState extends State<SplashScreen> {
         );
       }
     } else {
-      // ✅ Onboarding seen but not logged in → Go to Login
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -63,12 +59,11 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: ThemeHelper.backgroundColor(
         context,
-      ), // Splash background color
+      ), 
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Lottie animation
             Lottie.asset(
               "assets/lottie/sleep.json",
               height: 200.h,

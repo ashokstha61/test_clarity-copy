@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 
 class CustomImageThumbShape extends SliderComponentShape {
   final double thumbRadius;
-  final ui.Image? thumbImage; // preloaded image
+  final ui.Image? thumbImage; 
 
   const CustomImageThumbShape({this.thumbRadius = 15, this.thumbImage});
 
@@ -32,16 +32,13 @@ class CustomImageThumbShape extends SliderComponentShape {
     final paint = Paint();
 
     if (thumbImage != null) {
-      // draw preloaded image
       final dst = Rect.fromCircle(center: center, radius: thumbRadius);
       paintImage(canvas: canvas, rect: dst, image: thumbImage!, fit: BoxFit.cover);
     } else {
-      // fallback: draw a simple circle if image not loaded yet
       canvas.drawCircle(center, thumbRadius, paint..color = Colors.blue);
     }
   }
 
-  /// Utility to preload image from assets
   static Future<ui.Image> loadImage(String assetPath) async {
     final data = await rootBundle.load(assetPath);
     final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());

@@ -1,4 +1,3 @@
-//to be used to fetch user info from firebase and display it in profile page
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserModel {
@@ -16,7 +15,6 @@ class UserModel {
     this.lastSignInDate,
   });
 
-  // Convert Firebase User to UserModel
   factory UserModel.fromFirebaseUser(User user) {
     final metadata = user.metadata;
     final providerId = user.providerData.isNotEmpty
@@ -45,9 +43,8 @@ class UserModel {
     );
   }
 
-  // Helper: format date
   String formatDate(DateTime? date) {
     if (date == null) return "Unknown";
-    return "${date.toLocal()}".split(".").first; // simple formatting
+    return "${date.toLocal()}".split(".").first;
   }
 }

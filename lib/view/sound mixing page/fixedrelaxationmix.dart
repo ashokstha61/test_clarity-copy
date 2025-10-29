@@ -36,25 +36,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   bool showLoading = false;
   ui.Image? thumbImg;
 
-  // List<NewSoundModel> _buildUpdatedSounds() {
-  //   debugPrint("update in progess");
-  //   return widget.sounds
-  //       .map(
-  //         (s) => s.copyWith(
-  //           isSelected: _selectedSounds.any(
-  //             (selected) => selected.title == s.title,
-  //           ),
-  //           // Preserve volume changes made in mix page
-  //           volume: _selectedSounds
-  //               .firstWhere(
-  //                 (selected) => selected.title == s.title,
-  //                 orElse: () => s,
-  //               )
-  //               .volume,
-  //         ),
-  //       )
-  //       .toList();
-  // }
+  
 
   List<NewSoundModel> _buildUpdatedSounds() {
     debugPrint("update in progress");
@@ -70,8 +52,8 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       );
 
       return s.copyWith(
-        isSelected: isSelected, // explicitly false if not selected
-        volume: selectedSound.volume, // preserve volume if selected
+        isSelected: isSelected,
+        volume: selectedSound.volume,
       );
     }).toList();
   }
@@ -152,7 +134,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
             ),
           ),
           actionsAlignment:
-              MainAxisAlignment.spaceEvenly, // evenly spaced buttons
+              MainAxisAlignment.spaceEvenly,
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -200,7 +182,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
 
     await showDialog(
       context: context,
-      barrierDismissible: false, // must tap OK
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Text(
           "Sound saved",
@@ -253,16 +235,13 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       return;
     }
 
-    // Check trial mode restrictions
     if (!isTrial && _selectedSounds.isNotEmpty) {
-      // In non-trial mode, only one sound can be selected at a time
-      // Remove all currently selected sounds first
+    
       for (final selectedSound in List.from(_selectedSounds)) {
         await _removeSoundFromMixInternal(selectedSound);
       }
     }
 
-    // Ensure new sounds start with a reasonable volume (say 0.8)
     final normalizedSound = sound.copyWith(
       volume: sound.volume > 0 ? sound.volume : 0.8,
       isSelected: true,
@@ -313,7 +292,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         );
 
         if (originalIndex != -1) {
-          // Insert back into recommended sounds list
           final insertIndex = _recommendedSounds.indexWhere(
             (s) => widget.sounds.indexOf(s) > originalIndex,
           );
@@ -329,14 +307,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         }
       });
 
-      // Stop playback if no sounds are selected
       if (_selectedSounds.isEmpty) {
         setState(() {
           _audioManager.isPlayingNotifier.value = false;
         });
       }
 
-      // Stop and clear from audio manager
       _audioManager.pauseSound(sound.filepath);
       _audioManager.clearSound(sound.filepath);
       _audioManager.saveVolume(sound.filepath, 1.0);
@@ -349,18 +325,15 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     }
   }
 
-  // FIX: Properly update volume by creating new list with updated sound
   Future<void> _updateSoundVolume(int index, double volume) async {
     if (index >= _selectedSounds.length) return;
 
     setState(() {
-      // Create a new list with the updated sound
       _selectedSounds = List.from(_selectedSounds);
       _selectedSounds[index] = _selectedSounds[index].copyWith(volume: volume);
     });
     _audioManager.saveVolume(_selectedSounds[index].title, volume);
 
-    // Apply volume changes to audio players
     await _audioManager.adjustVolumes(_selectedSounds);
     widget.onSoundsChanged(_buildUpdatedSounds());
   }
@@ -518,7 +491,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                   label: 'Timer',
                   onPressed: () {
                     if (globalTimer.isRunning && globalTimer.remaining > 0) {
-                      // Timer already running → go back to same timer
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -531,7 +503,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                         ),
                       );
                     } else {
-                      // Start a fresh timer
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -575,17 +546,17 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black38, // shadow color
+                  color: Colors.black38,
                   blurRadius: 5,
-                  spreadRadius: -20, // spread of the shadow
-                  offset: Offset(-6.2, -5.7), // position of the shadow
+                  spreadRadius: -20,
+                  offset: Offset(-6.2, -5.7), 
                 ),
               ],
             ),
             child: ClipOval(
               child: Image.asset(
                 imagePath,
-                fit: BoxFit.cover, // fills circle without transparent space
+                fit: BoxFit.cover, 
               ),
             ),
           ),
@@ -659,7 +630,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           InkWell(
             onTap: locked ? null : () => _addSoundToMix(sound),
             child: Opacity(
-              opacity: locked ? 0.4 : 1.0, // dim if locked
+              opacity: locked ? 0.4 : 1.0,
               child: Container(
                 width: 80,
                 height: 80,
@@ -786,7 +757,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                       min: 0.0,
                       max: 1.0,
                       onChanged: (value) {
-                        // FIX: Use proper update method instead of direct modification
                         _updateSoundVolume(index, value);
                       },
                     ),
@@ -817,7 +787,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   }
 
   String? _getMatchingAssetPath(String iconName) {
-    // final cleanName = iconName.replaceAll(RegExp(r'\.png), '');
     return 'assets/images/$iconName.png';
   }
 

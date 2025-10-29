@@ -99,7 +99,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
       );
 
       if (match.isNotEmpty) {
-        // Restore saved volume if available
         final savedVolume = (match['volume'] as num?)?.toDouble() ?? s.volume;
         return s.copyWith(volume: savedVolume);
       }

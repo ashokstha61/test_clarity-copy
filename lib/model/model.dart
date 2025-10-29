@@ -72,6 +72,6 @@ class NewSoundModel {
     'musicURL': musicUrl,
     'title': title,
     'volume': volume,
-    'mixFilePaths': mixFilePaths, // ✅ serialize
+    'mixFilePaths': mixFilePaths, 
   };
 }

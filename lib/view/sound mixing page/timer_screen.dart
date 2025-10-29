@@ -25,13 +25,13 @@ class TimerScreen extends StatelessWidget {
               color: ThemeHelper.textColorTimer(context),
             ),
             Positioned(
-              right: 0, // adjust position
+              right: 0, 
               top: 0,
               child: Container(
                 padding: EdgeInsets.all(2.sp),
 
                 child: Text(
-                  "$soundCount", // count of selected sounds
+                  "$soundCount", 
                   style: TextStyle(
                     color: ThemeHelper.textColorTimer(context),
                     fontSize: 16.sp,
@@ -56,7 +56,7 @@ class TimerScreen extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.close, size: 20.sp),
             onPressed: () {
-              Navigator.pop(context); // Close the modal
+              Navigator.pop(context); 
             },
           ),
         ],
@@ -101,9 +101,7 @@ class TimerScreen extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                       onTap: () {
-                        // onTimerSelected(
-                        //   minutes * 60,
-                        // ); // Convert minutes to seconds
+                       
                         minutes * 60;
                         Navigator.push(
                           context,
@@ -113,19 +111,18 @@ class TimerScreen extends StatelessWidget {
                               soundCount: soundCount,
                             ),
                           ),
-                        ); // Close the modal after selection
+                        ); 
                       },
                     ),
                     Divider(
                       thickness: 1,
                       color: Colors.grey[300],
-                    ), // Add styled divider between ListTiles
+                    ), 
                   ],
                 );
               }),
-              // Remove the last Divider
               if ([5, 10, 15, 30, 60, 120, 240, 480].isNotEmpty)
-                SizedBox(height: 16.h), // Increased padding at the end
+                SizedBox(height: 16.h), 
             ],
           ),
         ),

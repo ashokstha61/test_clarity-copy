@@ -1,7 +1,7 @@
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 
 class GlobalTimerState {
-  int? duration; // total seconds
+  int? duration; 
   DateTime? startTime;
   Duration pausedDuration = Duration.zero;
   bool isRunning = false;
@@ -17,5 +17,4 @@ class GlobalTimerState {
   }
 }
 
-// Singleton
 GlobalTimerState globalTimer = GlobalTimerState();

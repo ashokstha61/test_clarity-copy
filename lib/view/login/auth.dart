@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// bool isLoggedIn = false ;
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -30,7 +29,7 @@ class AuthService {
     }
   }
 
-  // Google Sign-In
+
   Future<User?> signInWithGoogle(BuildContext context) async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -54,7 +53,7 @@ class AuthService {
 
       final UserCredential result = await _auth.signInWithCredential(credential);
 
-      // ✅ Success message
+   
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Login Successful'),
@@ -65,7 +64,7 @@ class AuthService {
       await _setLoginState(true);
       return result.user;
     } on FirebaseAuthException catch (e) {
-      // 🛑 Error message
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Sign in failed: ${e.message}'),
@@ -90,7 +89,7 @@ class AuthService {
     await prefs.setBool('isUserLoggedIn', isLoggedIn);
   }
 
-  // Sign Out
+  
   Future<void> signOut() async {
     try {
       await _googleSignIn.signOut();
@@ -101,7 +100,7 @@ class AuthService {
     }
   }
 
-  // Password Reset
+
   Future<void> sendPasswordResetEmail(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
@@ -110,7 +109,7 @@ class AuthService {
     }
   }
 
-  // Update User Profile
+  
   Future<void> updateUserProfile({String? displayName}) async {
     try {
       await _auth.currentUser?.updateDisplayName(displayName);
@@ -119,7 +118,7 @@ class AuthService {
     }
   }
 
-  // Update Email
+ 
   Future<void> updateEmail(String newEmail) async {
     try {
       await _auth.currentUser?.verifyBeforeUpdateEmail(newEmail);
@@ -128,7 +127,7 @@ class AuthService {
     }
   }
 
-  // Update Password
+ 
   Future<void> updatePassword(String newPassword) async {
     try {
       await _auth.currentUser?.updatePassword(newPassword);
@@ -137,7 +136,7 @@ class AuthService {
     }
   }
 
-  // Delete Account
+
   Future<void> deleteAccount() async {
     try {
       await _auth.currentUser?.delete();
@@ -146,7 +145,7 @@ class AuthService {
     }
   }
 
-  // Get User ID Token
+ 
   Future<String?> getIdToken() async {
     try {
       return await _auth.currentUser?.getIdToken();
@@ -155,7 +154,7 @@ class AuthService {
     }
   }
 
-  // Error Handling
+  
   String _handleAuthException(FirebaseAuthException e) {
     switch (e.code) {
       case 'invalid-email':
@@ -181,28 +180,25 @@ class AuthService {
     }
   }
 
-  // Verify if user is authenticated
+
   Future<bool> checkAuthStatus() async {
     await _auth.currentUser?.reload();
     return _auth.currentUser != null;
   }
 
-  // Get user display name
+
   String? get displayName => _auth.currentUser?.displayName;
 
-  // Get user email
+ 
   String? get email => _auth.currentUser?.email;
 
-  // Get user photo URL
+
   String? get photoURL => _auth.currentUser?.photoURL;
 
-  // Get user UID
   String? get uid => _auth.currentUser?.uid;
 
-  // Check if email is verified
   bool get isEmailVerified => _auth.currentUser?.emailVerified ?? false;
 
-  // Send email verification
   Future<void> sendEmailVerification() async {
     try {
       await _auth.currentUser?.sendEmailVerification();

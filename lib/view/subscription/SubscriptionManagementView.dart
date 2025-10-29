@@ -48,7 +48,6 @@ class _SubscriptionManagementViewState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Subscription Type Label
               Text(
                 "Subscription Type",
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -58,7 +57,6 @@ class _SubscriptionManagementViewState
               ),
               const SizedBox(height: 10),
 
-              // Subscription Type Field
               Container(
                 height: 50,
                 padding: const EdgeInsets.symmetric(horizontal: 10),

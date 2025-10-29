@@ -40,20 +40,17 @@ class _SignInScreenState extends State<SignInScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Firebase login
       UserCredential result = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
 
       final userID = result.user?.uid;
       if (userID == null) throw Exception("User ID is null");
 
-      // Save login status
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool("isUserLoggedIn", true);
 
       if (!mounted) return;
 
-      // Show success message
       showToast(
         "Login Successful",
         context: context,
@@ -68,24 +65,23 @@ class _SignInScreenState extends State<SignInScreen> {
 
           fontFamily: 'montserrat',
         ),
-        borderRadius: BorderRadius.circular(0), // Makes it rectangular
+        borderRadius: BorderRadius.circular(0), 
         shapeBorder: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(0), // Completely rectangular
+          borderRadius: BorderRadius.circular(0), 
         ),
       );
 
-      // Wait for 2 seconds then redirect
       await Future.delayed(const Duration(seconds: 2));
 
       if (!mounted) return;
 
-      Navigator.pop(context); // Close the dialog
+      Navigator.pop(context); 
       globals.isUserLoggedIn = true;
       if (globals.isUserLoggedIn) {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => const Homepage()),
-          (route) => false, // Removes all previous routes
+          (route) => false,
         );
       }
     } on FirebaseAuthException catch (_) {

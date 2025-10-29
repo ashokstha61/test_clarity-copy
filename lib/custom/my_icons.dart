@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 
 class MyIcons {
-  // Example icon definition - you'll need to replace with your actual values
   static const IconData thunder = IconData(0xe900, fontFamily: 'MyIcons');
   static const IconData forest = IconData(0xe901, fontFamily: 'MyIcons');
   static const IconData rain = IconData(0xe902, fontFamily: 'MyIcons');
@@ -20,5 +19,3 @@ class MyIcons {
   static const IconData piano = IconData(0xe90f, fontFamily: 'MyIcons');
   static const IconData guitar = IconData(0xe910, fontFamily: 'MyIcons');
 }
-
-// no usage
