@@ -169,7 +169,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     }
 
     // 3. Collect selected sound filepaths
-    final selectedSoundskoTitle = _selectedSounds
+    final selectedSoundsTitle = _selectedSounds
         .map(
           (s) => {
             'title': s.title,
@@ -178,7 +178,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         )
         .toList();
 
-    FavoriteManager.instance.addFavorite(mixName, selectedSoundskoTitle);
+    FavoriteManager.instance.addFavorite(mixName, selectedSoundsTitle);
 
     await showDialog(
       context: context,
@@ -210,7 +210,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const Homepage(initialTap: 1),
+                  builder: (_) => Homepage(initialTap: 1, favMessage: mixName, favBool: true, ),
                 ),
                 (route) => false,
               );

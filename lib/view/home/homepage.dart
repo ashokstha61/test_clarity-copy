@@ -11,7 +11,9 @@ import '../Sound page/sound.dart';
 
 class Homepage extends StatefulWidget {
   final int initialTap;
-  const Homepage({super.key,this.initialTap=0});
+  final String? favMessage;
+  final bool? favBool;
+  Homepage({super.key,this.initialTap = 0, this.favMessage, this.favBool,});
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -36,10 +38,12 @@ class _HomepageState extends State<Homepage> {
     _screens = [
       const SoundPage(),
     FavoritesPage(
-    currentTitle: _currentPlayingTitle,
-    onTogglePlayback: _togglePlayback,
-    onItemTap: _onFavoriteItemTap,
-    ), 
+      // currentTitle: _currentPlayingTitle,
+      // onTogglePlayback: _togglePlayback,
+      // onItemTap: _onFavoriteItemTap,
+      title: widget.favMessage ?? '',
+      triggerRefresh: widget.favBool ?? false,
+    ),
       const ProfilePage(),
     ];
     _fetchSoundData();
@@ -58,9 +62,11 @@ class _HomepageState extends State<Homepage> {
           soundData = sounds;
           _screens[0] = const SoundPage();
           _screens[1] = FavoritesPage(
-            currentTitle: _currentPlayingTitle,
-            onTogglePlayback: _togglePlayback,
-            onItemTap: _onFavoriteItemTap,
+            // currentTitle: _currentPlayingTitle,
+            // onTogglePlayback: _togglePlayback,
+            // onItemTap: _onFavoriteItemTap,
+            title: widget.favMessage ?? '',
+            triggerRefresh: widget.favBool ?? false,
           );
           _isLoading = false;
         });
@@ -84,24 +90,26 @@ class _HomepageState extends State<Homepage> {
     });
   }
 
-  void _togglePlayback() {
-    setState(() {
-      _isPlaying = !_isPlaying;
-    });
-  }
+  // void _togglePlayback() {
+  //   setState(() {
+  //     _isPlaying = !_isPlaying;
+  //   });
+  // }
 
-  void _onFavoriteItemTap(NewSoundModel sound) async {
-    setState(() {
-      _currentPlayingTitle = sound.title;
-      _isPlaying = true;
-      _screens[1] = FavoritesPage(
-        currentTitle: _currentPlayingTitle,
-        onTogglePlayback: _togglePlayback,
-        onItemTap: _onFavoriteItemTap,
-      );
-    });
-    await AudioManager().toggleSoundSelection(soundData, sound, false);
-  }
+  // void _onFavoriteItemTap(NewSoundModel sound) async {
+  //   setState(() {
+  //     _currentPlayingTitle = sound.title;
+  //     _isPlaying = true;
+  //     _screens[1] = FavoritesPage(
+  //       // currentTitle: _currentPlayingTitle,
+  //       // onTogglePlayback: _togglePlayback,
+  //       // onItemTap: _onFavoriteItemTap,
+  //       message: widget.favMessage ?? '',
+  //       triggerRefresh: widget.favBool ?? false,
+  //     );
+  //   });
+  //   await AudioManager().toggleSoundSelection(soundData, sound, false);
+  // }
 
   @override
   Widget build(BuildContext context) {
