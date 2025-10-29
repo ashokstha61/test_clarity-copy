@@ -18,15 +18,6 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
 
-  // bool _isDarkMode = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // final appState = MyApp.of(context);
-    // if (appState != null) _isDarkMode = appState.isDarkMode;
-  }
-
   void _logout(BuildContext context) {
     // Clear global user info
     setState(() {

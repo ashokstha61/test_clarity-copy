@@ -1,5 +1,5 @@
 import 'dart:ui' as ui;
-import 'package:Sleephoria/globals.dart';
+import 'package:Sleephoria/view/globals/globals.dart';
 import 'package:Sleephoria/model/model.dart';
 import 'package:Sleephoria/theme.dart';
 import 'package:Sleephoria/view/Sound%20page/sound.dart';
@@ -736,7 +736,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                           color: Color.fromRGBO(92, 67, 108, 1),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () => _removeSoundFromMixInternal(sound),
                       child: const Icon(
                         Icons.close,
                         size: 16,

@@ -23,3 +23,5 @@ class UserViewModel {
     return userInfo?.formatDate(userInfo?.creationDate) ?? "Unknown";
   }
 }
+
+// no usage

@@ -4,12 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'timer_test.dart';
 
 class TimerScreen extends StatelessWidget {
-  // final Function(int) onTimerSelected;
   final int soundCount;
 
   const TimerScreen({
     super.key,
-    // required this.onTimerSelected,
     required this.soundCount,
   });
 

@@ -76,23 +76,7 @@ class _SplashScreenState extends State<SplashScreen> {
               fit: BoxFit.contain,
               repeat: false,
             ),
-
             const SizedBox(height: 20),
-
-            // App logo
-            // Image.asset('assets/images/Image.png', height: 120, width: 120),
-            // const SizedBox(height: 20),
-
-            // App title
-            // Text(
-            //   'Clarity'.toUpperCase(),
-            //   style: TextStyle(
-            //     fontSize: 30,
-            //     fontWeight: FontWeight.bold,
-            //     color: textColor,
-            //     fontFamily: 'montserrat',
-            //   ),
-            // ),
             Text(
               'S L E E P H O R I A',
               style: TextStyle(

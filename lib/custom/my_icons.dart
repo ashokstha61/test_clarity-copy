@@ -20,3 +20,5 @@ class MyIcons {
   static const IconData piano = IconData(0xe90f, fontFamily: 'MyIcons');
   static const IconData guitar = IconData(0xe910, fontFamily: 'MyIcons');
 }
+
+// no usage

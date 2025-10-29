@@ -11,8 +11,6 @@ class EmptyFile extends StatelessWidget {
       children: [
         SizedBox(height: 100),
         Image(image: AssetImage('assets/images/empty-min.png'), height: 200),
-        // Image.asset('assets/images/empty-min.png', height: 200),
-
         SizedBox(height: 10),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 40.0),
@@ -21,7 +19,6 @@ class EmptyFile extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16.sp,
-              // color: Color.fromRGBO(50, 67, 118, 1.000),
               color: ThemeHelper.textSubtitle(context),
               fontFamily: 'Montserrat',
               fontWeight: FontWeight.w400,

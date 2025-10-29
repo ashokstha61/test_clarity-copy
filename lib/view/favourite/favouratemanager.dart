@@ -16,65 +16,65 @@ class FavoriteManager {
 
   String _mixesKey(String userId) => "SavedFavorites_$userId";
 
-  Future<void> saveSoundMixes() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final data = jsonEncode(favoriteSounds.map((e) => e.toJson()).toList());
-
-      // Save with a user-specific key
-      await prefs.setString(_mixesKey(user.uid), data);
-      debugPrint("✅ Favorites saved locally");
-    } catch (e) {
-      debugPrint("❌ Failed to save sound mixes: $e");
-    }
-
-  }
+  // Future<void> saveSoundMixes() async {
+  //   final user = FirebaseAuth.instance.currentUser;
+  //   if (user == null) return;
+  //
+  //   try {
+  //     final prefs = await SharedPreferences.getInstance();
+  //     final data = jsonEncode(favoriteSounds.map((e) => e.toJson()).toList());
+  //
+  //     // Save with a user-specific key
+  //     await prefs.setString(_mixesKey(user.uid), data);
+  //     debugPrint("✅ Favorites saved locally");
+  //   } catch (e) {
+  //     debugPrint("❌ Failed to save sound mixes: $e");
+  //   }
+  //
+  // }
 
   /// Load favorites for the current user
-  Future<List<FavSoundModel>> loadFavorites() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return [];
-
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final data = prefs.getString(_mixesKey(user.uid));
-      if (data == null) return [];
-
-      final List<dynamic> decodedList = jsonDecode(data);
-      final favorites = decodedList
-          .map((e) => FavSoundModel.fromJson(e as Map<String, dynamic>))
-          .toList();
-
-      // update local list
-      return favorites;
-    } catch (e) {
-      debugPrint("❌ Failed to load sound mixes: $e");
-      return [];
-    }
-  }
+  // Future<List<FavSoundModel>> loadFavorites() async {
+  //   final user = FirebaseAuth.instance.currentUser;
+  //   if (user == null) return [];
+  //
+  //   try {
+  //     final prefs = await SharedPreferences.getInstance();
+  //     final data = prefs.getString(_mixesKey(user.uid));
+  //     if (data == null) return [];
+  //
+  //     final List<dynamic> decodedList = jsonDecode(data);
+  //     final favorites = decodedList
+  //         .map((e) => FavSoundModel.fromJson(e as Map<String, dynamic>))
+  //         .toList();
+  //
+  //     // update local list
+  //     return favorites;
+  //   } catch (e) {
+  //     debugPrint("❌ Failed to load sound mixes: $e");
+  //     return [];
+  //   }
+  // }
 
   /// Clear favorites for current user
-  Future<void> clearFavorites() async {
-    favoriteSounds = [];
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(_mixesKey(user.uid));
-    }
-  }
+  // Future<void> clearFavorites() async {
+  //   favoriteSounds = [];
+  //   final user = FirebaseAuth.instance.currentUser;
+  //   if (user != null) {
+  //     final prefs = await SharedPreferences.getInstance();
+  //     await prefs.remove(_mixesKey(user.uid));
+  //   }
+  // }
 
   /// Refresh favorites (login/logout)
-  Future<void> refreshFavorites() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      await loadFavorites();
-    } else {
-      await clearFavorites();
-    }
-  }
+  // Future<void> refreshFavorites() async {
+  //   final user = FirebaseAuth.instance.currentUser;
+  //   if (user != null) {
+  //     await loadFavorites();
+  //   } else {
+  //     await clearFavorites();
+  //   }
+  // }
 
   /// Add a sound to favorites
   Future<void> addFavorite(String mixName, List<Map<String, dynamic>> soundTitles,) async {
@@ -90,12 +90,12 @@ class FavoriteManager {
   }
 
   /// Remove a sound from favorites
-  Future<void> removeFavorite(NewSoundModel sound) async {
-    favoriteSounds.removeWhere((s) => s.title == sound.title);
-  }
+  // Future<void> removeFavorite(NewSoundModel sound) async {
+  //   favoriteSounds.removeWhere((s) => s.title == sound.title);
+  // }
 
   /// Check if a sound is favorite
-  bool isFavorite(NewSoundModel sound) {
-    return favoriteSounds.any((s) => s.title == sound.title);
-  }
+  // bool isFavorite(NewSoundModel sound) {
+  //   return favoriteSounds.any((s) => s.title == sound.title);
+  // }
 }

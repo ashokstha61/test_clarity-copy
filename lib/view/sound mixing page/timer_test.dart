@@ -283,7 +283,6 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
           ],
         ),

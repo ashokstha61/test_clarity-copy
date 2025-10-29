@@ -3,23 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-bool isLoggedIn = false ;
+// bool isLoggedIn = false ;
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final prefs = SharedPreferences.getInstance();
 
-  // Stream to listen to authentication state changes
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  // Get current user
   User? get currentUser => _auth.currentUser;
 
-  // Check if user is logged in
-
-
-  // Email and Password Authentication
   Future<User?> signInWithEmailAndPassword({
     required String email,
     required String password,
@@ -35,7 +29,6 @@ class AuthService {
       throw _handleAuthException(e);
     }
   }
-
 
   // Google Sign-In
   Future<User?> signInWithGoogle(BuildContext context) async {
