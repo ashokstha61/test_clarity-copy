@@ -89,7 +89,6 @@ class AuthService {
     await prefs.setBool('isUserLoggedIn', isLoggedIn);
   }
 
-  
   Future<void> signOut() async {
     try {
       await _googleSignIn.signOut();
@@ -100,7 +99,6 @@ class AuthService {
     }
   }
 
-
   Future<void> sendPasswordResetEmail(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
@@ -109,7 +107,6 @@ class AuthService {
     }
   }
 
-  
   Future<void> updateUserProfile({String? displayName}) async {
     try {
       await _auth.currentUser?.updateDisplayName(displayName);
@@ -118,7 +115,6 @@ class AuthService {
     }
   }
 
- 
   Future<void> updateEmail(String newEmail) async {
     try {
       await _auth.currentUser?.verifyBeforeUpdateEmail(newEmail);
@@ -126,7 +122,6 @@ class AuthService {
       throw _handleAuthException(e);
     }
   }
-
  
   Future<void> updatePassword(String newPassword) async {
     try {
@@ -136,7 +131,6 @@ class AuthService {
     }
   }
 
-
   Future<void> deleteAccount() async {
     try {
       await _auth.currentUser?.delete();
@@ -145,7 +139,6 @@ class AuthService {
     }
   }
 
- 
   Future<String?> getIdToken() async {
     try {
       return await _auth.currentUser?.getIdToken();
@@ -154,7 +147,6 @@ class AuthService {
     }
   }
 
-  
   String _handleAuthException(FirebaseAuthException e) {
     switch (e.code) {
       case 'invalid-email':
@@ -180,18 +172,14 @@ class AuthService {
     }
   }
 
-
   Future<bool> checkAuthStatus() async {
     await _auth.currentUser?.reload();
     return _auth.currentUser != null;
   }
 
-
   String? get displayName => _auth.currentUser?.displayName;
 
- 
   String? get email => _auth.currentUser?.email;
-
 
   String? get photoURL => _auth.currentUser?.photoURL;
 

@@ -107,7 +107,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: ThemeHelper.textTitle(context),
               ),
             ),
-
             CustomListTile(
               title: 'FAQ',
               onTap: () {
@@ -120,7 +119,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 );
               },
             ),
-
             CustomListTile(
               title: 'Privacy Policy',
               onTap: () {

@@ -296,13 +296,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
             (s) => widget.sounds.indexOf(s) > originalIndex,
           );
 
+          final resetSound = sound.copyWith(isSelected: false, volume: 1.0);
+
           if (insertIndex == -1) {
-            _recommendedSounds.add(sound.copyWith(isSelected: false));
+            _recommendedSounds.add(resetSound);
           } else {
-            _recommendedSounds.insert(
-              originalIndex,
-              sound.copyWith(isSelected: false),
-            );
+            _recommendedSounds.insert(originalIndex, resetSound);
           }
         }
       });
@@ -590,7 +589,9 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
               icon: Image.asset(
-                isPlaying
+                _selectedSounds.isEmpty
+                    ? "assets/images/pause.png"
+                    : isPlaying
                     ? "assets/images/pause.png"
                     : "assets/images/play.png",
                 height: 25.sp,

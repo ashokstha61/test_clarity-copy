@@ -65,7 +65,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _showAlert("Invalid Input", "Phone number must be exactly 10 digits.");
       return;
     }
-   
 
     if (email.isEmpty) {
       _showAlert("Invalid Input", "Email is required.");
@@ -196,7 +195,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       LengthLimitingTextInputFormatter(10),
                     ],
                   ),
-
                   const SizedBox(height: 12),
                   _buildTextField(
                     _emailController,

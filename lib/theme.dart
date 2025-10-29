@@ -120,6 +120,7 @@ class ThemeHelper {
         ? Colors.black
         : Colors.white;
   }
+
   static Color remixBackgroundColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
         ? Colors.white54

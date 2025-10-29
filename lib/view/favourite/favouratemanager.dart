@@ -1,10 +1,6 @@
-import 'dart:convert';
 import 'package:Sleephoria/model/favSoundModel.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:Sleephoria/model/model.dart';
-
 import '../../new_firebase_service.dart';
 
 class FavoriteManager {
@@ -16,7 +12,6 @@ class FavoriteManager {
 
   String _mixesKey(String userId) => "SavedFavorites_$userId";
 
- 
   Future<void> addFavorite(String mixName, List<Map<String, dynamic>> soundTitles,) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
 
@@ -28,5 +23,4 @@ class FavoriteManager {
 
     await service.addOrUpdateMix(mix);
   }
-
 }
