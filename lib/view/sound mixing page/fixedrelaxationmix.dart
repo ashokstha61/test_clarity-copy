@@ -92,12 +92,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         .toList();
     _recommendedSounds = widget.sounds.where((s) => !s.isSelected).toList();
 
-    setState(() {
-      _selectedSounds = _selectedSounds
-          .map((s) => s.copyWith(volume: 1.0))
-          .toList();
-    });
-
     CustomImageThumbShape.loadImage('assets/images/thumb.png').then((img) {
       setState(() {
         thumbImg = img;
@@ -191,10 +185,15 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     if (mixName == null || mixName.isEmpty) {
       return;
     }
-    
+
     // 3. Collect selected sound filepaths
     final selectedSoundskoTitle = _selectedSounds
-        .map((s) => {'title': s.title, 'volume': _audioManager.getSavedVolume(s.title)})
+        .map(
+          (s) => {
+            'title': s.title,
+            'volume': _audioManager.getSavedVolume(s.title),
+          },
+        )
         .toList();
 
     FavoriteManager.instance.addFavorite(mixName, selectedSoundskoTitle);
@@ -228,8 +227,11 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               Navigator.pop(context);
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (_)=> const Homepage(initialTap: 1)),
-                (route)=>false);
+                MaterialPageRoute(
+                  builder: (_) => const Homepage(initialTap: 1),
+                ),
+                (route) => false,
+              );
             },
             child: const Text(
               "OK",
@@ -303,6 +305,8 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           }
           return false;
         });
+
+        
 
         final originalIndex = widget.sounds.indexWhere(
           (s) => s.title == sound.title,
@@ -732,7 +736,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                           color: Color.fromRGBO(92, 67, 108, 1),
                         ),
                       ),
-                      onPressed: () {} ,
+                      onPressed: () {},
                       child: const Icon(
                         Icons.close,
                         size: 16,
