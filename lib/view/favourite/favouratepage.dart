@@ -15,15 +15,15 @@ class FavoritesPage extends StatefulWidget {
   // final VoidCallback onTogglePlayback;
   // final Function(NewSoundModel) onItemTap;
   final String title;
-  final bool triggerRefresh;
+  bool triggerRefresh;
 
-  const FavoritesPage({
+  FavoritesPage({
     super.key,
     // this.currentTitle,
     // required this.onTogglePlayback,
     // required this.onItemTap,
     required this.title,
-    required this.triggerRefresh,
+    this.triggerRefresh = false,
   });
 
   @override
@@ -65,6 +65,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
           _onFavoriteTap(widget.title, sound.soundTitles);
         }
       }
+      setState(() {
+        widget.triggerRefresh = false;
+      });
     }
   }
 
