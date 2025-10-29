@@ -33,25 +33,25 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (!mounted) return;
 
-    if (isUserLoggedIn) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const Homepage()),
-      );
-    } else if (onboardingSeen == null || onboardingSeen == false) {
-      await prefs.setBool('onboardingSeen', true);
-      if (mounted) {
+    // if (isUserLoggedIn) {
+    //   Navigator.pushReplacement(
+    //     context,
+    //     MaterialPageRoute(builder: (_) => const Homepage()),
+    //   );
+    // } else if (onboardingSeen == null || onboardingSeen == false) {
+    //   await prefs.setBool('onboardingSeen', true);
+    //   if (mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const OnboardingScreen()),
         );
-      }
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
-    }
+    //   }
+    // } else {
+    //   Navigator.pushReplacement(
+    //     context,
+    //     MaterialPageRoute(builder: (_) => const LoginScreen()),
+    //   );
+    // }
   }
 
   @override

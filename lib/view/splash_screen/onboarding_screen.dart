@@ -67,7 +67,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           _onboardingData[index]['image'],
                         ),
                       ),
-                      SizedBox(height: 20.h),
+                      SizedBox(height: 15.h),
                       Text(
                         _onboardingData[index]['title'],
                         style: TextStyle(
@@ -96,7 +96,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             SmoothPageIndicator(
               controller: _pageController,
               count: _onboardingData.length,
-
               effect: ExpandingDotsEffect(
                 dotHeight: 10.r,
                 dotWidth: 10.r,
@@ -140,7 +139,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 15.h),
+            SizedBox(height: 10.h),
             TextButton(
               onPressed: () {
                 Navigator.push(
