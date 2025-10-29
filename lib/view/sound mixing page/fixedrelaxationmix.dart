@@ -36,8 +36,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   bool showLoading = false;
   ui.Image? thumbImg;
 
-  
-
   List<NewSoundModel> _buildUpdatedSounds() {
     debugPrint("update in progress");
 
@@ -51,10 +49,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         (selected) => selected.title == s.title,
       );
 
-      return s.copyWith(
-        isSelected: isSelected,
-        volume: selectedSound.volume,
-      );
+      return s.copyWith(isSelected: isSelected, volume: selectedSound.volume);
     }).toList();
   }
 
@@ -133,8 +128,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               ),
             ),
           ),
-          actionsAlignment:
-              MainAxisAlignment.spaceEvenly,
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -165,6 +159,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     if (!mounted) return;
 
     if (mixName == null || mixName.isEmpty) {
+      return;
+    }
+    if (await FavoriteManager.instance.mixExists(mixName)) {
+      _showErrorSnackBar(
+        'A mix with this name already exists. Please choose another name.',
+      );
       return;
     }
 
@@ -210,7 +210,11 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => Homepage(initialTap: 1, favMessage: mixName, favBool: true, ),
+                  builder: (_) => Homepage(
+                    initialTap: 1,
+                    favMessage: mixName,
+                    favBool: true,
+                  ),
                 ),
                 (route) => false,
               );
@@ -236,7 +240,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     }
 
     if (!isTrial && _selectedSounds.isNotEmpty) {
-    
       for (final selectedSound in List.from(_selectedSounds)) {
         await _removeSoundFromMixInternal(selectedSound);
       }
@@ -285,8 +288,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           return false;
         });
 
-        
-
         final originalIndex = widget.sounds.indexWhere(
           (s) => s.title == sound.title,
         );
@@ -317,8 +318,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       _audioManager.saveVolume(sound.filepath, 1.0);
 
       widget.onSoundsChanged(_buildUpdatedSounds());
-
-
     } catch (e) {
       _showErrorSnackBar('Failed to remove sound: $e');
     }
@@ -548,16 +547,11 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                   color: Colors.black38,
                   blurRadius: 5,
                   spreadRadius: -20,
-                  offset: Offset(-6.2, -5.7), 
+                  offset: Offset(-6.2, -5.7),
                 ),
               ],
             ),
-            child: ClipOval(
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.cover, 
-              ),
-            ),
+            child: ClipOval(child: Image.asset(imagePath, fit: BoxFit.cover)),
           ),
         ),
 

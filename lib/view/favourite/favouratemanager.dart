@@ -12,7 +12,10 @@ class FavoriteManager {
 
   String _mixesKey(String userId) => "SavedFavorites_$userId";
 
-  Future<void> addFavorite(String mixName, List<Map<String, dynamic>> soundTitles,) async {
+  Future<void> addFavorite(
+    String mixName,
+    List<Map<String, dynamic>> soundTitles,
+  ) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
 
     final mix = FavSoundModel(
@@ -22,5 +25,18 @@ class FavoriteManager {
     );
 
     await service.addOrUpdateMix(mix);
+  }
+
+  Future<bool> mixExists(String mixName) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) return false;
+
+    // Load all favorites
+    final favData = await service.loadMixes(userId);
+
+    // Check if any mix has the same name (case-insensitive)
+    return favData.any(
+      (mix) => mix.favSoundTitle.toLowerCase() == mixName.toLowerCase(),
+    );
   }
 }
