@@ -206,8 +206,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 MaterialPageRoute(
                   builder: (_) => Homepage(
                     initialTap: 1,
-                    reloadFavorites: true,
-                    autoPlayMixName: mixName,
+                    
                   ),
                 ),
                 (route) => false,
