@@ -32,8 +32,8 @@ class FavoritesPage extends StatefulWidget {
 
 class _FavoritesPageState extends State<FavoritesPage> {
   static List<FavSoundModel>? _cachedFavSounds;
+  static List<NewSoundModel>? _cachedSounds;
   List<FavSoundModel> favoriteSounds = [];
-  List<NewSoundModel>? _cachedSounds;
   List<NewSoundModel> Sounds = [];
   final DatabaseService _firebaseService = DatabaseService();
   final AudioManager _audioManager = AudioManager();
