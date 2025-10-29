@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+Color primary = Color.fromRGBO(176, 176, 224, 1);
+
 class AppColors {
   // Theme management
   static AppTheme currentTheme = AppTheme.moonlight;

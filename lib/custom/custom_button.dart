@@ -1,6 +1,8 @@
 import 'package:Sleephoria/model/sound_item.dart';
 import 'package:flutter/material.dart';
 
+import '../constant/color_constant.dart';
+
 class SoundButton extends StatefulWidget {
   final SoundItem sound;
 
@@ -27,7 +29,7 @@ class SoundButtonState extends State<SoundButton> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
               border: Border.all(color: Colors.blueGrey),
-              color: _isPressed ? Color.fromRGBO(176, 176, 224, 1) : null,
+              color: _isPressed ? primary : null,
             ),
             child: Center(
               child: Image.asset(
