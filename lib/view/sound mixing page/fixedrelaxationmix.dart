@@ -419,7 +419,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                             },
                           ),
                   ),
-                  SizedBox(height: 5.h),
+                  SizedBox(height: 3.h),
                   Text(
                     'Selected Sounds',
                     style: TextStyle(
@@ -693,9 +693,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                         shape: CircleBorder(),
                         backgroundColor: Color.fromRGBO(92, 67, 108, 1),
                         elevation: 2,
-                        side: BorderSide(
-                          color: Color.fromRGBO(92, 67, 108, 1),
-                        ),
+                        side: BorderSide(color: Color.fromRGBO(92, 67, 108, 1)),
                       ),
                       onPressed: () => _removeSoundFromMixInternal(sound),
                       child: Icon(
@@ -735,9 +733,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                         thumbRadius: 18.h,
                         thumbImage: thumbImg,
                       ),
-                      overlayShape: RoundSliderOverlayShape(
-                        overlayRadius: 0,
-                      ),
+                      overlayShape: RoundSliderOverlayShape(overlayRadius: 0),
                       trackHeight: 10.h,
                       activeTrackColor: Color.fromRGBO(128, 128, 178, 1),
                       inactiveTrackColor: Color.fromRGBO(113, 109, 150, 1),
