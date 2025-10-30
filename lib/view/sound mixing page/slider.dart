@@ -29,7 +29,7 @@ class CustomImageThumbShape extends SliderComponentShape {
     required Size sizeWithOverflow,
   }) {
     final canvas = context.canvas;
-    final paint = Paint();
+    
 
     if (thumbImage != null) {
       final dst = Rect.fromCircle(center: center, radius: thumbRadius);
@@ -39,9 +39,7 @@ class CustomImageThumbShape extends SliderComponentShape {
         image: thumbImage!,
         fit: BoxFit.cover,
       );
-    } else {
-      canvas.drawCircle(center, thumbRadius, paint..color = Colors.transparent);
-    }
+    } 
   }
 
   static Future<ui.Image> loadImage(String assetPath) async {
