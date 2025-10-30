@@ -96,7 +96,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     final selectedSoundsData = _selectedSounds
         .map((s) => {
       'title': s.title,
-      'volume': _audioManager.getSavedVolume(s.title),
+      'volume': _audioManager.getSavedVolume(s.title.toLowerCase()),
     })
         .toList();
 
@@ -141,6 +141,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               hintText: 'My Sleep Mix Title',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey)
               ),
               filled: true,
               fillColor: ThemeHelper.textFieldFillColor(context),
