@@ -115,17 +115,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   if (_currentPage < _onboardingData.length - 1) {
                     _pageController.nextPage(
                       duration: Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
                     );
                   } else {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
-                    );
+                    await precacheImage(const AssetImage("aassets/images/LoginPageImage.png"), context);
+                    // Future.delayed(const Duration(milliseconds: 600), () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      );
+                    // });
                   }
                 },
                 child: Text(
@@ -141,11 +144,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             SizedBox(height: 10.h),
             TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                );
+              onPressed: () async {
+                await precacheImage(const AssetImage("assets/images/LoginPageImage.png"), context);
+                // Future.delayed(const Duration(milliseconds: 500), () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  );
+                // });
               },
               child: Text(
                 'Sign In',

@@ -16,7 +16,8 @@ bool _trialDialogShown = false;
 bool isTrial = true;
 
 class SoundPage extends StatefulWidget {
-  const SoundPage({super.key});
+  List<NewSoundModel>? cachedSounds;
+  SoundPage({super.key, required this.cachedSounds});
 
   @override
   State<SoundPage> createState() => _SoundPageState();
@@ -26,7 +27,7 @@ class _SoundPageState extends State<SoundPage> {
   final DatabaseService _firebaseService = DatabaseService();
   final AudioManager _audioManager = AudioManager(); 
 
-  static List<NewSoundModel>? _cachedSounds;
+  // List<NewSoundModel>? _cachedSounds;
   late final UserModel userData;
   List<NewSoundModel> _sounds = [];
   bool _isLoading = false;
@@ -36,8 +37,8 @@ class _SoundPageState extends State<SoundPage> {
   @override
   void initState() {
     super.initState();
-    if (_cachedSounds != null) {
-      _sounds = _cachedSounds!;
+    if (widget.cachedSounds != null) {
+      _sounds = widget.cachedSounds!;
     } else {
       _loadSounds();
     }
@@ -60,6 +61,7 @@ class _SoundPageState extends State<SoundPage> {
       setState(() {
         for (var sound in _sounds) {
           sound.isSelected = selectedTitles.contains(sound.title);
+          sound.volume = 1.0;
         }
       });
     }
@@ -84,7 +86,7 @@ class _SoundPageState extends State<SoundPage> {
           sound.title,
         );
       }
-      _cachedSounds = sounds;
+      widget.cachedSounds = sounds;
 
       await _audioManager.downloadAllNewSounds(sounds);
 
@@ -105,15 +107,22 @@ class _SoundPageState extends State<SoundPage> {
 
     if (sound.isSelected) {
       setState(() {
-        _sounds[index].isSelected = !_sounds[index].isSelected;
+        sound.isSelected = !sound.isSelected;
+        sound.volume = 1.0;
       });
+      debugPrint("saving sound volume");
+      _audioManager.saveVolume(sound.filepath, 1.0);
+      debugPrint("saved sound volume");
+
       await _audioManager.pauseSound(sound.filepath);
       await _audioManager.clearSound(sound.filepath);
 
     } else {
       setState(() {
-        _sounds[index].isSelected = !_sounds[index].isSelected;
+        sound.isSelected = !sound.isSelected;
+        sound.volume = 1.0;
       });
+      _audioManager.saveVolume(sound.filepath, 1.0);
       await _audioManager.playSoundNew(sound.filepath, _sounds);
       await _audioManager.playAllNew();
     }

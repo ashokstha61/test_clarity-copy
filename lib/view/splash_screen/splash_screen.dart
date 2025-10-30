@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:Sleephoria/theme.dart';
+import 'package:Sleephoria/view/Sound%20page/AudioManager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
@@ -7,6 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Sleephoria/view/home/homepage.dart';
 import 'package:Sleephoria/view/login/login_screen.dart';
 import 'package:Sleephoria/view/splash_screen/onboarding_screen.dart';
+
+import '../../model/model.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,12 +19,38 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final int splashDuration = 3; 
+  final int splashDuration = 3;
+  static List<NewSoundModel>? _cachedSounds;
+
+  get _firebaseService => null;
 
   @override
   void initState() {
     super.initState();
     _navigateNext();
+    if (_cachedSounds == null){
+      _loadSounds();
+    }
+  }
+
+  Future<void> _loadSounds() async {
+    try {
+      final sounds = await _firebaseService.fetchSoundData();
+      for (var sound in sounds) {
+        sound.isSelected = AudioManager().selectedSoundTitles.contains(
+          sound.title,
+        );
+      }
+      _cachedSounds = sounds;
+
+      await AudioManager().downloadAllNewSounds(sounds);
+
+      setState(() {
+        _cachedSounds = sounds;
+
+      });
+    } catch (e) {
+    }
   }
 
   Future<void> _navigateNext() async {
@@ -36,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (isUserLoggedIn) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) =>  Homepage()),
+        MaterialPageRoute(builder: (_) =>  Homepage(cachedSounds: _cachedSounds,)),
       );
     } else if (onboardingSeen == null || onboardingSeen == false) {
       await prefs.setBool('onboardingSeen', true);

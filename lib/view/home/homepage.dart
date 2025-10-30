@@ -12,7 +12,8 @@ class Homepage extends StatefulWidget {
   final int initialTap;
   final String? favMessage;
   final bool? favBool;
-  Homepage({super.key,this.initialTap = 0, this.favMessage, this.favBool,});
+  final List<NewSoundModel>? cachedSounds;
+  Homepage({super.key,this.initialTap = 0, this.favMessage, this.favBool, this.cachedSounds});
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -24,7 +25,18 @@ class _HomepageState extends State<Homepage> {
   bool _isLoading = true;
   String? _errorMessage;
 
-  late List<Widget> _screens;
+  late final List<Widget> _screens =  [
+    SoundPage(cachedSounds: widget.cachedSounds,),
+    FavoritesPage(
+      // currentTitle: _currentPlayingTitle,
+      // onTogglePlayback: _togglePlayback,
+      // onItemTap: _onFavoriteItemTap,
+      title: widget.favMessage ?? '',
+      triggerRefresh: widget.favBool ?? false,
+    ),
+    const ProfilePage(),
+  ];
+
   final List<String> _titles = const ['Sounds', 'Favorites', 'Settings'];
 
   // String? _currentPlayingTitle;
@@ -34,54 +46,44 @@ class _HomepageState extends State<Homepage> {
   void initState() {
     super.initState();
     _currentIndex = widget.initialTap;
-    _screens = [
-      const SoundPage(),
-    FavoritesPage(
-      // currentTitle: _currentPlayingTitle,
-      // onTogglePlayback: _togglePlayback,
-      // onItemTap: _onFavoriteItemTap,
-      title: widget.favMessage ?? '',
-      triggerRefresh: widget.favBool ?? false,
-    ),
-      const ProfilePage(),
-    ];
-    _fetchSoundData();
+
+    // _fetchSoundData();
   }
 
-  Future<void> _fetchSoundData() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-
-    try {
-      final sounds = await DatabaseService().fetchSoundData();
-      if (mounted) {
-        setState(() {
-          soundData = sounds;
-          _screens[0] = const SoundPage();
-          _screens[1] = FavoritesPage(
-            // currentTitle: _currentPlayingTitle,
-            // onTogglePlayback: _togglePlayback,
-            // onItemTap: _onFavoriteItemTap,
-            title: widget.favMessage ?? '',
-            triggerRefresh: widget.favBool ?? false,
-          );
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorMessage = 'Failed to load sounds: $e';
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to load sounds: $e')));
-      }
-    }
-  }
+  // Future<void> _fetchSoundData() async {
+  //   setState(() {
+  //     _isLoading = true;
+  //     _errorMessage = null;
+  //   });
+  //
+  //   try {
+  //     final sounds = await DatabaseService().fetchSoundData();
+  //     if (mounted) {
+  //       setState(() {
+  //         soundData = sounds;
+  //         _screens[0] = const SoundPage();
+  //         _screens[1] = FavoritesPage(
+  //           // currentTitle: _currentPlayingTitle,
+  //           // onTogglePlayback: _togglePlayback,
+  //           // onItemTap: _onFavoriteItemTap,
+  //           title: widget.favMessage ?? '',
+  //           triggerRefresh: widget.favBool ?? false,
+  //         );
+  //         _isLoading = false;
+  //       });
+  //     }
+  //   } catch (e) {
+  //     if (mounted) {
+  //       setState(() {
+  //         _errorMessage = 'Failed to load sounds: $e';
+  //         _isLoading = false;
+  //       });
+  //       ScaffoldMessenger.of(
+  //         context,
+  //       ).showSnackBar(SnackBar(content: Text('Failed to load sounds: $e')));
+  //     }
+  //   }
+  // }
 
   void _onTabTapped(int index) {
     setState(() {
@@ -124,27 +126,29 @@ class _HomepageState extends State<Homepage> {
           ),
         ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage != null
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    _errorMessage!,
-                    style: const TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _fetchSoundData,
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            )
-          : _screens[_currentIndex],
+      body:
+      // _isLoading
+      //     ? const Center(child: CircularProgressIndicator())
+      //     : _errorMessage != null
+      //     ? Center(
+      //         child: Column(
+      //           mainAxisAlignment: MainAxisAlignment.center,
+      //           children: [
+      //             Text(
+      //               _errorMessage!,
+      //               style: const TextStyle(fontSize: 16),
+      //               textAlign: TextAlign.center,
+      //             ),
+      //             const SizedBox(height: 16),
+      //             ElevatedButton(
+      //               onPressed: _fetchSoundData,
+      //               child: const Text('Retry'),
+      //             ),
+      //           ],
+      //         ),
+      //       )
+      //     :
+      _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromARGB(255, 37, 37, 80),
         currentIndex: _currentIndex,

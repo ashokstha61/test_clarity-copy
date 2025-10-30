@@ -29,8 +29,8 @@ class AudioManager {
 
   void saveVolume(String title, double volume) {
     _volumeMap[title] = volume;
+    print("All volumes: $_volumeMap");
   }
-
 
   Future<void> toggleSoundSelection(
     List<NewSoundModel> allSounds,
@@ -107,8 +107,8 @@ class AudioManager {
     }
   }
 
-  double getSavedVolume(String title, {double defaultValue = 1.0}) {
-    return _volumeMap[title] ?? defaultValue;
+  double getSavedVolume(String title) {
+    return _volumeMap[title] ?? 1.0;
   }
 
   Future<void> playSound(String title) async {

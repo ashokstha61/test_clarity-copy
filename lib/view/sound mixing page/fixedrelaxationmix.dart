@@ -65,8 +65,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         .map(
           (s) => s.copyWith(
             volume: _audioManager.getSavedVolume(
-              s.title,
-              defaultValue: s.volume.toDouble(),
+              s.title.toLowerCase(),
             ),
           ),
         )
@@ -311,9 +310,9 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         });
       }
 
-      _audioManager.pauseSound(sound.filepath);
       _audioManager.clearSound(sound.filepath);
       _audioManager.saveVolume(sound.filepath, 1.0);
+      _audioManager.pauseSound(sound.filepath);
 
       widget.onSoundsChanged(_buildUpdatedSounds());
 
@@ -330,7 +329,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       _selectedSounds = List.from(_selectedSounds);
       _selectedSounds[index] = _selectedSounds[index].copyWith(volume: volume);
     });
-    _audioManager.saveVolume(_selectedSounds[index].title, volume);
+    _audioManager.saveVolume(_selectedSounds[index].title.toLowerCase(), volume);
 
     await _audioManager.adjustVolumes(_selectedSounds);
     widget.onSoundsChanged(_buildUpdatedSounds());
