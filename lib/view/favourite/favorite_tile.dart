@@ -14,8 +14,8 @@ class FavoriteTile extends StatelessWidget {
       children: [
         ListTile(
           leading: Container(
-            width: 40.w,
-            height: 40.h,
+            width: 53.w,
+            height: 53.h,
             decoration: BoxDecoration(
               border: Border.all(color: Colors.blue.shade200, width: 1.w),
               borderRadius: BorderRadius.circular(3),
