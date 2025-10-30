@@ -9,7 +9,8 @@ class ThemeHelper {
 
   static Color backgroundColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
-        ? const Color.fromARGB(255, 32, 32, 45)
+        // ? const Color.fromARGB(255, 32, 32, 45)
+        ? Colors.black
         : Colors.white;
   }
 

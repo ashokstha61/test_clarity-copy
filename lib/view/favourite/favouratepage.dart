@@ -1,5 +1,6 @@
 import 'package:Sleephoria/model/favSoundModel.dart';
 import 'package:Sleephoria/model/model.dart';
+import 'package:Sleephoria/theme.dart';
 import 'package:Sleephoria/view/favourite/empty_file.dart';
 import 'package:Sleephoria/view/favourite/favorite_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -59,12 +60,11 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   Future<void> playAftersSave() async {
-
     print(widget.triggerRefresh);
-    if (widget.triggerRefresh){
+    if (widget.triggerRefresh) {
       await _loadFavorites();
       await _loadSounds();
-      for (var sound in favoriteSounds){
+      for (var sound in favoriteSounds) {
         if (sound.favSoundTitle == widget.title) {
           _onFavoriteTap(widget.title, sound.soundTitles);
         }
@@ -117,16 +117,20 @@ class _FavoritesPageState extends State<FavoritesPage> {
     });
 
     debugPrint("All sounds: ${Sounds.map((e) => e.title).toList()}");
-    debugPrint("Mix soundTitles: ${soundTitles.map((e) => e['title']).toList()}");
+    debugPrint(
+      "Mix soundTitles: ${soundTitles.map((e) => e['title']).toList()}",
+    );
 
     final selectedSounds = Sounds.where((s) {
       final match = soundTitles.firstWhere(
-            (map) => map['title'] == s.title,
+        (map) => map['title'] == s.title,
         orElse: () => {},
       );
 
       if (match.isNotEmpty) {
-        s = s.copyWith(volume: (match['volume'] as num?)?.toDouble() ?? s.volume);
+        s = s.copyWith(
+          volume: (match['volume'] as num?)?.toDouble() ?? s.volume,
+        );
         return true;
       }
       return false;
@@ -145,7 +149,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     await AudioManager().playFavSounds(Sounds, soundTitles);
     await AudioManager().playAllFav();
     // setState(() {
-      favIsTapped = true;
+    favIsTapped = true;
     // });
     if (!mounted) return;
   }
@@ -165,6 +169,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ThemeHelper.backgroundColor(context),
       body: SafeArea(
         child: Column(
           children: [

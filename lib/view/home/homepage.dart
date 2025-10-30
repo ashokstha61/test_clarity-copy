@@ -12,7 +12,7 @@ class Homepage extends StatefulWidget {
   final int initialTap;
   final String? favMessage;
   final bool? favBool;
-  Homepage({super.key,this.initialTap = 0, this.favMessage, this.favBool,});
+  Homepage({super.key, this.initialTap = 0, this.favMessage, this.favBool});
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -24,8 +24,8 @@ class _HomepageState extends State<Homepage> {
   bool _isLoading = true;
   String? _errorMessage;
 
-  late final List<Widget> _screens =  [
-     SoundPage(),
+  late final List<Widget> _screens = [
+    SoundPage(),
     FavoritesPage(
       // currentTitle: _currentPlayingTitle,
       // onTogglePlayback: _togglePlayback,
@@ -125,29 +125,30 @@ class _HomepageState extends State<Homepage> {
           ),
         ),
       ),
+      backgroundColor: ThemeHelper.backgroundColor(context),
       body:
-      // _isLoading
-      //     ? const Center(child: CircularProgressIndicator())
-      //     : _errorMessage != null
-      //     ? Center(
-      //         child: Column(
-      //           mainAxisAlignment: MainAxisAlignment.center,
-      //           children: [
-      //             Text(
-      //               _errorMessage!,
-      //               style: const TextStyle(fontSize: 16),
-      //               textAlign: TextAlign.center,
-      //             ),
-      //             const SizedBox(height: 16),
-      //             ElevatedButton(
-      //               onPressed: _fetchSoundData,
-      //               child: const Text('Retry'),
-      //             ),
-      //           ],
-      //         ),
-      //       )
-      //     :
-      _screens[_currentIndex],
+          // _isLoading
+          //     ? const Center(child: CircularProgressIndicator())
+          //     : _errorMessage != null
+          //     ? Center(
+          //         child: Column(
+          //           mainAxisAlignment: MainAxisAlignment.center,
+          //           children: [
+          //             Text(
+          //               _errorMessage!,
+          //               style: const TextStyle(fontSize: 16),
+          //               textAlign: TextAlign.center,
+          //             ),
+          //             const SizedBox(height: 16),
+          //             ElevatedButton(
+          //               onPressed: _fetchSoundData,
+          //               child: const Text('Retry'),
+          //             ),
+          //           ],
+          //         ),
+          //       )
+          //     :
+          _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromARGB(255, 37, 37, 80),
         currentIndex: _currentIndex,

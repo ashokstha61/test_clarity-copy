@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (user != null) {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) =>  Homepage()),
+          MaterialPageRoute(builder: (context) => Homepage()),
           (route) => false,
         );
       }
@@ -43,14 +43,14 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ThemeHelper.backgroundColor(context),
-      body:Stack(
+      body: Stack(
         children: [
           Column(
             children: [
               const SizedBox(height: 60),
               SizedBox(
-                height: 453.h,
-                width : 339.w,
+                height: 458.h,
+                width: 334.w,
                 child: Image.asset('assets/images/LoginPageImage.png'),
               ),
               const SizedBox(height: 50),
@@ -77,7 +77,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const SignInScreen()),
+                            MaterialPageRoute(
+                              builder: (context) => const SignInScreen(),
+                            ),
                           );
                         },
                       ),

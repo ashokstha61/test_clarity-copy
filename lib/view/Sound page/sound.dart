@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:Sleephoria/theme.dart';
 import 'package:Sleephoria/view/globals/globals.dart';
 import 'package:Sleephoria/model/model.dart';
 import 'package:Sleephoria/new_firebase_service.dart';
@@ -148,6 +149,7 @@ class _SoundPageState extends State<SoundPage> {
     final selectedSounds = _sounds.where((s) => s.isSelected).toList();
 
     return Scaffold(
+      backgroundColor: ThemeHelper.backgroundColor(context),
       body: Column(
         children: [
           Expanded(
