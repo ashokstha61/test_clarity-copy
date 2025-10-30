@@ -12,8 +12,7 @@ class Homepage extends StatefulWidget {
   final int initialTap;
   final String? favMessage;
   final bool? favBool;
-  final List<NewSoundModel>? cachedSounds;
-  Homepage({super.key,this.initialTap = 0, this.favMessage, this.favBool, this.cachedSounds});
+  Homepage({super.key,this.initialTap = 0, this.favMessage, this.favBool,});
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -26,7 +25,7 @@ class _HomepageState extends State<Homepage> {
   String? _errorMessage;
 
   late final List<Widget> _screens =  [
-    SoundPage(cachedSounds: widget.cachedSounds,),
+     SoundPage(),
     FavoritesPage(
       // currentTitle: _currentPlayingTitle,
       // onTogglePlayback: _togglePlayback,

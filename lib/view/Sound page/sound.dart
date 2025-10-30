@@ -16,8 +16,7 @@ bool _trialDialogShown = false;
 bool isTrial = true;
 
 class SoundPage extends StatefulWidget {
-  List<NewSoundModel>? cachedSounds;
-  SoundPage({super.key, required this.cachedSounds});
+  const SoundPage({super.key});
 
   @override
   State<SoundPage> createState() => _SoundPageState();
@@ -27,7 +26,7 @@ class _SoundPageState extends State<SoundPage> {
   final DatabaseService _firebaseService = DatabaseService();
   final AudioManager _audioManager = AudioManager(); 
 
-  // List<NewSoundModel>? _cachedSounds;
+  static List<NewSoundModel>? _cachedSounds;
   late final UserModel userData;
   List<NewSoundModel> _sounds = [];
   bool _isLoading = false;
@@ -37,8 +36,8 @@ class _SoundPageState extends State<SoundPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.cachedSounds != null) {
-      _sounds = widget.cachedSounds!;
+    if (_cachedSounds != null) {
+      _sounds = _cachedSounds!;
     } else {
       _loadSounds();
     }
@@ -86,7 +85,7 @@ class _SoundPageState extends State<SoundPage> {
           sound.title,
         );
       }
-      widget.cachedSounds = sounds;
+      _cachedSounds = sounds;
 
       await _audioManager.downloadAllNewSounds(sounds);
 
@@ -110,10 +109,7 @@ class _SoundPageState extends State<SoundPage> {
         sound.isSelected = !sound.isSelected;
         sound.volume = 1.0;
       });
-      debugPrint("saving sound volume");
       _audioManager.saveVolume(sound.filepath, 1.0);
-      debugPrint("saved sound volume");
-
       await _audioManager.pauseSound(sound.filepath);
       await _audioManager.clearSound(sound.filepath);
 

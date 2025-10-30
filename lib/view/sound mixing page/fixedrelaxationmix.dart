@@ -80,17 +80,37 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   }
 
   Future<void> _saveMix() async {
-    // 1. Validate selected sounds
+    // 1️⃣ Validate selected sounds
     if (_selectedSounds.isEmpty) {
       _showErrorSnackBar('Please select at least one sound to save.');
       return;
     }
 
-    // 2. Ask for mix name
-    String? mixName = await showDialog<String>(
+    // 2️⃣ Ask user for mix name
+    final mixName = await _showMixNameDialog();
+    if (!mounted || mixName == null || mixName.isEmpty) {
+      _showMissingTitleDialog();
+      return;
+    }
+
+    final selectedSoundsData = _selectedSounds
+        .map((s) => {
+      'title': s.title,
+      'volume': _audioManager.getSavedVolume(s.title),
+    })
+        .toList();
+
+    FavoriteManager.instance.addFavorite(mixName, selectedSoundsData);
+
+    await _showSuccessDialog(mixName);
+  }
+
+  Future<String?> _showMixNameDialog() {
+    final controller = TextEditingController();
+
+    return showDialog<String>(
       context: context,
       builder: (context) {
-        TextEditingController controller = TextEditingController();
         return AlertDialog(
           title: Column(
             children: [
@@ -118,21 +138,17 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           content: TextField(
             controller: controller,
             decoration: InputDecoration(
-              hintText: 'My Sleep Mix',
+              hintText: 'My Sleep Mix Title',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.grey),
               ),
               filled: true,
               fillColor: ThemeHelper.textFieldFillColor(context),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 10,
-              ),
+              contentPadding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             ),
           ),
-          actionsAlignment:
-              MainAxisAlignment.spaceEvenly,
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -146,7 +162,8 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               ),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context, controller.text),
+              onPressed: () =>
+                  Navigator.pop(context, controller.text.trim()), // return input
               child: Text(
                 'Save',
                 style: TextStyle(
@@ -160,30 +177,31 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         );
       },
     );
-    if (!mounted) return;
+  }
 
-    if (mixName == null || mixName.isEmpty) {
-      return;
-    }
+  void _showMissingTitleDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Missing Title"),
+        content: const Text("Please enter the mix title."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
 
-    // 3. Collect selected sound filepaths
-    final selectedSoundsTitle = _selectedSounds
-        .map(
-          (s) => {
-            'title': s.title,
-            'volume': _audioManager.getSavedVolume(s.title),
-          },
-        )
-        .toList();
-
-    FavoriteManager.instance.addFavorite(mixName, selectedSoundsTitle);
-
-    await showDialog(
+  Future<void> _showSuccessDialog(String mixName) {
+    return showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Text(
-          "Sound saved",
+          "Sound Saved",
           textAlign: TextAlign.center,
           style: TextStyle(
             fontWeight: FontWeight.bold,
@@ -208,9 +226,13 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => Homepage(initialTap: 1, favMessage: mixName, favBool: true, ),
+                  builder: (_) => Homepage(
+                    initialTap: 1,
+                    favMessage: mixName,
+                    favBool: true,
+                  ),
                 ),
-                (route) => false,
+                    (route) => false,
               );
             },
             child: const Text(
@@ -226,6 +248,170 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       ),
     );
   }
+
+
+  // Future<void> _saveMix() async {
+  //   // 1. Validate selected sounds
+  //   if (_selectedSounds.isEmpty) {
+  //     _showErrorSnackBar('Please select at least one sound to save.');
+  //     return;
+  //   }
+  //
+  //   // 2. Ask for mix name
+  //   String? mixName = await showDialog<String>(
+  //     context: context,
+  //     builder: (context) {
+  //       TextEditingController controller = TextEditingController();
+  //       return AlertDialog(
+  //         title: Column(
+  //           children: [
+  //             Text(
+  //               'Name Your Mix',
+  //               style: TextStyle(
+  //                 fontSize: 20,
+  //                 color: ThemeHelper.textColor(context),
+  //                 fontFamily: 'Montserrat',
+  //                 fontWeight: FontWeight.bold,
+  //               ),
+  //             ),
+  //             const SizedBox(height: 8),
+  //             Text(
+  //               'Enter a name for your sound mix',
+  //               textAlign: TextAlign.center,
+  //               style: TextStyle(
+  //                 fontSize: 14,
+  //                 color: ThemeHelper.textColor(context),
+  //                 fontFamily: 'Montserrat',
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         content: TextField(
+  //           controller: controller,
+  //           decoration: InputDecoration(
+  //             hintText: 'My Sleep Mix Title',
+  //             border: OutlineInputBorder(
+  //               borderRadius: BorderRadius.circular(8),
+  //               borderSide: const BorderSide(color: Colors.grey),
+  //             ),
+  //             filled: true,
+  //             fillColor: ThemeHelper.textFieldFillColor(context),
+  //             contentPadding: const EdgeInsets.symmetric(
+  //               horizontal: 12,
+  //               vertical: 10,
+  //             ),
+  //           ),
+  //         ),
+  //         actionsAlignment:
+  //             MainAxisAlignment.spaceEvenly,
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () => Navigator.pop(context),
+  //             child: Text(
+  //               'Cancel',
+  //               style: TextStyle(
+  //                 color: Colors.blue,
+  //                 fontFamily: 'Montserrat',
+  //                 fontSize: 14.sp,
+  //               ),
+  //             ),
+  //           ),
+  //           TextButton(
+  //             onPressed: () {
+  //               if (mixName == null || mixName.isEmpty) {
+  //                 showDialog(
+  //                   context: context,
+  //                   builder: (context) => AlertDialog(
+  //                     title: const Text("Missing Title"),
+  //                     content: const Text("Please enter the mix title."),
+  //                     actions: [
+  //                       TextButton(
+  //                         onPressed: () => Navigator.pop(context), // close dialog
+  //                         child: const Text("OK"),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 );
+  //                 return;
+  //               }
+  //             },
+  //             child: Text(
+  //               'Save',
+  //               style: TextStyle(
+  //                 color: Colors.blue,
+  //                 fontFamily: 'Montserrat',
+  //                 fontSize: 14.sp,
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  //   if (!mounted) return;
+  //
+  //
+  //
+  //   // 3. Collect selected sound filepaths
+  //   final selectedSoundsTitle = _selectedSounds
+  //       .map(
+  //         (s) => {
+  //           'title': s.title,
+  //           'volume': _audioManager.getSavedVolume(s.title),
+  //         },
+  //       )
+  //       .toList();
+  //
+  //   FavoriteManager.instance.addFavorite(mixName, selectedSoundsTitle);
+  //
+  //   await showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (context) => AlertDialog(
+  //       title: Text(
+  //         "Sound saved",
+  //         textAlign: TextAlign.center,
+  //         style: TextStyle(
+  //           fontWeight: FontWeight.bold,
+  //           fontFamily: 'Montserrat',
+  //           color: ThemeHelper.textColor(context),
+  //         ),
+  //       ),
+  //       content: Text(
+  //         "Your customized mix has been saved to your favorites.",
+  //         textAlign: TextAlign.center,
+  //         style: TextStyle(
+  //           fontFamily: 'Montserrat',
+  //           fontSize: 14,
+  //           color: ThemeHelper.textColor(context),
+  //         ),
+  //       ),
+  //       actionsAlignment: MainAxisAlignment.center,
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () {
+  //             Navigator.pop(context);
+  //             Navigator.pushAndRemoveUntil(
+  //               context,
+  //               MaterialPageRoute(
+  //                 builder: (_) => Homepage(initialTap: 1, favMessage: mixName, favBool: true, ),
+  //               ),
+  //               (route) => false,
+  //             );
+  //           },
+  //           child: const Text(
+  //             "OK",
+  //             style: TextStyle(
+  //               color: Colors.blue,
+  //               fontFamily: 'Montserrat',
+  //               fontWeight: FontWeight.w600,
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Future<void> _addSoundToMix(NewSoundModel sound) async {
     if (_selectedSounds.any((s) => s.title == sound.title)) {
