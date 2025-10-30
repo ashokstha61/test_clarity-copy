@@ -41,7 +41,7 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: EdgeInsets.all(16.0),
               decoration: BoxDecoration(
                 color: Color.fromRGBO(59, 59, 122, 1),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(10.sp),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -153,7 +153,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   barrierDismissible: false,
                   builder: (ctx) => AlertDialog(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.sp),
                     ),
                     title: const Center(
                       child: Text(
@@ -164,10 +164,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                     ),
-                    content: const Text(
+                    content:  Text(
                       "Are you sure you want to log out?",
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontFamily: 'Montserrat', fontSize: 15),
+                      style: TextStyle(fontFamily: 'Montserrat', fontSize: 15.sp),
                     ),
                     actionsPadding: EdgeInsets.zero,
                     actions: [

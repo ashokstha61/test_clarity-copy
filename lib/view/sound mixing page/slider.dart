@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 
 class CustomImageThumbShape extends SliderComponentShape {
   final double thumbRadius;
-  final ui.Image? thumbImage; 
+  final ui.Image? thumbImage;
 
   const CustomImageThumbShape({this.thumbRadius = 15, this.thumbImage});
 
@@ -15,27 +15,32 @@ class CustomImageThumbShape extends SliderComponentShape {
 
   @override
   void paint(
-      PaintingContext context,
-      Offset center, {
-        required Animation<double> activationAnimation,
-        required Animation<double> enableAnimation,
-        required bool isDiscrete,
-        required TextPainter labelPainter,
-        required RenderBox parentBox,
-        required SliderThemeData sliderTheme,
-        required TextDirection textDirection,
-        required double value,
-        required double textScaleFactor,
-        required Size sizeWithOverflow,
-      }) {
+    PaintingContext context,
+    Offset center, {
+    required Animation<double> activationAnimation,
+    required Animation<double> enableAnimation,
+    required bool isDiscrete,
+    required TextPainter labelPainter,
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required TextDirection textDirection,
+    required double value,
+    required double textScaleFactor,
+    required Size sizeWithOverflow,
+  }) {
     final canvas = context.canvas;
     final paint = Paint();
 
     if (thumbImage != null) {
       final dst = Rect.fromCircle(center: center, radius: thumbRadius);
-      paintImage(canvas: canvas, rect: dst, image: thumbImage!, fit: BoxFit.cover);
+      paintImage(
+        canvas: canvas,
+        rect: dst,
+        image: thumbImage!,
+        fit: BoxFit.cover,
+      );
     } else {
-      canvas.drawCircle(center, thumbRadius, paint..color = Colors.blue);
+      canvas.drawCircle(center, thumbRadius, paint..color = Colors.transparent);
     }
   }
 
@@ -46,4 +51,3 @@ class CustomImageThumbShape extends SliderComponentShape {
     return frame.image;
   }
 }
-

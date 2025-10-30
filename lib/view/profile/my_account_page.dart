@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:Sleephoria/custom/custom_setting.dart';
 import 'package:Sleephoria/custom/custom_text_field.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyAccountPage extends StatefulWidget {
@@ -89,7 +90,7 @@ class MyAccountPageState extends State<MyAccountPage> {
         centerTitle: true,
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.sp),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -98,13 +99,13 @@ class MyAccountPageState extends State<MyAccountPage> {
               initialValue: fullName,
               readOnly: true,
             ),
-            SizedBox(height: 16.0),
+            SizedBox(height: 16.h ),
             CustomTextField(
               labelText: 'Email',
               initialValue: email,
               readOnly: true,
             ),
-            SizedBox(height: 10.0),
+            SizedBox(height: 10.h),
             Divider(),
             CustomSetting(
               title: 'App Settings',

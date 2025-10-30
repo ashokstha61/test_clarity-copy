@@ -36,8 +36,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   bool showLoading = false;
   ui.Image? thumbImg;
 
-  
-
   List<NewSoundModel> _buildUpdatedSounds() {
     debugPrint("update in progress");
 
@@ -51,10 +49,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         (selected) => selected.title == s.title,
       );
 
-      return s.copyWith(
-        isSelected: isSelected,
-        volume: selectedSound.volume,
-      );
+      return s.copyWith(isSelected: isSelected, volume: selectedSound.volume);
     }).toList();
   }
 
@@ -99,18 +94,18 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               Text(
                 'Name Your Mix',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 20.sp,
                   color: ThemeHelper.textColor(context),
                   fontFamily: 'Montserrat',
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
               Text(
                 'Enter a name for your sound mix',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 14.sp,
                   color: ThemeHelper.textColor(context),
                   fontFamily: 'Montserrat',
                 ),
@@ -122,19 +117,18 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
             decoration: InputDecoration(
               hintText: 'My Sleep Mix',
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8.sp),
+                borderSide: BorderSide(color: Colors.grey),
               ),
               filled: true,
               fillColor: ThemeHelper.textFieldFillColor(context),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 10,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 12.sp,
+                vertical: 10.sp,
               ),
             ),
           ),
-          actionsAlignment:
-              MainAxisAlignment.spaceEvenly,
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -198,7 +192,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Montserrat',
-            fontSize: 14,
+            fontSize: 14.sp,
             color: ThemeHelper.textColor(context),
           ),
         ),
@@ -210,12 +204,16 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => Homepage(initialTap: 1, favMessage: mixName, favBool: true, ),
+                  builder: (_) => Homepage(
+                    initialTap: 1,
+                    favMessage: mixName,
+                    favBool: true,
+                  ),
                 ),
                 (route) => false,
               );
             },
-            child: const Text(
+            child: Text(
               "OK",
               style: TextStyle(
                 color: Colors.blue,
@@ -236,7 +234,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     }
 
     if (!isTrial && _selectedSounds.isNotEmpty) {
-    
       for (final selectedSound in List.from(_selectedSounds)) {
         await _removeSoundFromMixInternal(selectedSound);
       }
@@ -285,8 +282,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           return false;
         });
 
-        
-
         final originalIndex = widget.sounds.indexWhere(
           (s) => s.title == sound.title,
         );
@@ -317,8 +312,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       _audioManager.saveVolume(sound.filepath, 1.0);
 
       widget.onSoundsChanged(_buildUpdatedSounds());
-
-
     } catch (e) {
       _showErrorSnackBar('Failed to remove sound: $e');
     }
@@ -343,7 +336,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         SnackBar(
           content: Text(message),
           backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
+          duration: Duration(seconds: 3),
         ),
       );
     }
@@ -359,7 +352,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        leadingWidth: 60,
+        leadingWidth: 60.sp,
         leading: IconButton(
           icon: Icon(
             Icons.keyboard_arrow_down,
@@ -371,16 +364,16 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
             Navigator.pop(context, updated);
           },
         ),
-        toolbarHeight: 100,
+        toolbarHeight: 100.h,
         title: Padding(
-          padding: const EdgeInsets.only(top: 8.0),
+          padding: EdgeInsets.only(top: 8.h),
           child: Column(
             children: [
               Text(
                 'Your Relaxation Mix',
                 style: TextStyle(
                   color: ThemeHelper.textTitle(context),
-                  fontSize: 25,
+                  fontSize: 25.sp,
                   fontFamily: 'Montserrat',
                 ),
               ),
@@ -393,23 +386,23 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         children: [
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.sp),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Recommended Sounds',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 20.sp,
                       color: ThemeHelper.textTitle(context),
                       fontFamily: 'Montserrat',
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   SizedBox(
-                    height: 120,
+                    height: 120.h,
                     child: _isLoadingRecommendedSounds
-                        ? const Center(
+                        ? Center(
                             child: CircularProgressIndicator(
                               color: Colors.white,
                             ),
@@ -426,19 +419,19 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                             },
                           ),
                   ),
-                  const SizedBox(height: 5),
+                  SizedBox(height: 5.h),
                   Text(
                     'Selected Sounds',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 20.sp,
                       color: ThemeHelper.textTitle(context),
                       fontFamily: 'Montserrat',
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.sp),
                   Expanded(
                     child: _selectedSounds.isEmpty
-                        ? const Center(
+                        ? Center(
                             child: Text(
                               'No sounds selected\nTap on recommended sounds to add them',
                               textAlign: TextAlign.center,
@@ -459,7 +452,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           ),
           Container(
             height: 150,
-            padding: EdgeInsets.all(16.0.sp),
+            padding: EdgeInsets.all(16.sp),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -469,16 +462,16 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
-              color: const Color.fromARGB(194, 194, 244, 244),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
+              color: Color.fromARGB(194, 194, 244, 244),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16.sp),
+                topRight: Radius.circular(16.sp),
               ),
               boxShadow: [
                 BoxShadow(
                   color: Color.fromRGBO(0, 0, 0, 1).withOpacity(0.2),
                   blurRadius: 8,
-                  offset: const Offset(0, -2),
+                  offset: Offset(0, -2),
                 ),
               ],
             ),
@@ -546,23 +539,18 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               boxShadow: [
                 BoxShadow(
                   color: Colors.black38,
-                  blurRadius: 5,
+                  blurRadius: 5.sp,
                   spreadRadius: -20,
-                  offset: Offset(-6.2, -5.7), 
+                  offset: Offset(-6.2, -5.7),
                 ),
               ],
             ),
-            child: ClipOval(
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.cover, 
-              ),
-            ),
+            child: ClipOval(child: Image.asset(imagePath, fit: BoxFit.cover)),
           ),
         ),
 
         Positioned(
-          top: 90,
+          top: 90.h,
           left: leading,
           child: Text(
             label,
@@ -624,7 +612,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(right: 16.0),
+      padding: EdgeInsets.only(right: 16.w),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -647,13 +635,13 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildIconImage(sound.icon, 40),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 4.w),
                       child: Text(
                         sound.title.replaceAll('_', ' '),
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 12.sp,
                           color: ThemeHelper.textTitle(context),
                           overflow: TextOverflow.ellipsis,
                           fontFamily: 'Montserrat',
@@ -673,7 +661,8 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
 
   Widget _buildSelectedSoundItem(NewSoundModel sound, int index) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      key: ValueKey(sound.title),
+      margin: EdgeInsets.symmetric(vertical: 8.h),
       child: Row(
         children: [
           GestureDetector(
@@ -699,19 +688,19 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.zero,
-                        minimumSize: const Size(24, 24),
+                        minimumSize: Size(24, 24),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        shape: const CircleBorder(),
-                        backgroundColor: const Color.fromRGBO(92, 67, 108, 1),
+                        shape: CircleBorder(),
+                        backgroundColor: Color.fromRGBO(92, 67, 108, 1),
                         elevation: 2,
-                        side: const BorderSide(
+                        side: BorderSide(
                           color: Color.fromRGBO(92, 67, 108, 1),
                         ),
                       ),
                       onPressed: () => _removeSoundFromMixInternal(sound),
-                      child: const Icon(
+                      child: Icon(
                         Icons.close,
-                        size: 16,
+                        size: 16.sp,
                         color: Colors.white,
                       ),
                     ),
@@ -720,7 +709,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -746,7 +735,7 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                         thumbRadius: 18.h,
                         thumbImage: thumbImg,
                       ),
-                      overlayShape: const RoundSliderOverlayShape(
+                      overlayShape: RoundSliderOverlayShape(
                         overlayRadius: 0,
                       ),
                       trackHeight: 10.h,
@@ -754,7 +743,9 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                       inactiveTrackColor: Color.fromRGBO(113, 109, 150, 1),
                     ),
                     child: Slider(
+                      key: ValueKey("${sound.title}_slider"),
                       value: sound.volume.toDouble(),
+                      // value: _selectedSounds[index].volume.toDouble(),
                       min: 0.0,
                       max: 1.0,
                       onChanged: (value) {

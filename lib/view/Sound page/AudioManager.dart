@@ -29,8 +29,8 @@ class AudioManager {
 
   void saveVolume(String title, double volume) {
     _volumeMap[title] = volume;
+    print("All volumes: $_volumeMap");
   }
-
 
   Future<void> toggleSoundSelection(
     List<NewSoundModel> allSounds,
@@ -149,20 +149,18 @@ class AudioManager {
   Future<void> adjustVolumes(List<NewSoundModel> selectedSounds) async {
     for (final s in selectedSounds) {
       final player = _players[s.title.toLowerCase()];
-      debugPrint(":headphones: Adjusting volume for ${s.title.toLowerCase()}");
+      debugPrint("🎧 Adjusting volume for ${s.title.toLowerCase()}");
       if (player == null) {
-        debugPrint(":x: No player found for ${s.title.toLowerCase()}");
+        debugPrint("❌ No player found for ${s.title.toLowerCase()}");
         continue;
       }
-      debugPrint(":arrow_right: Setting volume to ${s.volume}");
+      debugPrint("➡️ Setting volume to ${s.volume}");
       try {
         await player.setVolume(s.volume.toDouble());
-        debugPrint(
-          ":white_check_mark: Volume set for ${s.title.toLowerCase()}",
-        );
+        debugPrint("✅ Volume set for ${s.title.toLowerCase()}");
       } catch (e, st) {
         debugPrint(
-          ":x: Failed to set volume for ${s.title.toLowerCase()}: $e\n$st",
+          "❌ Failed to set volume for ${s.title.toLowerCase()}: $e\n$st",
         );
       }
     }
@@ -434,8 +432,7 @@ class AudioManager {
       try {
         await player.stop();
         await player.dispose();
-      } catch (_) {
-      }
+      } catch (_) {}
     }
     players.clear();
   }

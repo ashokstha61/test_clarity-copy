@@ -9,9 +9,9 @@ class EmptyFile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: 100),
+        SizedBox(height: 100.h),
         Image(image: AssetImage('assets/images/empty-min.png'), height: 200),
-        SizedBox(height: 10),
+        SizedBox(height: 10.h),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 40.0),
           child: Text(

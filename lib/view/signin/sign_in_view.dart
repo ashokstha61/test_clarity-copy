@@ -1,6 +1,7 @@
 import 'package:Sleephoria/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SignInView extends StatefulWidget {
   final TextEditingController emailController;
@@ -10,7 +11,7 @@ class SignInView extends StatefulWidget {
   final bool isPasswordVisible;
   final VoidCallback onTogglePassword;
 
-  const SignInView({
+   SignInView({
     super.key,
     required this.emailController,
     required this.passwordController,
@@ -34,26 +35,26 @@ class _SignInViewState extends State<SignInView> {
       backgroundColor: ThemeHelper.backgroundColor(context),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon:  Icon(Icons.arrow_back),
           color: ThemeHelper.iconColorRemix(context),
           onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: ThemeHelper.backgroundColor(context),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding:  EdgeInsets.all(20.sp),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               "Login",
               style: TextStyle(
-                fontSize: 28,
+                fontSize: 28.sp,
                 fontWeight: FontWeight.bold,
                 color: ThemeHelper.loginAndRegisterTitleColor(context),
               ),
             ),
-            const SizedBox(height: 30),
+             SizedBox(height: 30.h),
 
             _buildTextField(
               widget.emailController,
@@ -61,7 +62,7 @@ class _SignInViewState extends State<SignInView> {
               isDarkMode,
               keyboardType: TextInputType.emailAddress,
             ),
-            const SizedBox(height: 20),
+             SizedBox(height: 20.h),
 
             _buildTextField(
               widget.passwordController,
@@ -72,7 +73,7 @@ class _SignInViewState extends State<SignInView> {
               isPasswordVisible: widget.isPasswordVisible,
               onTogglePassword: widget.onTogglePassword,
             ),
-            const SizedBox(height: 20),
+             SizedBox(height: 20.h),
 
             SizedBox(
               width: double.infinity,
@@ -81,17 +82,17 @@ class _SignInViewState extends State<SignInView> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.sp),
                   ),
                 ),
                 onPressed: widget.onLogin,
-                child: const Text(
+                child:  Text(
                   "Login",
                   style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+             SizedBox(height: 12.h),
 
             Center(
               child: TextButton(
@@ -101,7 +102,7 @@ class _SignInViewState extends State<SignInView> {
                       Colors.transparent, 
                   splashFactory: NoSplash.splashFactory, 
                 ),
-                child: const Text.rich(
+                child:  Text.rich(
                   TextSpan(
                     text: "Don't have an account? ",
                     style: TextStyle(color: Colors.grey),
