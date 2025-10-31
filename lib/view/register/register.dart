@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -60,7 +61,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _showAlert("Invalid Input", "Please enter your full name.");
       return;
     }
-    
+
     if (phone.isNotEmpty && phone.length != 10) {
       _showAlert("Invalid Input", "Phone number must be exactly 10 digits.");
       return;
@@ -115,7 +116,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
 
       _showAlert("Success", "Registered successfully.", () {
-        Navigator.pop(context); 
+        Navigator.pop(context);
       });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
@@ -163,27 +164,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
         MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: ThemeHelper.registerColor(context),
+      backgroundColor: ThemeHelper.backgroundColor(context),
       body: Stack(
         children: [
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20.sp),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     "Register",
                     style: TextStyle(
-                      fontSize: 26,
+                      fontSize: 26.sp,
                       fontWeight: FontWeight.bold,
                       color: ThemeHelper.registerTextColor(context),
                     ),
                     textAlign: TextAlign.start,
                   ),
-                  const SizedBox(height: 30),
                   _buildTextField(_nameController, "Full Name", isDarkMode),
-                  const SizedBox(height: 12),
                   _buildTextField(
                     _phoneController,
                     "Phone Number",
@@ -195,14 +194,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       LengthLimitingTextInputFormatter(10),
                     ],
                   ),
-                  const SizedBox(height: 12),
                   _buildTextField(
                     _emailController,
                     "Email",
                     isDarkMode,
                     keyboardType: TextInputType.emailAddress,
                   ),
-                  const SizedBox(height: 12),
                   _buildTextField(
                     _passwordController,
                     "Password",
@@ -216,7 +213,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       });
                     },
                   ),
-                  const SizedBox(height: 12),
                   _buildTextField(
                     _confirmPasswordController,
                     "Confirm Password",
@@ -230,33 +226,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       });
                     },
                   ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: _registerUser,
-                      child: const Text(
-                        "Register",
-                        style: TextStyle(fontSize: 16, color: Colors.white),
-                      ),
-                    ),
+
+                  customRegistrationButton(
+                    onPressed: _registerUser,
+                    title: "Register",
+                    backgroundColor: Colors.blueAccent,
+                    height: 50.h,
+                    borderRadius: 8.r,
+                    fontSize: 16,
+                    textColor: Colors.white,
                   ),
-                  const SizedBox(height: 12),
                   Center(
                     child: TextButton(
                       onPressed: () => Navigator.pop(context),
                       style: TextButton.styleFrom(
-                        overlayColor:
-                            Colors.transparent, 
-                        splashFactory:
-                            NoSplash.splashFactory, 
+                        overlayColor: Colors.transparent,
+                        splashFactory: NoSplash.splashFactory,
                       ),
                       child: const Text.rich(
                         TextSpan(
@@ -303,36 +288,71 @@ Widget _buildTextField(
   Color? borderColor,
   List<TextInputFormatter>? inputFormatters,
 }) {
-  return TextField(
-    controller: controller,
-    obscureText: obscureText,
-    keyboardType: keyboardType,
-    style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
-    decoration: InputDecoration(
-      filled: true,
-      fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
-      labelText: label,
-      labelStyle: TextStyle(
-        color: isDarkMode ? Colors.white70 : Colors.black54,
+  return Padding(
+    padding: EdgeInsets.symmetric(vertical: 8.h),
+    child: TextField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
+        labelText: label,
+        labelStyle: TextStyle(
+          color: isDarkMode ? Colors.white70 : Colors.black54,
+        ),
+        floatingLabelStyle: TextStyle(
+          color: isDarkMode ? Colors.grey : Colors.black,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r),
+          borderSide: BorderSide(
+            color:
+                borderColor ?? (isDarkMode ? Colors.white54 : Colors.black26),
+          ),
+        ),
+        suffixIcon: isPasswordField
+            ? IconButton(
+                icon: Icon(
+                  isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+                onPressed: onTogglePassword,
+              )
+            : null,
       ),
-      floatingLabelStyle: TextStyle(
-        color: isDarkMode ? Colors.grey : Colors.black,
-      ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(
-          color: borderColor ?? (isDarkMode ? Colors.white54 : Colors.black26),
+    ),
+  );
+}
+
+Widget customRegistrationButton({
+  required VoidCallback onPressed,
+  required String title,
+  Color backgroundColor = Colors.blueAccent,
+  double height = 50,
+  double borderRadius = 8,
+  double fontSize = 16,
+  Color textColor = Colors.white,
+}) {
+  return Padding(
+    padding: EdgeInsets.symmetric(vertical: 8.h),
+    child: SizedBox(
+      width: double.infinity,
+      height: height.h,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadius),
+          ),
+        ),
+        onPressed: onPressed,
+        child: Text(
+          title,
+          style: TextStyle(fontSize: fontSize.sp, color: textColor),
         ),
       ),
-      suffixIcon: isPasswordField
-          ? IconButton(
-              icon: Icon(
-                isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                color: isDarkMode ? Colors.white : Colors.black,
-              ),
-              onPressed: onTogglePassword,
-            )
-          : null,
     ),
   );
 }

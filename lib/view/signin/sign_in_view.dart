@@ -1,6 +1,7 @@
 import 'package:Sleephoria/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SignInView extends StatefulWidget {
   final TextEditingController emailController;
@@ -41,19 +42,18 @@ class _SignInViewState extends State<SignInView> {
         backgroundColor: ThemeHelper.backgroundColor(context),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20.sp),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               "Login",
               style: TextStyle(
-                fontSize: 28,
+                fontSize: 28.sp,
                 fontWeight: FontWeight.bold,
                 color: ThemeHelper.loginAndRegisterTitleColor(context),
               ),
             ),
-            const SizedBox(height: 30),
 
             _buildTextField(
               widget.emailController,
@@ -61,7 +61,6 @@ class _SignInViewState extends State<SignInView> {
               isDarkMode,
               keyboardType: TextInputType.emailAddress,
             ),
-            const SizedBox(height: 20),
 
             _buildTextField(
               widget.passwordController,
@@ -72,34 +71,20 @@ class _SignInViewState extends State<SignInView> {
               isPasswordVisible: widget.isPasswordVisible,
               onTogglePassword: widget.onTogglePassword,
             ),
-            const SizedBox(height: 20),
 
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                onPressed: widget.onLogin,
-                child: const Text(
-                  "Login",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
+            customButton(
+              onPressed: widget.onLogin,
+              title: "Login",
+              backgroundColor: Colors.green,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12.h),
 
             Center(
               child: TextButton(
                 onPressed: widget.onRegister,
                 style: TextButton.styleFrom(
-                  overlayColor:
-                      Colors.transparent, 
-                  splashFactory: NoSplash.splashFactory, 
+                  overlayColor: Colors.transparent,
+                  splashFactory: NoSplash.splashFactory,
                 ),
                 child: const Text.rich(
                   TextSpan(
@@ -137,38 +122,68 @@ Widget _buildTextField(
   Color? borderColor,
   List<TextInputFormatter>? inputFormatters,
 }) {
-  return TextField(
-    controller: controller,
-    obscureText: obscureText,
-    keyboardType: keyboardType,
-    inputFormatters: inputFormatters,
-    style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
-    decoration: InputDecoration(
-      filled: true,
-      fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
-      labelText: label,
-      labelStyle: TextStyle(
-        color: isDarkMode ? Colors.white70 : Colors.black54,
-      ),
-      floatingLabelStyle: TextStyle(
-        color: isDarkMode ? Colors.grey : Colors.black,
-        fontWeight: FontWeight.bold,
-      ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(
-          color: borderColor ?? (isDarkMode ? Colors.white54 : Colors.black26),
+  return Padding(
+    padding: EdgeInsets.symmetric(vertical: 8.h),
+    child: TextField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
+      style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
+        labelText: label,
+        labelStyle: TextStyle(
+          color: isDarkMode ? Colors.white70 : Colors.black54,
         ),
+        floatingLabelStyle: TextStyle(
+          color: isDarkMode ? Colors.grey : Colors.black,
+          fontWeight: FontWeight.bold,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r),
+          borderSide: BorderSide(
+            color:
+                borderColor ?? (isDarkMode ? Colors.white54 : Colors.black26),
+          ),
+        ),
+        suffixIcon: isPasswordField
+            ? IconButton(
+                icon: Icon(
+                  isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+                onPressed: onTogglePassword,
+              )
+            : null,
       ),
-      suffixIcon: isPasswordField
-          ? IconButton(
-              icon: Icon(
-                isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                color: isDarkMode ? Colors.white : Colors.black,
-              ),
-              onPressed: onTogglePassword,
-            )
-          : null,
+    ),
+  );
+}
+
+Widget customButton({
+  required VoidCallback onPressed,
+  required String title,
+  Color backgroundColor = Colors.green,
+  double height = 50,
+  double borderRadius = 8,
+}) {
+  return Padding(
+    padding: EdgeInsets.symmetric(vertical: 10.h),
+    child: SizedBox(
+      width: double.infinity,
+      height: height.h,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadius.r),
+          ),
+        ),
+        onPressed: onPressed,
+        child: Text(title, style: const TextStyle(color: Colors.white)),
+      ),
     ),
   );
 }

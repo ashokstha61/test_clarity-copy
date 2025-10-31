@@ -375,8 +375,10 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ThemeHelper.backgroundColor(context),
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        backgroundColor: ThemeHelper.backgroundColor(context),
         leadingWidth: 60.w,
         leading: IconButton(
           icon: Icon(

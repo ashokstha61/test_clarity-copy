@@ -70,19 +70,22 @@ class ThemeHelper {
 
   static Color timerBackgroundColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
-        ? Color.fromRGBO(34, 32, 51, 1)
+        // ? Color.fromRGBO(34, 32, 51, 1)
+        ? Colors.black
         : Colors.white;
   }
 
   static Color timerscreenBackgrundColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
-        ? const Color.fromRGBO(18, 23, 42, 1)
+        // ? const Color.fromRGBO(18, 23, 42, 1)
+        ? Colors.black
         : Colors.white;
   }
 
   static Color registerColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
-        ? const Color.fromARGB(255, 32, 32, 45)
+        // ? const Color.fromARGB(255, 32, 32, 45)
+        ? Colors.black
         : Colors.white;
   }
 
@@ -106,7 +109,8 @@ class ThemeHelper {
 
   static Color loginAndRegisterBackgroundColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
-        ? const Color.fromARGB(255, 32, 32, 45)
+        // ? const Color.fromARGB(255, 32, 32, 45)
+        ? Colors.black
         : Colors.white;
   }
 

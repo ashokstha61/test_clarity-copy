@@ -22,8 +22,8 @@ class MyAccountPageState extends State<MyAccountPage> {
   @override
   void initState() {
     super.initState();
-    _loadCachedUserInfo(); 
-    _loadUserInfoFromFirestore(); 
+    _loadCachedUserInfo();
+    _loadUserInfoFromFirestore();
     final appState = MyApp.of(context);
     if (appState != null) _isDarkMode = appState.isDarkMode;
   }
@@ -34,7 +34,7 @@ class MyAccountPageState extends State<MyAccountPage> {
 
     setState(() {
       fullName = user?.displayName ?? prefs.getString('fullName') ?? 'No Name';
-      email =  user?.email ?? prefs.getString('email') ?? 'No Email';
+      email = user?.email ?? prefs.getString('email') ?? 'No Email';
     });
   }
 
@@ -72,7 +72,9 @@ class MyAccountPageState extends State<MyAccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ThemeHelper.backgroundColor(context),
       appBar: AppBar(
+        backgroundColor: ThemeHelper.backgroundColor(context),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios),
           onPressed: () {
@@ -115,7 +117,7 @@ class MyAccountPageState extends State<MyAccountPage> {
                   _isDarkMode = value;
                 });
                 final appState = MyApp.of(context);
-                appState?.toggleTheme(value); 
+                appState?.toggleTheme(value);
               },
             ),
           ],
