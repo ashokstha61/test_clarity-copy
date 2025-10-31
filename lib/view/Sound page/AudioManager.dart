@@ -305,6 +305,11 @@ class AudioManager {
   }
 
   Future<void> playAllNew() async {
+    debugPrint("🎧 All players count: ${_players.length}");
+    for (final entry in _players.entries) {
+      debugPrint("🎵 Player: ${entry.key}, State: ${entry.value.playing ? 'Playing' : 'Paused'}");
+    }
+
     if (isPlayingMix) {
       debugPrint("🛑 Mix player active — clearing it before playing sounds");
       await pauseAllFav();
@@ -438,5 +443,16 @@ class AudioManager {
       }
     }
     players.clear();
+  }
+
+  Future<void> deleteAllPlayer() async {
+    for (final player in _players.values) {
+      try {
+        await player.stop();
+        await player.dispose();
+      } catch (_) {
+      }
+    }
+    _players.clear();
   }
 }

@@ -73,6 +73,12 @@ class _SoundPageState extends State<SoundPage> {
   }
 
   Future<void> _loadSounds() async {
+
+    if (isSoundPlaying){
+      _audioManager.pauseAllNew();
+      _audioManager.deleteAllPlayer();
+    }
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -94,9 +100,7 @@ class _SoundPageState extends State<SoundPage> {
         _isLoading = false;
       });
 
-      if (isSoundPlaying){
-        _audioManager.pauseAllNew();
-      }
+
     } catch (e) {
       setState(() {
         _errorMessage = 'Failed to load sounds: $e';

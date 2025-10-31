@@ -622,8 +622,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                   ? null
                   : () async {
                       if (isPlaying) {
+                        isPlaying = false;
+                        isSoundPlaying = false;
                         await AudioManager().pauseAllNew();
                       } else {
+                        isPlaying = true;
+                        isSoundPlaying = true;
                         await AudioManager().playAllNew();
                       }
                     },

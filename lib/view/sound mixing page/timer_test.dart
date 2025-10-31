@@ -210,15 +210,15 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                               icon: Column(
                                 children: [
                                   Image.asset(
-                                    _isPaused
-                                        ? "assets/images/playImage.png"
-                                        : "assets/images/pauseImage.png",
+                                    isSoundPlaying
+                                        ? "assets/images/pauseImage.png"
+                                        : "assets/images/playImage.png",
                                     width: 50.w,
                                     height: 50.h,
                                   ),
                                   SizedBox(height: 4.h),
                                   Text(
-                                    _isPaused ? 'Play' : 'Pause',
+                                    isSoundPlaying ? 'Pause' : 'Play',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 14.sp,
