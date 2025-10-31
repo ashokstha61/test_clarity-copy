@@ -11,17 +11,11 @@ import '../../new_firebase_service.dart';
 import '../Sound page/AudioManager.dart';
 
 class FavoritesPage extends StatefulWidget {
-  // final String? currentTitle;
-  // final VoidCallback onTogglePlayback;
-  // final Function(NewSoundModel) onItemTap;
   final String title;
   bool triggerRefresh;
 
   FavoritesPage({
     super.key,
-    // this.currentTitle,
-    // required this.onTogglePlayback,
-    // required this.onItemTap,
     required this.title,
     this.triggerRefresh = false,
   });
@@ -59,8 +53,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   Future<void> playAftersSave() async {
-
-    print(widget.triggerRefresh);
     if (widget.triggerRefresh){
       await _loadFavorites();
       await _loadSounds();
@@ -149,9 +141,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
     await AudioManager().playFavSounds(Sounds, soundTitles);
     await AudioManager().playAllFav();
-    // setState(() {
-      favIsTapped = true;
-    // });
+    favIsTapped = true;
+
     if (!mounted) return;
   }
 

@@ -123,12 +123,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     );
                   } else {
                     await precacheImage(const AssetImage("aassets/images/LoginPageImage.png"), context);
-                    // Future.delayed(const Duration(milliseconds: 600), () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const LoginScreen()),
                       );
-                    // });
                   }
                 },
                 child: Text(
@@ -146,12 +144,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             TextButton(
               onPressed: () async {
                 await precacheImage(const AssetImage("assets/images/LoginPageImage.png"), context);
-                // Future.delayed(const Duration(milliseconds: 500), () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const LoginScreen()),
                   );
-                // });
               },
               child: Text(
                 'Sign In',

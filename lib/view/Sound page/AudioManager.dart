@@ -29,7 +29,6 @@ class AudioManager {
 
   void saveVolume(String title, double volume) {
     _volumeMap[title] = volume;
-    print("All volumes: $_volumeMap");
   }
 
   Future<void> toggleSoundSelection(
