@@ -93,6 +93,10 @@ class _SoundPageState extends State<SoundPage> {
         _sounds = sounds;
         _isLoading = false;
       });
+
+      if (isSoundPlaying){
+        _audioManager.pauseAllNew();
+      }
     } catch (e) {
       setState(() {
         _errorMessage = 'Failed to load sounds: $e';
@@ -107,7 +111,6 @@ class _SoundPageState extends State<SoundPage> {
     if (sound.isSelected) {
       setState(() {
         sound.isSelected = !sound.isSelected;
-        sound.volume = 1.0;
       });
       _audioManager.saveVolume(sound.filepath, 1.0);
       await _audioManager.pauseSound(sound.filepath);
@@ -116,7 +119,6 @@ class _SoundPageState extends State<SoundPage> {
     } else {
       setState(() {
         sound.isSelected = !sound.isSelected;
-        sound.volume = 1.0;
       });
       _audioManager.saveVolume(sound.filepath, 1.0);
       await _audioManager.playSoundNew(sound.filepath, _sounds);

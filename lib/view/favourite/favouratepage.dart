@@ -81,6 +81,11 @@ class _FavoritesPageState extends State<FavoritesPage> {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     final favData = await _firebaseService.loadMixes(userId.toString());
 
+    if (isPlayingMix) {
+      setState(() => isPlayingMix = false);
+      await AudioManager().pauseAllFav();
+    }
+
     setState(() {
       favoriteSounds = favData;
       _cachedFavSounds = favData;
