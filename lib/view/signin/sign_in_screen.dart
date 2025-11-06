@@ -1,13 +1,12 @@
-import 'package:clarity/view/home/homepage.dart';
-import 'package:clarity/view/register/register.dart';
+import 'package:Sleephoria/view/home/homepage.dart';
+import 'package:Sleephoria/view/register/register.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:clarity/globals.dart' as globals;
-
+import 'package:Sleephoria/globals.dart' as globals;
 import 'sign_in_view.dart';
-// import 'register_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -29,49 +28,6 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
-  // Future<void> _handleLogin() async {
-  //   final email = _emailController.text.trim();
-  //   final password = _passwordController.text.trim();
-
-  //   if (email.isEmpty || password.isEmpty) {
-  //     _showAlert("Invalid Input", "Please enter both email and password.");
-  //     return;
-  //   }
-
-  //   setState(() => _isLoading = true);
-
-  //   try {
-  //     // Firebase login
-  //     UserCredential result = await FirebaseAuth.instance
-  //         .signInWithEmailAndPassword(email: email, password: password);
-
-  //     final userID = result.user?.uid;
-  //     if (userID == null) throw Exception("User ID is null");
-
-  //     // RevenueCat login
-  //     // await Purchases.logIn(userID);
-
-  //     // Save login status
-  //     final prefs = await SharedPreferences.getInstance();
-  //     await prefs.setBool("isUserLoggedIn", true);
-
-  //     if (!mounted) return;
-  //     _showAlert("Login Successful", "Welcome back!", () {
-  //       Navigator.pushAndRemoveUntil(
-  //         context,
-  //         MaterialPageRoute(builder: (_) => const Homepage()),
-  //         (route) => false, // Removes all previous routes
-  //       );
-  //       globals.isUserLoggedIn = true;
-  //     });
-  //   } on FirebaseAuthException catch (_) {
-  //     _showAlert("Login Failed", "Email or Password is incorrect.");
-  //   } catch (e) {
-  //     _showAlert("Error", e.toString());
-  //   } finally {
-  //     setState(() => _isLoading = false);
-  //   }
-  // }
   Future<void> _handleLogin() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -91,9 +47,6 @@ class _SignInScreenState extends State<SignInScreen> {
       final userID = result.user?.uid;
       if (userID == null) throw Exception("User ID is null");
 
-      // RevenueCat login
-      // await Purchases.logIn(userID);
-
       // Save login status
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool("isUserLoggedIn", true);
@@ -101,33 +54,23 @@ class _SignInScreenState extends State<SignInScreen> {
       if (!mounted) return;
 
       // Show success message
-      // showDialog(
-      //   context: context,
-      //   builder: (_) =>
-      //       AlertDialog(content: Center(child: Text("Login Successful"))),
-      // );
-      showDialog(
+      showToast(
+        "Login Successful",
         context: context,
-        barrierDismissible: false,
-        builder: (_) => Dialog(
-          backgroundColor: Colors.transparent, // make background transparent
-          elevation: 0,
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              // semi-transparent background for text
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Text(
-              "Login Successful",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+        animation: StyledToastAnimation.scale,
+        reverseAnimation: StyledToastAnimation.fade,
+        position: StyledToastPosition.center,
+        duration: Duration(seconds: 2),
+        backgroundColor: Colors.black54,
+        textStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 16.sp,
+
+          fontFamily: 'montserrat',
+        ),
+        borderRadius: BorderRadius.circular(0), // Makes it rectangular
+        shapeBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(0), // Completely rectangular
         ),
       );
 
@@ -183,13 +126,6 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   backgroundColor: const Color.fromRGBO(61, 67, 89, 1.000),
-      //   leading: IconButton(
-      //     icon: const Icon(Icons.arrow_back, color: Colors.white),
-      //     onPressed: () => Navigator.of(context).pop(),
-      //   ),
-      // ),
       backgroundColor: Color.fromRGBO(61, 67, 89, 1.000),
       body: Stack(
         children: [

@@ -1,14 +1,8 @@
-// import 'package:clarity/view/home/homepage.dart';
-import 'package:clarity/view/splash_screen/splash_screen.dart';
-// import 'package:clarity/view/sound%20mixing%20page/timer_screen.dart';
-// import 'package:clarity/view/testSoundpage.dart';
+import 'package:Sleephoria/view/splash_screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-// import 'view/sound mixing page/remix test.dart';
-// import 'package:just_audio/just_audio.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,6 +51,7 @@ class _MyAppState extends State<MyApp> {
     return ScreenUtilInit(
       designSize: const Size(360, 780),
       child: MaterialApp(
+        
         theme: ThemeData(
           primarySwatch: Colors.blue,
           brightness: Brightness.light,

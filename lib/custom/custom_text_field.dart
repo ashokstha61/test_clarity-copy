@@ -1,4 +1,4 @@
-import 'package:clarity/theme.dart';
+import 'package:Sleephoria/theme.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -10,7 +10,7 @@ class CustomTextField extends StatelessWidget {
   const CustomTextField({
     super.key,
     required this.labelText,
-    required this.hintText,
+    this.hintText = '',
     this.initialValue,
     this.readOnly = false,
   });

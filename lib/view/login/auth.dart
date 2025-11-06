@@ -1,9 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+bool isLoggedIn = false ;
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final prefs = SharedPreferences.getInstance();
 
   // Stream to listen to authentication state changes
   Stream<User?> get authStateChanges => _auth.authStateChanges();
@@ -12,7 +17,7 @@ class AuthService {
   User? get currentUser => _auth.currentUser;
 
   // Check if user is logged in
-  bool get isLoggedIn => _auth.currentUser != null;
+
 
   // Email and Password Authentication
   Future<User?> signInWithEmailAndPassword({
@@ -24,62 +29,72 @@ class AuthService {
         email: email,
         password: password,
       );
+      await _setLoginState(true);
       return result.user;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     }
   }
 
-  // Future<User?> RegisterV({
-  //   required String fullName,
-  //   num phone,
-  //   required String email,
-  //   required String password,
-  //   required String conformPassword,
-
-  // }) async {
-  //   try {
-  //     final UserCredential result = await _auth.RegisterV(
-  //       fullName: fullName,
-  //       email: email,
-  //       phoneNo: phone,
-  //       password: password,
-  //       conformPassword:conformPassword,
-  //     );
-  //     return result.user;
-  //   } on FirebaseAuthException catch (e) {
-  //     throw _handleAuthException(e);
-  //   }
-  // }
 
   // Google Sign-In
-  Future<User?> signInWithGoogle() async {
+  Future<User?> signInWithGoogle(BuildContext context) async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return null;
+      if (googleUser == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Google Sign-In was cancelled.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return null;
+      }
 
       final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      await googleUser.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential result = await _auth.signInWithCredential(
-        credential,
+      final UserCredential result = await _auth.signInWithCredential(credential);
+
+      // ✅ Success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Login Successful'),
+          backgroundColor: Colors.green,
+        ),
       );
+
+      await _setLoginState(true);
       return result.user;
     } on FirebaseAuthException catch (e) {
+      // 🛑 Error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Sign in failed: ${e.message}'),
+          backgroundColor: Colors.red,
+        ),
+      );
       throw _handleAuthException(e);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Unexpected error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      rethrow;
     }
   }
 
-  // Apple Sign-In (if you want to implement it later)
-  Future<User?> signInWithApple() async {
-    // Apple sign-in implementation would go here
-    // This requires additional setup with Apple Developer account
-    throw UnimplementedError('Apple sign-in not implemented yet');
+
+  Future<void> _setLoginState(bool isLoggedIn) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isUserLoggedIn', isLoggedIn);
   }
 
   // Sign Out
@@ -87,6 +102,7 @@ class AuthService {
     try {
       await _googleSignIn.signOut();
       await _auth.signOut();
+      await _setLoginState(false);
     } catch (e) {
       throw Exception('Failed to sign out: $e');
     }

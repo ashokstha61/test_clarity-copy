@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "clarity",
+      "name": "Sleephoria",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
@@ -15,7 +15,7 @@
       ]
     },
     {
-      "name": "clarity (profile mode)",
+      "name": "Sleephoria (profile mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile",
@@ -23,7 +23,7 @@
       "args": ["--no-sound-null-safety"]
     },
     {
-      "name": "clarity (release mode)",
+      "name": "Sleephoria (release mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "release",

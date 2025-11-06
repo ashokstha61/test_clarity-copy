@@ -1,13 +1,19 @@
-// Fixed RelaxationMixPage - Key fixes applied
+import 'dart:ui' as ui;
+import 'package:Sleephoria/globals.dart';
+import 'package:Sleephoria/model/model.dart';
+import 'package:Sleephoria/theme.dart';
+import 'package:Sleephoria/view/Sound%20page/sound.dart';
+import 'package:Sleephoria/view/favourite/favouratemanager.dart';
 
-import 'package:clarity/model/model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:async';
-
-import '../Sound page/test2.dart';
-
+import '../home/homepage.dart';
+import 'global_timer.dart';
+import '../Sound page/AudioManager.dart';
 import 'slider.dart';
 import 'timer_screen.dart';
+import 'timer_test.dart';
 
 class RelaxationMixPage extends StatefulWidget {
   final List<NewSoundModel> sounds;
@@ -25,84 +31,339 @@ class RelaxationMixPage extends StatefulWidget {
 class _RelaxationMixPageState extends State<RelaxationMixPage> {
   List<NewSoundModel> _selectedSounds = [];
   List<NewSoundModel> _recommendedSounds = [];
-  // bool _isLoadingPlayback = false;
+  final AudioManager _audioManager = AudioManager();
   final bool _isLoadingRecommendedSounds = false;
   bool showLoading = false;
+  ui.Image? thumbImg;
+
+  // List<NewSoundModel> _buildUpdatedSounds() {
+  //   debugPrint("update in progess");
+  //   return widget.sounds
+  //       .map(
+  //         (s) => s.copyWith(
+  //           isSelected: _selectedSounds.any(
+  //             (selected) => selected.title == s.title,
+  //           ),
+  //           // Preserve volume changes made in mix page
+  //           volume: _selectedSounds
+  //               .firstWhere(
+  //                 (selected) => selected.title == s.title,
+  //                 orElse: () => s,
+  //               )
+  //               .volume,
+  //         ),
+  //       )
+  //       .toList();
+  // }
 
   List<NewSoundModel> _buildUpdatedSounds() {
-    return widget.sounds
-        .map(
-          (s) => s.copyWith(
-            isSelected: _selectedSounds.any(
-              (selected) => selected.title == s.title,
-            ),
-            // Preserve volume changes made in mix page
-            volume: _selectedSounds
-                .firstWhere(
-                  (selected) => selected.title == s.title,
-                  orElse: () => s,
-                )
-                .volume,
-          ),
-        )
-        .toList();
+    debugPrint("update in progress");
+
+    return widget.sounds.map((s) {
+      final selectedSound = _selectedSounds.firstWhere(
+            (selected) => selected.title == s.title,
+        orElse: () => s.copyWith(isSelected: false),
+      );
+
+      final isSelected = _selectedSounds.any((selected) => selected.title == s.title);
+
+      return s.copyWith(
+        isSelected: isSelected, // explicitly false if not selected
+        volume: selectedSound.volume, // preserve volume if selected
+      );
+    }).toList();
   }
+
+
 
   @override
   void initState() {
     super.initState();
-    _selectedSounds.addAll(widget.sounds.where((s) => s.isSelected));
+    _selectedSounds = widget.sounds
+        .where((s) => s.isSelected)
+        .map(
+          (s) => s.copyWith(
+            volume: _audioManager.getSavedVolume(
+              s.title,
+              defaultValue: s.volume.toDouble(),
+            ),
+          ),
+        )
+        .toList();
     _recommendedSounds = widget.sounds.where((s) => !s.isSelected).toList();
 
-    AudioManager().syncPlayers(_selectedSounds);
+    CustomImageThumbShape.loadImage('assets/images/thumb.png').then((img) {
+      setState(() {
+        thumbImg = img;
+      });
+    });
   }
 
-  void _addSoundToMix(NewSoundModel sound) async {
+  Future<void> _saveMix() async {
+    // 1. Validate selected sounds
+    if (_selectedSounds.isEmpty) {
+      _showErrorSnackBar('Please select at least one sound to save.');
+      return;
+    }
+
+    // 2. Ask for mix name
+    String? mixName = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        TextEditingController controller = TextEditingController();
+        return AlertDialog(
+          title: Column(
+            children: [
+              Text(
+                'Name Your Mix',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: ThemeHelper.textColor(context),
+                  fontFamily: 'Montserrat',
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Enter a name for your sound mix',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: ThemeHelper.textColor(context),
+                  fontFamily: 'Montserrat',
+                ),
+              ),
+            ],
+          ),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: 'My Sleep Mix',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Colors.grey),
+              ),
+              filled: true,
+              fillColor: ThemeHelper.textFieldFillColor(context),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
+            ),
+          ),
+          actionsAlignment:
+              MainAxisAlignment.spaceEvenly, // evenly spaced buttons
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontFamily: 'Montserrat',
+                  fontSize: 14.sp,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, controller.text),
+              child: Text(
+                'Save',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontFamily: 'Montserrat',
+                  fontSize: 14.sp,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+    if (!mounted) return;
+
+    if (mixName == null || mixName.isEmpty) {
+      return;
+    }
+
+    // 3. Collect selected sound filepaths
+    final selectedSoundskoTitle = _selectedSounds
+        .map((s) => {'title': s.title, 'volume': s.volume})
+        .toList();
+
+    // // 4. Create a new mix model
+    // final mix = NewSoundModel(
+    //   title: mixName,
+    //   icon: 'default_icon',
+    //   filepath: "mix_$mixName",
+    //   musicUrl: "",
+    //   isSelected: false,
+    //   isFav: true,
+    //   isNew: true,
+    //   isLocked: false,
+    //   volume: 1.0,
+    //   mixFilePaths: filepaths, // 👈 your saved sounds
+    // );
+
+    // 5. Save using your FavoritesManager
+    FavoriteManager.instance.addFavorite(mixName, selectedSoundskoTitle);
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false, // must tap OK
+      builder: (context) => AlertDialog(
+        title: Text(
+          "Sound saved",
+          textAlign: TextAlign.center, // ✅ center align
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Montserrat',
+            color: ThemeHelper.textColor(context),
+          ),
+        ),
+        content: Text(
+          "Your customized mix has been saved to your favorites.",
+          textAlign: TextAlign.center, // ✅ center align
+          style: TextStyle(
+            fontFamily: 'Montserrat',
+            fontSize: 14,
+            color: ThemeHelper.textColor(context),
+          ),
+        ),
+        actionsAlignment: MainAxisAlignment.center, // ✅ center button
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=> const Homepage(initialTap: 1)), (route)=>false);
+
+            }, // close only on OK
+            child: const Text(
+              "OK",
+              style: TextStyle(
+                color: Colors.blue,
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _addSoundToMix(NewSoundModel sound) async {
     if (_selectedSounds.any((s) => s.title == sound.title)) {
       _showErrorSnackBar('Sound already selected');
       return;
     }
 
+    // Check trial mode restrictions
+    if (!isTrial && _selectedSounds.isNotEmpty) {
+      // In non-trial mode, only one sound can be selected at a time
+      // Remove all currently selected sounds first
+      for (final selectedSound in List.from(_selectedSounds)) {
+        await _removeSoundFromMixInternal(selectedSound);
+      }
+    }
+
+    // Ensure new sounds start with a reasonable volume (say 0.8)
+    final normalizedSound = sound.copyWith(
+      volume: sound.volume > 0 ? sound.volume : 0.8,
+      isSelected: true,
+    );
+
     setState(() {
-      _selectedSounds = List.from(_selectedSounds)..add(sound);
-      _recommendedSounds.removeWhere((s) => s.title == sound.title);
+      _recommendedSounds.removeWhere((s) => s.title == normalizedSound.title);
+      _selectedSounds.add(normalizedSound);
     });
 
-    await AudioManager().syncPlayers(List.from(_selectedSounds));
+    if (_selectedSounds.isNotEmpty) {
+      setState(() {
+        _audioManager.isPlayingNotifier.value = true;
+      });
+    }
+
+    final allSounds = _buildUpdatedSounds();
+
+    await _audioManager.playSoundNew(sound.filepath, allSounds);
+    await _audioManager.playSound(sound.filepath);
+
+    await _audioManager.adjustVolumes(_selectedSounds);
+    _audioManager.saveVolume(
+      normalizedSound.title,
+      normalizedSound.volume.toDouble(),
+    );
+
     widget.onSoundsChanged(_buildUpdatedSounds());
   }
 
-  void _removeSoundFromMix(int index) async {
-    if (index < 0 || index >= _selectedSounds.length) return;
+  Future<void> _removeSoundFromMix(NewSoundModel sound) async {
+    await _removeSoundFromMixInternal(sound);
+    widget.onSoundsChanged(_buildUpdatedSounds());
+  }
 
-    final removedSound = _selectedSounds[index];
-
+  Future<void> _removeSoundFromMixInternal(
+      NewSoundModel sound,
+      // bool updateCallback,
+      ) async {
     try {
-      // First update UI to give immediate feedback
       setState(() {
-        _selectedSounds = List.from(_selectedSounds)..removeAt(index);
-        _recommendedSounds = List.from(_recommendedSounds)
-          ..add(removedSound.copyWith(isSelected: false));
+        sound.isSelected = false;
+
+        _selectedSounds.removeWhere((s) {
+          if (s.title == sound.title) {
+            s.isSelected = false;
+            return true;
+          }
+          return false;
+        });
+
+        final originalIndex = widget.sounds.indexWhere(
+              (s) => s.title == sound.title,
+        );
+
+        if (originalIndex != -1) {
+          // Insert back into recommended sounds list
+          final insertIndex = _recommendedSounds.indexWhere(
+                (s) => widget.sounds.indexOf(s) > originalIndex,
+          );
+
+          if (insertIndex == -1) {
+            _recommendedSounds.add(sound.copyWith(isSelected: false));
+          } else {
+            _recommendedSounds.insert(
+              originalIndex,
+              sound.copyWith(isSelected: false),
+            );
+          }
+        }
       });
 
-      // Stop and remove the specific player
-      await AudioManager().removeSound(removedSound.title);
-
-      // Sync remaining sounds to ensure proper playback state
-      if (_selectedSounds.isNotEmpty) {
-        await AudioManager().syncPlayers(List.from(_selectedSounds));
+      // Stop playback if no sounds are selected
+      if (_selectedSounds.isEmpty) {
+        setState(() {
+          _audioManager.isPlayingNotifier.value = false;
+        });
       }
-      widget.onSoundsChanged(_buildUpdatedSounds());
+
+      // Stop and clear from audio manager
+      _audioManager.pauseSound(sound.filepath);
+      _audioManager.clearSound(sound.filepath);
+      _audioManager.saveVolume(sound.filepath, 1.0);
+
+      // Notify parent widget if required
+      // if (updateCallback) {
+      //   debugPrint("updated");
+        widget.onSoundsChanged(_buildUpdatedSounds());
+      // }
+
+      favIsTapped = true ;
     } catch (e) {
       _showErrorSnackBar('Failed to remove sound: $e');
-      // Revert UI changes on error
-      setState(() {
-        _selectedSounds = List.from(_selectedSounds)
-          ..insert(index, removedSound);
-        _recommendedSounds.removeWhere((s) => s.title == removedSound.title);
-      });
     }
   }
+
 
   // FIX: Properly update volume by creating new list with updated sound
   Future<void> _updateSoundVolume(int index, double volume) async {
@@ -113,37 +374,12 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
       _selectedSounds = List.from(_selectedSounds);
       _selectedSounds[index] = _selectedSounds[index].copyWith(volume: volume);
     });
+   _audioManager.saveVolume(_selectedSounds[index].title, volume);
 
     // Apply volume changes to audio players
-    await AudioManager().adjustVolumes(_selectedSounds);
+    await _audioManager.adjustVolumes(_selectedSounds);
+    widget.onSoundsChanged(_buildUpdatedSounds());
   }
-
-  // Future<void> _playAllSounds() async {
-  //   if (_selectedSounds.isEmpty || _isLoadingPlayback) return;
-
-  //   Timer? loadingTimer = Timer(const Duration(milliseconds: 500), () {
-  //     if (mounted) {
-  //       setState(() => _isLoadingPlayback = true);
-  //       showLoading = true;
-  //     }
-  //   });
-
-  //   try {
-  //     await AudioManager().playAll();
-
-  //     loadingTimer.cancel();
-  //     if (mounted) {
-  //       setState(() {
-  //         _isLoadingPlayback = false;
-  //       });
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error playing all sounds: $e');
-  //     loadingTimer.cancel();
-  //     setState(() => _isLoadingPlayback = false);
-  //     _showErrorSnackBar('Failed to play sounds');
-  //   }
-  // }
 
   void _showErrorSnackBar(String message) {
     if (mounted) {
@@ -165,12 +401,13 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         leadingWidth: 60,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.keyboard_arrow_down,
-            color: Colors.white,
+            color: ThemeHelper.textTitle(context),
             size: 35,
           ),
           onPressed: () {
@@ -179,52 +416,68 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
           },
         ),
         toolbarHeight: 100,
-        title: const Padding(
-          padding: EdgeInsets.only(top: 8.0),
-          child: Text(
-            'Your Relaxation Mix',
-            style: TextStyle(color: Colors.white, fontSize: 25),
+        title: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Column(
+            children: [
+              Text(
+                'Your Relaxation Mix',
+                style: TextStyle(
+                  color: ThemeHelper.textTitle(context),
+                  fontSize: 25,
+                  fontFamily: 'Montserrat',
+                ),
+              ),
+            ],
           ),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromRGBO(18, 23, 42, 1),
       ),
-      body: Container(
-        color: const Color.fromRGBO(18, 23, 42, 1),
-        child: Column(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Recommended Sounds',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
+      body: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Recommended Sounds',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: ThemeHelper.textTitle(context),
+                      fontFamily: 'Montserrat',
+                      ),
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
                       height: 120,
                       child: _isLoadingRecommendedSounds
-                          ? const Center(
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                              ),
-                            )
-                          : ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: _recommendedSounds.length,
-                              itemBuilder: (context, index) {
-                                final sound = _recommendedSounds[index];
-                                return _buildRecommendedSoundButton(sound);
-                              },
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
                             ),
+                          )
+                        : ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: _recommendedSounds.length,
+                            itemBuilder: (context, index) {
+                              final sound = _recommendedSounds[index];
+                              return _buildRecommendedSoundButton(
+                                sound,
+                                isTrial: isTrial,
+                              );
+                            },
+                          ),
                     ),
                     const SizedBox(height: 5),
-                    const Text(
+                    Text(
                       'Selected Sounds',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: ThemeHelper.textTitle(context),
+                        fontFamily: 'Montserrat',
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Expanded(
@@ -250,8 +503,16 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
             ),
             Container(
               height: 150,
-              padding: const EdgeInsets.symmetric(horizontal: 50.0),
+              padding: EdgeInsets.all(16.0.sp),
               decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromRGBO(200, 200, 251, 1),
+                    Color.fromRGBO(45, 45, 105, 1),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
                 color: const Color.fromARGB(194, 194, 244, 244),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(16),
@@ -259,84 +520,104 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Color.fromRGBO(0, 0, 0, 1).withOpacity(0.2),
                     blurRadius: 8,
                     offset: const Offset(0, -2),
                   ),
                 ],
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildControlButton(
-                    icon: Icons.timer_outlined,
+                    imagePath: "assets/images/timer_button.png",
                     label: 'Timer',
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TimerScreen(
-                            // onTimerSelected: (Duration) {},
-                            soundCount: _selectedSounds.length,
+                      if (globalTimer.isRunning && globalTimer.remaining > 0) {
+                        // Timer already running → go back to same timer
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CircularTimerScreen(
+                              duration: globalTimer.remaining > 0
+                                  ? globalTimer.remaining
+                                  : (globalTimer.duration ?? 0),
+                              soundCount: _selectedSounds.length,
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      } else {
+                        // Start a fresh timer
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                TimerScreen(soundCount: _selectedSounds.length),
+                          ),
+                        );
+                      }
                     },
+                    leading: 32.w,
                   ),
                   _buildPlaybackControls(),
                   _buildControlButton(
-                    icon: Icons.favorite_border_outlined,
+                    imagePath: "assets/images/saveMix.png",
                     label: 'Save Mix',
-                    onPressed: () {
-                      _showErrorSnackBar('Save mix feature coming soon!');
-                    },
+                    onPressed: _saveMix,
+                    leading: 25.w,
                   ),
                 ],
               ),
             ),
           ],
         ),
-      ),
     );
   }
 
   Widget _buildControlButton({
-    required IconData icon,
+    required String imagePath,
     required String label,
     required VoidCallback onPressed,
+    required double leading,
   }) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    return Stack(
       children: [
-        Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.3),
-                blurRadius: 6,
-                spreadRadius: 1,
-                offset: const Offset(0, 2),
+        GestureDetector(
+          onTap: onPressed,
+          child: Container(
+            height: 110.h,
+            width: 110.h,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black38, // shadow color
+                  blurRadius: 5,
+                  spreadRadius: -20, // spread of the shadow
+                  offset: Offset(-6.2, -5.7), // position of the shadow
+                ),
+              ],
+            ),
+            child: ClipOval(
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.cover, // fills circle without transparent space
               ),
-            ],
-          ),
-          child: CircleAvatar(
-            backgroundColor: Colors.white.withOpacity(0.2),
-            radius: 24,
-            child: IconButton(
-              icon: Icon(icon, color: Colors.white),
-              onPressed: onPressed,
-              padding: EdgeInsets.zero,
             ),
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
+
+        Positioned(
+          top: 90,
+          left: leading,
+          child: Text(
+            label,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w500,
+              fontFamily: 'Montserrat',
+            ),
           ),
         ),
       ],
@@ -345,66 +626,87 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
 
   Widget _buildPlaybackControls() {
     return ValueListenableBuilder<bool>(
-      valueListenable: AudioManager().isPlayingNotifier,
+      valueListenable: _audioManager.isPlayingNotifier,
       builder: (context, isPlaying, _) {
-        return CircleAvatar(
-          backgroundColor: Colors.white,
-          radius: 28,
-          child: IconButton(
-            icon: Icon(
-              isPlaying ? Icons.pause : Icons.play_arrow,
-              size: 28,
-              color: const Color.fromRGBO(18, 23, 42, 1),
-            ),
-            onPressed: _selectedSounds.isEmpty
+        return Column(
+          children: [
+            SizedBox(height: 25.h),
+            IconButton(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              icon: Image.asset(
+                isPlaying
+                    ? "assets/images/pause.png"
+                    : "assets/images/play.png",
+                height: 25.sp,
+                width: 25.sp,
+              ),
+              onPressed: _selectedSounds.isEmpty
                 ? null
                 : () async {
                     if (isPlaying) {
-                      await AudioManager().pauseAll();
+                      await AudioManager().pauseAllNew();
                     } else {
-                      await AudioManager().playAll();
+                      await AudioManager().playAllNew();
                     }
                   },
-          ),
+            ),
+          ],
         );
       },
     );
   }
 
-  Widget _buildRecommendedSoundButton(NewSoundModel sound) {
+  Widget _buildRecommendedSoundButton(
+    NewSoundModel sound, {
+    required bool isTrial,
+  }) {
+    bool locked = false;
+
+    if (!isTrial) {
+      locked = sound.isLocked;
+    }
+
     return Padding(
       padding: const EdgeInsets.only(right: 16.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           InkWell(
-            onTap: () => _addSoundToMix(sound),
-            child: Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: const Color.fromRGBO(18, 23, 42, 1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.teal[50]!),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildIconImage(sound.icon, 40),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Text(
-                      sound.title.replaceAll('_', ' '),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.white,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      maxLines: 1,
-                    ),
+            onTap: locked ? null : () => _addSoundToMix(sound),
+            child: Opacity(
+              opacity: locked ? 0.4 : 1.0, // dim if locked
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(
+                    color: Color.fromARGB(255, 62, 86, 145),
+                    width: 2.w,
                   ),
-                ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildIconImage(sound.icon, 40),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        sound.title.replaceAll('_', ' '),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: ThemeHelper.textTitle(context),
+                          overflow: TextOverflow.ellipsis,
+                          fontFamily: 'Montserrat',
+                        ),
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -414,107 +716,99 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   }
 
   Widget _buildSelectedSoundItem(NewSoundModel sound, int index) {
-    return Card(
-      color: const Color.fromRGBO(18, 23, 42, 1),
-      elevation: 3,
+    return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: const Color.fromRGBO(18, 23, 42, 1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.teal[50]!),
+      child: Row(
+        children: [
+          Container(
+            width: 50.w,
+            height: 50.h,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(
+                color: Color.fromARGB(255, 51, 61, 108),
+                width: 2.w,
               ),
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Center(child: _buildIconImage(sound.icon, 36)),
-                  Positioned(
-                    top: -8,
-                    right: -8,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size(24, 24),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        shape: const CircleBorder(),
-                        backgroundColor: const Color.fromRGBO(92, 67, 108, 1),
-                        elevation: 2,
-                        side: const BorderSide(
-                          color: Color.fromRGBO(92, 67, 108, 1),
-                        ),
-                      ),
-                      onPressed: () => _removeSoundFromMix(index),
-                      child: const Icon(
-                        Icons.close,
-                        size: 16,
-                        color: Colors.white,
+            ),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Center(child: _buildIconImage(sound.icon, 24)),
+                Positioned(
+                  top: -8,
+                  right: -8,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(24, 24),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      shape: const CircleBorder(),
+                      backgroundColor: const Color.fromRGBO(92, 67, 108, 1),
+                      elevation: 2,
+                      side: const BorderSide(
+                        color: Color.fromRGBO(92, 67, 108, 1),
                       ),
                     ),
+                    onPressed: () => _removeSoundFromMixInternal(sound),
+                    child: const Icon(
+                      Icons.close,
+                      size: 16,
+                      color: Colors.white,
+                    ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 16.sp),
+                  child: Text(
                     sound.title.replaceAll('_', ' '),
-                    style: const TextStyle(fontSize: 16, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: ThemeHelper.textTitle(context),
+                      fontFamily: 'Montserrat',
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: SliderTheme(
-                          data: SliderTheme.of(context).copyWith(
-                            thumbShape: const CustomImageThumbShape(
-                              imagePath: 'assets/images/thumb.png',
-                              thumbRadius: 18,
-                            ),
-                            overlayShape: const RoundSliderOverlayShape(
-                              overlayRadius: 0,
-                            ),
-                            trackHeight: 4,
-                            activeTrackColor: const Color.fromRGBO(
-                              128,
-                              128,
-                              178,
-                              1,
-                            ),
-                            inactiveTrackColor: const Color.fromRGBO(
-                              113,
-                              109,
-                              150,
-                              1,
-                            ),
-                          ),
-                          child: Slider(
-                            value: sound.volume.toDouble(),
-                            min: 0.0,
-                            max: 1.0,
-                            onChanged: (value) {
-                              // FIX: Use proper update method instead of direct modification
-                              _updateSoundVolume(index, value);
-                            },
-                          ),
-                        ),
+                ),
+                SizedBox(height: 5.h),
+                SizedBox(
+                  width: double.infinity,
+                  child: SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      thumbShape: CustomImageThumbShape(
+                        thumbRadius: 18.h,
+                        thumbImage: thumbImg,
                       ),
-                    ],
+                      overlayShape: const RoundSliderOverlayShape(
+                        overlayRadius: 0,
+                      ),
+                      trackHeight: 10.h,
+                      activeTrackColor: Color.fromRGBO(128, 128, 178, 1),
+                      inactiveTrackColor: Color.fromRGBO(113, 109, 150, 1),
+                    ),
+                    child: Slider(
+                      value: sound.volume.toDouble(),
+                      min: 0.0,
+                      max: 1.0,
+                      onChanged: (value) {
+                        // FIX: Use proper update method instead of direct modification
+                        _updateSoundVolume(index, value);
+                      },
+                    ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -529,7 +823,6 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
         width: size,
         height: size,
         fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) => _buildFallbackIcon(size),
       );
     }
 
@@ -537,8 +830,8 @@ class _RelaxationMixPageState extends State<RelaxationMixPage> {
   }
 
   String? _getMatchingAssetPath(String iconName) {
-    final cleanName = iconName.replaceAll(RegExp(r'\.png$'), '').toLowerCase();
-    return 'assets/images/$cleanName.png';
+    // final cleanName = iconName.replaceAll(RegExp(r'\.png), '');
+    return 'assets/images/$iconName.png';
   }
 
   Widget _buildFallbackIcon(double size) =>

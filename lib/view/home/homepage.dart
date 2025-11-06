@@ -1,17 +1,17 @@
-import 'package:clarity/model/model.dart';
-// import 'package:clarity/new%20data.dart';
-import 'package:clarity/new_firebase_service.dart';
-import 'package:clarity/theme.dart';
-
+import 'package:Sleephoria/model/model.dart';
+import 'package:Sleephoria/new_firebase_service.dart';
+import 'package:Sleephoria/theme.dart';
+import 'package:Sleephoria/view/favourite/favouratepage.dart';
+import 'package:Sleephoria/view/profile/profile_page.dart';
 import 'package:flutter/material.dart';
-import 'package:clarity/view/favourite/favouratepage.dart';
-import 'package:clarity/view/profile/profile_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../Sound page/test2.dart';
+import '../Sound page/AudioManager.dart';
+import '../Sound page/sound.dart';
 
 class Homepage extends StatefulWidget {
-  const Homepage({super.key});
+  final int initialTap;
+  const Homepage({super.key,this.initialTap=0});
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -23,16 +23,23 @@ class _HomepageState extends State<Homepage> {
   bool _isLoading = true;
   String? _errorMessage;
 
-  late List<Widget> _screens; // Made late to initialize after fetching sounds
-
+  late List<Widget> _screens;
   final List<String> _titles = const ['Sounds', 'Favorites', 'Settings'];
+
+  String? _currentPlayingTitle;
+  bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
+    _currentIndex = widget.initialTap;
     _screens = [
-      const SoundPage(), // Placeholder, updated after fetch
-      const Favouratepage(),
+      const SoundPage(), // Will update after fetching sounds
+    FavoritesPage(
+    currentTitle: _currentPlayingTitle,
+    onTogglePlayback: _togglePlayback,
+    onItemTap: _onFavoriteItemTap,
+    ), // Placeholder for FavoritesPage, updated later
       const ProfilePage(),
     ];
     _fetchSoundData();
@@ -49,8 +56,12 @@ class _HomepageState extends State<Homepage> {
       if (mounted) {
         setState(() {
           soundData = sounds;
-          // _screens[0] = SoundPage();
-          _screens[0] = SoundPage(); // Update SoundPage with fetched sounds
+          _screens[0] = const SoundPage();
+          _screens[1] = FavoritesPage(
+            currentTitle: _currentPlayingTitle,
+            onTogglePlayback: _togglePlayback,
+            onItemTap: _onFavoriteItemTap,
+          );
           _isLoading = false;
         });
       }
@@ -73,9 +84,28 @@ class _HomepageState extends State<Homepage> {
     });
   }
 
+  void _togglePlayback() {
+    setState(() {
+      _isPlaying = !_isPlaying;
+    });
+    // TODO: Add actual audio play/pause logic
+  }
+
+  void _onFavoriteItemTap(NewSoundModel sound) async {
+    setState(() {
+      _currentPlayingTitle = sound.title;
+      _isPlaying = true;
+      _screens[1] = FavoritesPage(
+        currentTitle: _currentPlayingTitle,
+        onTogglePlayback: _togglePlayback,
+        onItemTap: _onFavoriteItemTap,
+      );
+    });
+    await AudioManager().toggleSoundSelection(soundData, sound, false);
+  }
+
   @override
   Widget build(BuildContext context) {
-    // final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -84,9 +114,6 @@ class _HomepageState extends State<Homepage> {
             fontSize: 30.sp,
             fontWeight: FontWeight.w500,
             fontFamily: 'Recoleta',
-            // color: isDarkMode
-            //     ? Colors.white
-            //     : Color.fromRGBO(41, 41, 102, 1.000),
             color: ThemeHelper.textColor(context),
           ),
         ),
@@ -116,8 +143,8 @@ class _HomepageState extends State<Homepage> {
         backgroundColor: const Color.fromARGB(255, 37, 37, 80),
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
-        unselectedItemColor: Color.fromRGBO(92, 92, 153, 1.000),
-        selectedItemColor: Color.fromRGBO(190, 190, 245, 1.000),
+        unselectedItemColor: const Color.fromRGBO(92, 92, 153, 1.0),
+        selectedItemColor: const Color.fromRGBO(190, 190, 245, 1.0),
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
         items: const [
           BottomNavigationBarItem(

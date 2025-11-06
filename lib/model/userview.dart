@@ -1,4 +1,6 @@
-import 'package:clarity/model/usermodel.dart';
+//To be used in to fetch the user info from firebase and display it in profile page
+
+import 'package:Sleephoria/model/usermodel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserViewModel {
@@ -11,7 +13,6 @@ class UserViewModel {
   void fetchUserInfo() {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      print("No user is signed in.");
       return;
     }
 

@@ -1,4 +1,4 @@
-name: clarity
+name: Sleephoria
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -60,6 +60,11 @@ dependencies:
   flutter_screenutil: ^5.9.3
   lottie: ^3.3.1
   audioplayers: ^6.5.0
+  fluttertoast: ^8.2.12
+  flutter_styled_toast: ^2.2.1
+  dio: ^5.9.0
+  http: ^1.5.0
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
@@ -122,7 +127,7 @@ flutter:
     - assets/images/empty.png
     - assets/images/empty-min.png
     - assets/images/ellipse_mix_page.png
-
+    - assets/images/timer_button.png
     - assets/images/vertical-lines1.png
     - assets/images/thumb.png
     - assets/lottie/
@@ -131,6 +136,8 @@ flutter:
     - assets/images/quit.png
     - assets/images/pauseImage.png
     - assets/images/playImage.png
+    - assets/images/saveMix.png
+    - assets/images/mail.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

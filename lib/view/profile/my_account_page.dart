@@ -1,19 +1,20 @@
-import 'package:clarity/main.dart';
-import 'package:clarity/theme.dart';
+import 'package:Sleephoria/main.dart';
+import 'package:Sleephoria/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:clarity/custom/custom_setting.dart';
-import 'package:clarity/custom/custom_text_field.dart';
+import 'package:Sleephoria/custom/custom_setting.dart';
+import 'package:Sleephoria/custom/custom_text_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyAccountPage extends StatefulWidget {
   const MyAccountPage({super.key});
 
   @override
-  _MyAccountPageState createState() => _MyAccountPageState();
+  MyAccountPageState createState() => MyAccountPageState();
 }
 
-class _MyAccountPageState extends State<MyAccountPage> {
+class MyAccountPageState extends State<MyAccountPage> {
   bool _isDarkMode = false;
   String fullName = '';
   String email = '';
@@ -21,43 +22,54 @@ class _MyAccountPageState extends State<MyAccountPage> {
   @override
   void initState() {
     super.initState();
-    loadUserInfo();
+    _loadCachedUserInfo(); // Load from cache first
+    _loadUserInfoFromFirestore(); // Then check Firestore
     final appState = MyApp.of(context);
     if (appState != null) _isDarkMode = appState.isDarkMode;
   }
 
-  Future<void> loadUserInfo() async {
+  /// Load cached values (instant display)
+  Future<void> _loadCachedUserInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    final user = FirebaseAuth.instance.currentUser;
+
+    setState(() {
+      fullName = prefs.getString('fullName') ?? user?.displayName ?? 'No Name';
+      email = prefs.getString('email') ?? user?.email ?? 'No Email';
+    });
+  }
+
+  /// Fetch from Firestore only if newer data exists
+  Future<void> _loadUserInfoFromFirestore() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
-
-    email = user.email ?? 'No Email';
 
     try {
       final doc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .get();
-      // if (doc.exists) {
-      //   final data = doc.data();
-      //   fullName = data?['fullName'] ?? user.displayName ?? 'No Name';
-      // } else {
-      //   fullName = user.displayName ?? 'No Name';
-      // }
+
       if (doc.exists) {
         final data = doc.data();
         final fetchedName = data?['fullName'];
-        if (fetchedName != null && fetchedName.isNotEmpty) {
+
+        if (fetchedName != null &&
+            fetchedName.isNotEmpty &&
+            fetchedName != fullName) {
           setState(() {
             fullName = fetchedName;
           });
+
+          // ✅ Save to cache
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('fullName', fetchedName);
+          await prefs.setString('email', user.email ?? 'No Email');
         }
       }
     } catch (e) {
-      fullName = user.displayName ?? 'No Name';
-      print("Error fetching user details: $e");
+      debugPrint("Error fetching user details: $e");
     }
-
-    setState(() {});
   }
 
   @override
@@ -86,28 +98,16 @@ class _MyAccountPageState extends State<MyAccountPage> {
           children: [
             CustomTextField(
               labelText: 'Full Name',
-              hintText: '',
               initialValue: fullName,
               readOnly: true,
             ),
             SizedBox(height: 16.0),
             CustomTextField(
               labelText: 'Email',
-              hintText: 'Email',
               initialValue: email,
               readOnly: true,
             ),
             SizedBox(height: 10.0),
-            // CustomSetting(
-            //   title: 'App Settings',
-            //   switchLabel: 'Dark Mode',
-            //   switchValue: _isDarkMode,
-            //   onChanged: (bool value) {
-            //     setState(() {
-            //       _isDarkMode = value; // Update the theme state
-            //     });
-            //   },
-            // ),
             Divider(),
             CustomSetting(
               title: 'App Settings',

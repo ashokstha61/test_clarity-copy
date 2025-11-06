@@ -1,7 +1,9 @@
-import 'package:clarity/theme.dart';
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-class RelaxationMixBar extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+class RelaxationMixBar extends StatefulWidget {
   final VoidCallback onArrowTap;
   final VoidCallback onPlay;
   final VoidCallback onPause;
@@ -16,8 +18,23 @@ class RelaxationMixBar extends StatelessWidget {
     required this.onPause,
     required this.imagePath,
     required this.soundCount,
-    required this.isPlaying,
+    this.isPlaying = true,
   });
+
+  @override
+  State<RelaxationMixBar> createState() => _RelaxationMixBarState();
+}
+
+class _RelaxationMixBarState extends State<RelaxationMixBar> {
+
+  void _handleTap() async {
+
+    if (widget.isPlaying) {
+      widget.onPause();
+    } else {
+      widget.onPlay();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +44,8 @@ class RelaxationMixBar extends StatelessWidget {
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Color.fromARGB(255, 193, 193, 242), // top color
-            Color.fromARGB(255, 41, 41, 102), // bottom color
+            Color.fromARGB(255, 193, 193, 242),
+            Color.fromARGB(255, 41, 41, 102),
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -36,62 +53,55 @@ class RelaxationMixBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          IconButton(
-            icon: Icon(
-              Icons.keyboard_arrow_up,
-              color: ThemeHelper.iconColorRemix(context),
-              size: 30,
-            ),
-            onPressed: onArrowTap,
-          ),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              // "assets/images/remix_image.png",
-              imagePath,
-              width: 60,
-              height: 60,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Your Relaxation Mix",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: ThemeHelper.iconAndTextColorRemix(context),
+          GestureDetector(
+            onTap: widget.onArrowTap,
+            child: Container(
+              width: 260.w,
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
+              color: Colors.transparent,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Icon(Icons.keyboard_arrow_up, color: Colors.white, size: 30),
+                  Image.asset(
+                    widget.imagePath,
+                    width: 50.w,
+                    height: 50.w,
+                    fit: BoxFit.contain,
                   ),
-                ),
-                Text(
-                  "$soundCount sound selected",
-                  style: TextStyle(
-                    color: ThemeHelper.iconAndTextColorRemix(context),
-                    fontSize: 13,
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Your Relaxation Mix",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14.sp,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        "${widget.soundCount} sound selected",
+                        style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                      ),
+                      SizedBox(height: 5.h),
+                    ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-
-          // IconButton(
-          //   icon: isPlaying
-          //       ? Image.asset('assets/images/pause.png', width: 24, height: 24)
-          //       : Image.asset('assets/images/play.png', width: 24, height: 24),
-          //   onPressed: isPlaying ? onPause : onPlay,
-          // ),
+          const Spacer(),
           IconButton(
             icon: Image.asset(
-              isPlaying ? 'assets/images/pause.png' : 'assets/images/play.png',
+              widget.isPlaying
+                  ? 'assets/images/pause.png'
+                  : 'assets/images/play.png',
               width: 24,
               height: 24,
             ),
-            onPressed: isPlaying ? onPause : onPlay,
+            onPressed: _handleTap,
           ),
         ],
       ),

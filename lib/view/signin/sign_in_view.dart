@@ -1,6 +1,8 @@
+import 'package:Sleephoria/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-class SignInView extends StatelessWidget {
+class SignInView extends StatefulWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final VoidCallback onLogin;
@@ -19,11 +21,26 @@ class SignInView extends StatelessWidget {
   });
 
   @override
+  State<SignInView> createState() => _SignInViewState();
+}
+
+class _SignInViewState extends State<SignInView> {
+  @override
   Widget build(BuildContext context) {
     final isDarkMode =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
-    return SafeArea(
-      child: Padding(
+
+    return Scaffold(
+      backgroundColor: ThemeHelper.backgroundColor(context),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: ThemeHelper.iconColorRemix(context),
+          onPressed: () => Navigator.pop(context),
+        ),
+        backgroundColor: ThemeHelper.backgroundColor(context),
+      ),
+      body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,49 +50,29 @@ class SignInView extends StatelessWidget {
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : Colors.black,
+                color: ThemeHelper.loginAndRegisterTitleColor(context),
               ),
             ),
             const SizedBox(height: 30),
 
             // Email
-            TextField(
-              controller: emailController,
+            _buildTextField(
+              widget.emailController,
+              "Email",
+              isDarkMode,
               keyboardType: TextInputType.emailAddress,
-              style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: isDarkMode ? Colors.black : Colors.white,
-                labelText: "Email",
-                labelStyle: TextStyle(
-                  color: isDarkMode ? Colors.white70 : Colors.black54,
-                ),
-                border: const OutlineInputBorder(),
-              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
 
-            // Password with eye toggle
-            TextField(
-              controller: passwordController,
-              obscureText: !isPasswordVisible,
-              style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: isDarkMode ? Colors.black : Colors.white,
-                labelText: "Password",
-                labelStyle: TextStyle(
-                  color: isDarkMode ? Colors.white : Colors.black,
-                ),
-                border: const OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                    color: isDarkMode ? Colors.white : Colors.black,
-                  ),
-                  onPressed: onTogglePassword,
-                ),
-              ),
+            // Password
+            _buildTextField(
+              widget.passwordController,
+              "Password",
+              isDarkMode,
+              obscureText: !widget.isPasswordVisible,
+              isPasswordField: true,
+              isPasswordVisible: widget.isPasswordVisible,
+              onTogglePassword: widget.onTogglePassword,
             ),
             const SizedBox(height: 20),
 
@@ -85,14 +82,16 @@ class SignInView extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromRGBO(195, 254, 170, 1.000),
+                  backgroundColor: Colors.green,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                // radius: BorderRadius.circular(8),
-                onPressed: onLogin,
-                child: const Text("Login"),
+                onPressed: widget.onLogin,
+                child: const Text(
+                  "Login",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -100,7 +99,12 @@ class SignInView extends StatelessWidget {
             // Register link
             Center(
               child: TextButton(
-                onPressed: onRegister,
+                onPressed: widget.onRegister,
+                style: TextButton.styleFrom(
+                  overlayColor:
+                      Colors.transparent, // 👈 removes ripple/animation
+                  splashFactory: NoSplash.splashFactory, // 👈 removes splash
+                ),
                 child: const Text.rich(
                   TextSpan(
                     text: "Don't have an account? ",
@@ -123,4 +127,52 @@ class SignInView extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _buildTextField(
+  TextEditingController controller,
+  String label,
+  bool isDarkMode, {
+  bool obscureText = false,
+  bool isPasswordField = false,
+  VoidCallback? onTogglePassword,
+  bool isPasswordVisible = false,
+  TextInputType? keyboardType,
+  Color? borderColor,
+  List<TextInputFormatter>? inputFormatters,
+}) {
+  return TextField(
+    controller: controller,
+    obscureText: obscureText,
+    keyboardType: keyboardType,
+    inputFormatters: inputFormatters,
+    style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+    decoration: InputDecoration(
+      filled: true,
+      fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
+      labelText: label,
+      labelStyle: TextStyle(
+        color: isDarkMode ? Colors.white70 : Colors.black54,
+      ),
+      floatingLabelStyle: TextStyle(
+        color: isDarkMode ? Colors.grey : Colors.black,
+        fontWeight: FontWeight.bold,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(
+          color: borderColor ?? (isDarkMode ? Colors.white54 : Colors.black26),
+        ),
+      ),
+      suffixIcon: isPasswordField
+          ? IconButton(
+              icon: Icon(
+                isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
+              onPressed: onTogglePassword,
+            )
+          : null,
+    ),
+  );
 }

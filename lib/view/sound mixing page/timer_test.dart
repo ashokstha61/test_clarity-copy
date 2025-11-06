@@ -1,129 +1,9 @@
-import 'package:clarity/theme.dart';
+import 'package:Sleephoria/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
-
-// class CircularTimerScreen extends StatefulWidget {
-//   const CircularTimerScreen({super.key});
-
-//   @override
-//   State<CircularTimerScreen> createState() => _CircularTimerScreenState();
-// }
-
-// class _CircularTimerScreenState extends State<CircularTimerScreen> {
-//   final CountDownController _controller = CountDownController();
-//   final int _duration = 10; // 5 minutes (in seconds)
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(backgroundColor: Colors.black),
-//       backgroundColor: Colors.black,
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             const Text(
-//               'Timer',
-//               style: TextStyle(
-//                 color: Colors.white,
-//                 fontSize: 32,
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             ),
-//             const SizedBox(height: 40),
-//             Stack(
-//               alignment: Alignment.center,
-//               children: [
-//                 CircularCountDownTimer(
-//                   duration: _duration,
-//                   initialDuration: 0,
-//                   controller: _controller,
-//                   width: 200,
-//                   height: 200,
-//                   ringColor: Colors.grey[800]!,
-//                   fillColor: Colors.blueAccent,
-//                   backgroundColor: Colors.transparent,
-//                   strokeWidth: 12,
-//                   strokeCap: StrokeCap.round,
-//                   textStyle: const TextStyle(
-//                     fontSize: 48,
-//                     color: Colors.white,
-//                     fontWeight: FontWeight.bold,
-//                   ),
-//                   textFormat: CountdownTextFormat.HH_MM_SS,
-//                   isReverse: true,
-//                   onComplete: () {
-//                     print('Timer completed!');
-//                   },
-//                 ),
-//                 Positioned(
-//                   top: 40, // Adjust position as needed
-//                   child: Image.asset(
-//                     "assets/images/moon.png",
-//                     width: 60,
-//                     height: 60,
-//                     color: Colors.purple,
-//                   ),
-//                 ),
-//               ],
-//             ),
-//             const SizedBox(height: 40),
-//             Spacer(),
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: [
-//                 ElevatedButton(
-//                   onPressed: () => _controller.pause(),
-//                   style: ElevatedButton.styleFrom(
-//                     backgroundColor: Colors.grey[800],
-//                     padding: const EdgeInsets.symmetric(
-//                       horizontal: 30,
-//                       vertical: 15,
-//                     ),
-//                   ),
-//                   child: const Text(
-//                     'Pause',
-//                     style: TextStyle(color: Colors.white, fontSize: 18),
-//                   ),
-//                 ),
-//                 const SizedBox(width: 20),
-//                 ElevatedButton(
-//                   onPressed: () => _controller.resume(),
-//                   style: ElevatedButton.styleFrom(
-//                     backgroundColor: Colors.grey[800],
-//                     padding: const EdgeInsets.symmetric(
-//                       horizontal: 30,
-//                       vertical: 15,
-//                     ),
-//                   ),
-//                   child: const Text(
-//                     'Resume',
-//                     style: TextStyle(color: Colors.white, fontSize: 18),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//             const SizedBox(height: 20),
-//             ElevatedButton(
-//               onPressed: () => _controller.restart(duration: _duration),
-//               style: ElevatedButton.styleFrom(
-//                 backgroundColor: Colors.red,
-//                 padding: const EdgeInsets.symmetric(
-//                   horizontal: 30,
-//                   vertical: 15,
-//                 ),
-//               ),
-//               child: const Text(
-//                 'Restart',
-//                 style: TextStyle(color: Colors.white, fontSize: 18),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'global_timer.dart';
+import '../Sound page/AudioManager.dart';
 
 class CircularTimerScreen extends StatefulWidget {
   final int duration;
@@ -140,26 +20,62 @@ class CircularTimerScreen extends StatefulWidget {
 }
 
 class _CircularTimerScreenState extends State<CircularTimerScreen> {
-  final CountDownController _controller = CountDownController();
+  // final CountDownController _controller = CountDownController();
   bool _isPaused = false;
+  bool _isCompleted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!globalTimer.isRunning) {
+      globalTimer.duration = widget.duration;
+      globalTimer.startTime = DateTime.now();
+      globalTimer.isRunning = true;
+      globalTimer.isPaused = false;
+      globalTimer.pausedDuration = Duration.zero;
+    }
+
+    _isPaused = globalTimer.isPaused;
+  }
+
   void _togglePauseResume() {
+    // setState(() {
+    //   if (_isPaused) {
+    //     _controller.resume(); // Resume timer
+    //   } else {
+    //     _controller.pause(); // Pause timer
+    //   }
+    //   _isPaused = !_isPaused; // flip state
+    // });
     setState(() {
       if (_isPaused) {
-        _controller.resume(); // Resume timer
+        // Resume
+        globalTimer.controller.resume();
       } else {
-        _controller.pause(); // Pause timer
+        // Pause
+        globalTimer.controller.pause();
       }
-      _isPaused = !_isPaused; // flip state
+      _isPaused = !_isPaused;
+      globalTimer.isPaused = _isPaused;
     });
+  }
+
+  void _quitTimer() {
+    globalTimer.controller.reset();
+    globalTimer.isRunning = false;
+    globalTimer.isPaused = false;
+    globalTimer.pausedDuration = Duration.zero;
+    globalTimer.startTime = null;
   }
 
   @override
   Widget build(BuildContext context) {
+    final remainingTime = globalTimer.remaining;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: ThemeHelper.timerBackgroundColor(context),
         leading: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.sp),
           child: Stack(
             children: [
               Icon(
@@ -171,15 +87,12 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
                 top: 0,
                 child: Container(
                   padding: EdgeInsets.all(4),
-                  // decoration: BoxDecoration(
-                  //   color: Colors.red,
-                  //   shape: BoxShape.circle,
-                  // ),
+
                   child: Text(
                     "${widget.soundCount}", // count of selected sounds
                     style: TextStyle(
                       color: ThemeHelper.iconAndTextColorRemix(context),
-                      fontSize: 12,
+                      fontSize: 14.sp,
                     ),
                   ),
                 ),
@@ -195,109 +108,185 @@ class _CircularTimerScreenState extends State<CircularTimerScreen> {
               color: ThemeHelper.iconAndTextColorRemix(context),
             ),
             onPressed: () {
-              Navigator.pop(context); // Close the modal
+              // Navigator.pushAndRemoveUntil(
+              //   context,
+              //   MaterialPageRoute(builder: (_) => const Homepage()),
+              //   (route) => false,
+              // );
+              if (globalTimer.isRunning) {
+                // Go back to homepage root (without rebuilding a new one)
+                Navigator.popUntil(context, (route) => route.isFirst);
+              } else {
+                // Just close the timer screen
+                Navigator.pop(context);
+              }
             },
           ),
         ],
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: ThemeHelper.timerBackgroundColor(context),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               'Timer',
               style: TextStyle(
-                color: Colors.white,
-                fontSize: 32,
+                color: ThemeHelper.iconAndTextColorRemix(context),
+                fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Montserrat',
               ),
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: 40.h),
             Stack(
               alignment: Alignment.center,
               children: [
                 CircularCountDownTimer(
-                  duration: widget.duration, // 👈 use passed duration
-                  initialDuration: 0,
-                  controller: _controller,
-                  width: 200,
-                  height: 200,
+                  duration:
+                      globalTimer.duration ??
+                      widget.duration, // 👈 use passed duration
+                  // initialDuration: 0,
+                  initialDuration:
+                      (globalTimer.duration ?? widget.duration) - remainingTime,
+                  // controller: _controller,
+                  controller: globalTimer.controller,
+                  width: 200.w,
+                  height: 200.h,
                   ringColor: Colors.grey[800]!,
-                  fillColor: Colors.blueAccent,
+                  fillColor: Color(0xFFE5E5E5),
                   backgroundColor: Colors.transparent,
                   strokeWidth: 12,
-                  strokeCap: StrokeCap.round,
-                  textStyle: const TextStyle(
-                    fontSize: 24,
-                    color: Colors.white,
+                  strokeCap: StrokeCap.square,
+                  textStyle: TextStyle(
+                    fontSize: 20.sp,
+                    color: ThemeHelper.iconAndTextColorRemix(context),
                     fontWeight: FontWeight.bold,
+                    fontFamily: 'Montserrat',
                   ),
                   textFormat: CountdownTextFormat.HH_MM_SS,
                   isReverse: true,
-                  onComplete: () {
-                    print('Timer completed!');
+                  // isReverseAnimation: true,
+                  onChange: (time) {
+                    // Update remaining time dynamically
+                  },
+                  onComplete: () async {
+                    await AudioManager().pauseAllNew();
+                    // setState(() {
+                    //   _isPaused = true;
+                    //   _isCompleted = true;
+                    // });
+                    globalTimer.isRunning = false;
+                    globalTimer.isPaused = true;
+                    setState(() {
+                      _isCompleted = true;
+                    });
                   },
                 ),
                 Positioned(
                   top: 35,
                   child: Image.asset(
                     "assets/images/moon.png",
-                    width: 40,
-                    height: 40,
+                    width: 35.w,
+                    height: 35.h,
                     color: Colors.purple,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 40),
-            const Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  onPressed: _togglePauseResume,
+            SizedBox(height: 40.h),
+            Spacer(),
 
-                  icon: Column(
-                    children: [
-                      Image.asset(
-                        _isPaused
-                            ? "assets/images/playImage.png"
-                            : "assets/images/pauseImage.png",
-                        width: 30,
-                        height: 30,
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        _isPaused ? 'Resume' : 'Pause',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
+            Transform.translate(
+              offset: Offset(0, 20.h),
+              child: SizedBox(
+                height: 200.h,
+                // width: double.infinity,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      bottom: -70.sp,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 10.sp),
+                        child: Image.asset(
+                          "assets/images/ellipse_mix_page.png",
+                          fit: BoxFit
+                              .contain, // adjust as needed (cover/contain/fill)
+                          filterQuality: FilterQuality.high,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 20),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: Column(
-                    children: [
-                      Image.asset(
-                        "assets/images/quit.png",
-                        width: 30,
-                        height: 30,
+                    ),
+                    Positioned(
+                      top: 50, // adjust for spacing from status bar
+                      left: 0,
+                      right: 0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Opacity(
+                            opacity: _isCompleted ? 0.5 : 1.0,
+                            child: IconButton(
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onPressed: _isCompleted
+                                  ? null
+                                  : _togglePauseResume,
+
+                              icon: Column(
+                                children: [
+                                  Image.asset(
+                                    _isPaused
+                                        ? "assets/images/playImage.png"
+                                        : "assets/images/pauseImage.png",
+                                    width: 50.w,
+                                    height: 50.h,
+                                  ),
+                                  SizedBox(height: 4.h),
+                                  Text(
+                                    _isPaused ? 'Play' : 'Pause',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14.sp,
+                                      fontFamily: 'Montserrat',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 20.w),
+                          InkWell(
+                            // onPressed: () => _controller.reset(),
+                            onTap: _quitTimer,
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            splashFactory: NoSplash.splashFactory,
+                            child: Column(
+                              children: [
+                                Image.asset(
+                                  "assets/images/quit.png",
+                                  width: 50.w,
+                                  height: 50.h,
+                                ),
+                                SizedBox(height: 4.h),
+                                Text(
+                                  'Quit',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Quit',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ],
-                  ), // Go back to previous screen
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
+
             const SizedBox(height: 20),
           ],
         ),

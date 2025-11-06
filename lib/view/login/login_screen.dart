@@ -1,7 +1,11 @@
-import 'package:clarity/view/signin/sign_in_screen.dart';
+import 'dart:ui';
+
+import 'package:Sleephoria/theme.dart';
+import 'package:Sleephoria/view/home/homepage.dart';
+import 'package:Sleephoria/view/signin/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:clarity/view/login/auth.dart';
+import 'package:Sleephoria/view/login/auth.dart';
 import '../../custom/custom_login_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,10 +17,32 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final AuthService _authService = AuthService();
+  bool _isLoading = false;
+
+  Future<void> _handleGoogleLogin() async {
+    setState(() => _isLoading = true);
+
+    try {
+      User? user = await _authService.signInWithGoogle(context);
+      if (!mounted) return;
+
+      if (user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Homepage()),
+        );
+      }
+    } catch (e) {
+      debugPrint("Google sign-in failed: $e");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ThemeHelper.backgroundColor(context),
       body: Column(
         children: [
           SizedBox(height: 60),
@@ -27,28 +53,13 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: CustomLoginButton(
-                    label: 'Continue with Apple',
-                    imagePath: 'assets/images/apple.png',
-                    onPressed: () {},
-                  ),
-                ),
                 SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: CustomLoginButton(
                     label: 'Connect with Google',
                     imagePath: 'assets/images/google.png',
-                    onPressed: () async {
-                      User? user = await _authService.signInWithGoogle();
-                      if (user != null) {
-                        // Navigate to home or show success
-                      } else {
-                        // Show error message
-                      }
-                    },
+                    onPressed: _handleGoogleLogin,
                   ),
                 ),
                 SizedBox(height: 10),
@@ -56,27 +67,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: CustomLoginButton(
                     label: 'Connect with Email',
-                    imagePath: 'assets/images/email.png',
+                    imagePath: 'assets/images/mail.png',
                     onPressed: () async {
-                      // String email = await _showEmailDialog();
-                      // String password = await _showPasswordDialog();
-                      // if (email.isNotEmpty && password.isNotEmpty) {
-                      //   User? user = await _authService.signInWithEmailAndPassword(email: email, password: password);
-                      //   if (user != null) {
-                      //     // Navigate to home or show success
-                      //   } else {
-                      //     // Show error message
-                      //   }
-                      // }
-                      // Navigator.pushReplacementNamed(
-                      //   // context,
-                      //   // MaterialPageRoute(builder: (_) => SignInScreen()),
-                      // );
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const SignInScreen(),
-                        ),
+                        MaterialPageRoute(builder: (context) => SignInScreen()),
                         // remove all previous
                       );
                     },

@@ -1,221 +1,4 @@
-// import 'package:flutter/material.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-
-// class RegisterScreen extends StatefulWidget {
-//   const RegisterScreen({super.key});
-
-//   @override
-//   State<RegisterScreen> createState() => _RegisterScreenState();
-// }
-
-// class _RegisterScreenState extends State<RegisterScreen> {
-//   final _nameController = TextEditingController();
-//   final _phoneController = TextEditingController();
-//   final _emailController = TextEditingController();
-//   final _passwordController = TextEditingController();
-//   final _confirmPasswordController = TextEditingController();
-
-//   final _auth = FirebaseAuth.instance;
-//   final _firestore = FirebaseFirestore.instance;
-
-//   bool _isLoading = false;
-
-//   @override
-//   void dispose() {
-//     _nameController.dispose();
-//     _phoneController.dispose();
-//     _emailController.dispose();
-//     _passwordController.dispose();
-//     _confirmPasswordController.dispose();
-//     super.dispose();
-//   }
-
-//   Future<void> _registerUser() async {
-//     final name = _nameController.text.trim();
-//     final phone = _phoneController.text.trim();
-//     final email = _emailController.text.trim();
-//     final password = _passwordController.text.trim();
-//     final confirmPassword = _confirmPasswordController.text.trim();
-
-//     // Validation
-//     if (name.isEmpty) {
-//       _showAlert("Invalid Input", "Please enter your full name.");
-//       return;
-//     }
-//     if (email.isEmpty) {
-//       _showAlert("Invalid Input", "Email is required.");
-//       return;
-//     }
-//     if (password.isEmpty) {
-//       _showAlert("Invalid Input", "Password is required.");
-//       return;
-//     }
-//     if (password != confirmPassword) {
-//       _showAlert("Error", "Passwords do not match.");
-//       return;
-//     }
-//     if (!_isValidEmail(email)) {
-//       _showAlert("Error", "Please enter a valid email address.");
-//       return;
-//     }
-
-//     setState(() => _isLoading = true);
-
-//     try {
-//       // Create Firebase user
-//       UserCredential result = await _auth.createUserWithEmailAndPassword(
-//         email: email,
-//         password: password,
-//       );
-
-//       String uid = result.user!.uid;
-
-//       // Save additional user info in Firestore
-//       await _firestore.collection("users").doc(uid).set({
-//         "fullName": name,
-//         "phone": phone,
-//         "email": email,
-//         "uid": uid,
-//         "createdAt": FieldValue.serverTimestamp(),
-//       });
-
-//       _showAlert("Success", "Registered successfully.", () {
-//         Navigator.pop(context); // Go back to login
-//       });
-//     } on FirebaseAuthException catch (e) {
-//       if (e.code == 'email-already-in-use') {
-//         _showAlert(
-//           "Error",
-//           "This email is already registered. Please use another email or login.",
-//         );
-//       } else {
-//         _showAlert("Error", e.message ?? "Registration failed.");
-//       }
-//     } catch (e) {
-//       _showAlert("Error", e.toString());
-//     } finally {
-//       setState(() => _isLoading = false);
-//     }
-//   }
-
-//   bool _isValidEmail(String email) {
-//     final regex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-//     return regex.hasMatch(email);
-//   }
-
-//   void _showAlert(String title, String message, [VoidCallback? onOk]) {
-//     showDialog(
-//       context: context,
-//       builder: (_) => AlertDialog(
-//         title: Text(title),
-//         content: Text(message),
-//         actions: [
-//           TextButton(
-//             onPressed: () {
-//               Navigator.pop(context);
-//               if (onOk != null) onOk();
-//             },
-//             child: const Text("OK"),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final isDarkMode =
-//         MediaQuery.of(context).platformBrightness == Brightness.dark;
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text("Register"),
-//         automaticallyImplyLeading: false,
-//       ),
-//       body: Stack(
-//         children: [
-//           // Registration Form
-//           SafeArea(
-//             child: Padding(
-//               padding: const EdgeInsets.all(20),
-//               child: Column(
-//                 children: [
-//                   TextField(
-//                     controller: _nameController,
-//                     decoration: const InputDecoration(
-//                       labelText: "Full Name",
-//                       border: OutlineInputBorder(),
-//                     ),
-//                   ),
-//                   const SizedBox(height: 12),
-//                   TextField(
-//                     controller: _phoneController,
-//                     keyboardType: TextInputType.phone,
-//                     decoration: const InputDecoration(
-//                       labelText: "Phone Number",
-//                       border: OutlineInputBorder(),
-//                     ),
-//                   ),
-//                   const SizedBox(height: 12),
-//                   TextField(
-//                     controller: _emailController,
-//                     keyboardType: TextInputType.emailAddress,
-//                     decoration: const InputDecoration(
-//                       labelText: "Email",
-//                       border: OutlineInputBorder(),
-//                     ),
-//                   ),
-//                   const SizedBox(height: 12),
-//                   TextField(
-//                     controller: _passwordController,
-//                     obscureText: true,
-//                     decoration: const InputDecoration(
-//                       labelText: "Password",
-//                       border: OutlineInputBorder(),
-//                     ),
-//                   ),
-//                   const SizedBox(height: 12),
-//                   TextField(
-//                     controller: _confirmPasswordController,
-//                     obscureText: true,
-//                     decoration: const InputDecoration(
-//                       labelText: "Confirm Password",
-//                       border: OutlineInputBorder(),
-//                     ),
-//                   ),
-//                   const SizedBox(height: 20),
-//                   SizedBox(
-//                     width: double.infinity,
-//                     height: 50,
-//                     child: ElevatedButton(
-//                       onPressed: _registerUser,
-//                       child: const Text(
-//                         "Register",
-//                         style: TextStyle(fontSize: 16),
-//                       ),
-//                     ),
-//                   ),
-//                   TextButton(
-//                     onPressed: () => Navigator.pop(context),
-//                     child: const Text("Already have an account? Login"),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ),
-
-//           // Loading indicator
-//           if (_isLoading)
-//             Container(
-//               color: Colors.black54,
-//               child: const Center(child: CircularProgressIndicator()),
-//             ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
+import 'package:Sleephoria/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -384,99 +167,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  // Helper to build TextField with optional password toggle
-  // Widget _buildTextField(
-  //   TextEditingController controller,
-  //   String label,
-  //   bool isDarkMode, {
-  //   bool obscureText = false,
-  //   bool isPasswordField = false,
-  //   VoidCallback? onTogglePassword,
-  //   bool isPasswordVisible = false,
-  //   TextInputType? keyboardType,
-  // }) {
-  //   return TextField(
-  //     controller: controller,
-  //     obscureText: obscureText,
-  //     keyboardType: keyboardType,
-  //     style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
-  //     decoration: InputDecoration(
-  //       filled: true,
-  //       fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
-  //       labelText: label,
-  //       labelStyle: TextStyle(
-  //         color: isDarkMode ? Colors.white70 : Colors.black54,
-  //       ),
-  //       border: OutlineInputBorder(
-  //         borderRadius: BorderRadius.circular(8),
-  //         borderSide: BorderSide(
-  //           color: isDarkMode ? Colors.white54 : Colors.black26,
-  //         ),
-  //       ),
-  //       suffixIcon: isPasswordField
-  //           ? IconButton(
-  //               icon: Icon(
-  //                 isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-  //                 color: isDarkMode ? Colors.white : Colors.black,
-  //               ),
-  //               onPressed: onTogglePassword,
-  //             )
-  //           : null,
-  //     ),
-  //   );
-  // }
-
-  Widget _buildTextField(
-    TextEditingController controller,
-    String label,
-    bool isDarkMode, {
-    bool obscureText = false,
-    bool isPasswordField = false,
-    VoidCallback? onTogglePassword,
-    bool isPasswordVisible = false,
-    TextInputType? keyboardType,
-    Color? borderColor,
-    List<TextInputFormatter>? inputFormatters, // new parameter
-  }) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
-        labelText: label,
-        labelStyle: TextStyle(
-          color: isDarkMode ? Colors.white70 : Colors.black54,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color:
-                borderColor ?? (isDarkMode ? Colors.white54 : Colors.black26),
-          ),
-        ),
-        suffixIcon: isPasswordField
-            ? IconButton(
-                icon: Icon(
-                  isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                  color: isDarkMode ? Colors.white : Colors.black,
-                ),
-                onPressed: onTogglePassword,
-              )
-            : null,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDarkMode =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Color.fromRGBO(61, 67, 89, 1.000),
+      backgroundColor: ThemeHelper.registerColor(context),
       body: Stack(
         children: [
           SafeArea(
@@ -488,9 +185,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Text(
                     "Register",
                     style: TextStyle(
-                      fontSize: 28,
+                      fontSize: 26,
                       fontWeight: FontWeight.bold,
-                      color: isDarkMode ? Colors.white : Colors.black,
+                      color: ThemeHelper.registerTextColor(context),
                     ),
                     textAlign: TextAlign.start,
                   ),
@@ -550,9 +247,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     height: 50,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
+                        backgroundColor: Colors.blueAccent,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                       onPressed: _registerUser,
@@ -566,10 +263,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Center(
                     child: TextButton(
                       onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(
+                        overlayColor:
+                            Colors.transparent, // 👈 removes ripple/animation
+                        splashFactory:
+                            NoSplash.splashFactory, // 👈 removes splash
+                      ),
                       child: const Text.rich(
                         TextSpan(
                           text: "Already have an account? ",
-                          style: TextStyle(color: Colors.white70),
+                          style: TextStyle(color: Colors.grey),
                           children: [
                             TextSpan(
                               text: "Login",
@@ -597,4 +300,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+}
+
+Widget _buildTextField(
+  TextEditingController controller,
+  String label,
+  bool isDarkMode, {
+  bool obscureText = false,
+  bool isPasswordField = false,
+  VoidCallback? onTogglePassword,
+  bool isPasswordVisible = false,
+  TextInputType? keyboardType,
+  Color? borderColor,
+  List<TextInputFormatter>? inputFormatters, // new parameter
+}) {
+  return TextField(
+    controller: controller,
+    obscureText: obscureText,
+    keyboardType: keyboardType,
+    style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+    decoration: InputDecoration(
+      filled: true,
+      fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
+      labelText: label,
+      labelStyle: TextStyle(
+        color: isDarkMode ? Colors.white70 : Colors.black54,
+      ),
+      floatingLabelStyle: TextStyle(
+        color: isDarkMode ? Colors.grey : Colors.black,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(
+          color: borderColor ?? (isDarkMode ? Colors.white54 : Colors.black26),
+        ),
+      ),
+      suffixIcon: isPasswordField
+          ? IconButton(
+              icon: Icon(
+                isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
+              onPressed: onTogglePassword,
+            )
+          : null,
+    ),
+  );
 }
