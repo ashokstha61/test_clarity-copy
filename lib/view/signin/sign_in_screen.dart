@@ -1,5 +1,6 @@
 import 'package:Sleephoria/view/home/homepage.dart';
 import 'package:Sleephoria/view/register/register.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -43,11 +44,33 @@ class _SignInScreenState extends State<SignInScreen> {
       UserCredential result = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
 
-      final userID = result.user?.uid;
+      final user = result.user;
+      final userID = user?.uid;
       if (userID == null) throw Exception("User ID is null");
 
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool("isUserLoggedIn", true);
+      // 🔹 Fetch user data from Firestore
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userID)
+          .get();
+
+      if (userDoc.exists) {
+        final data = userDoc.data();
+
+        // ✅ Check if account is disabled
+        final isDisabled = data?['isDisabled'] == true;
+        if (isDisabled) {
+          // Sign out immediately
+          await FirebaseAuth.instance.signOut();
+
+          if (!mounted) return;
+          _showAlert(
+            "Account Disabled",
+            "Your account has been disabled. Please contact support.",
+          );
+          return;
+        }
+      }
 
       if (!mounted) return;
 
@@ -71,7 +94,7 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
       );
 
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 1));
 
       if (!mounted) return;
 

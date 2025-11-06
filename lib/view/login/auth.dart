@@ -53,15 +53,6 @@ class AuthService {
 
       final UserCredential result = await _auth.signInWithCredential(credential);
 
-   
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Login Successful'),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      await _setLoginState(true);
       return result.user;
     } on FirebaseAuthException catch (e) {
       

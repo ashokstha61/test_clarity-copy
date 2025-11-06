@@ -1,6 +1,7 @@
 import 'package:Sleephoria/theme.dart';
 import 'package:Sleephoria/view/login/auth.dart';
 import 'package:Sleephoria/view/login/login_screen.dart';
+import 'package:Sleephoria/view/profile/DeleteAccount/deleteAccountScreen.dart';
 import 'package:Sleephoria/view/profile/legal_documents_page.dart';
 import 'package:Sleephoria/view/subscription/SubscriptionManagementView.dart';
 import 'package:flutter/material.dart';
@@ -142,6 +143,15 @@ class _ProfilePageState extends State<ProfilePage> {
                       type: DocumentType.termsAndConditions,
                     ),
                   ),
+                );
+              },
+            ),
+            CustomLogoutButton(
+              title: "Delete Account",
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) =>  DeleteAccountScreen()),
                 );
               },
             ),
